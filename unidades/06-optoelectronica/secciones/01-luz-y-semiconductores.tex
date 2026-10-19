@@ -1,0 +1,326 @@
+% =====================================================================
+\section{Luz y semiconductores}
+% =====================================================================
+
+Los dispositivos optoelectrónicos (fotoconductores, fotodiodos, celdas solares, LEDs y
+láseres) son dispositivos semiconductores diseñados para \emph{absorber} o \emph{emitir}
+luz de forma eficiente. Todos se basan en la misma idea: un fotón con energía suficiente
+puede llevar un electrón de la banda de valencia a la de conducción (\emph{absorción},
+genera un par electrón--hueco), y un electrón que cae de la banda de conducción a la de
+valencia puede liberar esa energía como un fotón (\emph{emisión}).
+
+\subsection{El fotón: energía y longitud de onda}
+
+La luz está formada por fotones de energía
+\begin{equation}
+  \Eph = h\nu = \frac{hc}{\lambda},
+\end{equation}
+con $h=\SI{6.626e-34}{J.s}=\SI{4.136e-15}{\eV.s}$ y $c=\SI{3e8}{m/s}$. Como
+$hc = \SI{1.24}{\eV.\micro m}$, en unidades prácticas:
+
+\begin{clave}[Relación energía -- longitud de onda]
+\[
+  \lambda\,[\si{\micro m}] = \frac{1.24}{\Eph\,[\si{\eV}]}
+  \qquad\Longrightarrow\qquad
+  \lG\,[\si{\micro m}] = \frac{1.24}{\EG\,[\si{\eV}]}
+\]
+$\lG$ es la \textbf{longitud de onda de corte} del semiconductor: la longitud de onda
+cuyo fotón tiene exactamente la energía del \emph{gap}. Fotones con $\lambda<\lG$
+($\Eph>\EG$) pueden ser absorbidos; fotones con $\lambda>\lG$ ($\Eph<\EG$) atraviesan el
+material: el semiconductor es \textbf{transparente} para ellos.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=7.2cm,y=1cm]
+  % banda visible con colores reales (modelo "wave" de xcolor, en nm)
+  \foreach \l in {380,384,...,748}{
+    \definecolor{tmpc}{wave}{\l}
+    \fill[tmpc] ({(\l/1000-0.2)},0) rectangle ({(\l/1000-0.2)+0.0042},0.45);
+  }
+  \fill[violet!25] (0,0) rectangle (0.18,0.45);
+  \fill[red!15] (0.552,0) rectangle (1.8,0.45);
+  \node[font=\small] at (0.09,0.225) {UV};
+  \node[font=\small] at (1.2,0.225) {infrarrojo (IR)};
+  \draw[flecha] (0,0) -- (1.85,0) node[right] {$\lambda$ (\si{\micro m})};
+  \foreach \x in {0.2,0.4,...,2.0}{
+    \draw ({\x-0.2},0) -- ({\x-0.2},-0.1) node[below,font=\scriptsize] {\pgfmathprintnumber[fixed,precision=1]{\x}};
+  }
+  \node[font=\scriptsize] at (0.37,-0.55) {visible};
+  % materiales: lambda_G
+  \foreach \lam/\nom/\h in {0.365/GaN/1.0, 0.413/SiC/1.6, 0.46/ZnSe/2.2, 0.549/GaP/1.0,
+                             0.873/GaAs/1.0, 0.919/InP/1.6, 1.107/Si/1.0, 1.65/InGaAs/1.0, 1.88/Ge/1.6}{
+    \draw[gris,thin] ({\lam-0.2},0.45) -- ({\lam-0.2},\h);
+    \node[above,font=\scriptsize,inner sep=1pt] at ({\lam-0.2},\h) {\nom};
+  }
+  % ventanas de fibra
+  \foreach \lam in {1.31,1.55}{
+    \draw[azul,densely dashed] ({\lam-0.2},0) -- ({\lam-0.2},-0.9);
+  }
+  \node[azul,font=\scriptsize,align=center] at (1.23,-1.15) {ventanas de fibra óptica\\1.31 y \SI{1.55}{\micro m}};
+  \node[font=\scriptsize,align=left,anchor=west] at (0.95,2.1) {marcas: $\lG=1.24/\EG$ de cada material};
+\end{tikzpicture}
+\caption{Espectro óptico y longitud de onda de corte $\lG$ de semiconductores comunes (300\,K).
+El rango visible va de \SIrange{0.38}{0.75}{\micro m}, es decir de \SIrange{3.3}{1.65}{\eV}.}
+\label{fig:espectro}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Gap de algunos semiconductores a 300\,K. La columna ``tipo'' es fundamental: decide si
+el material sirve para emitir luz (sección~\ref{sec:led}).}
+\label{tab:gaps}
+\begin{tabular}{lcccl}
+\toprule
+Material & $\EG$ (\si{\eV}) & $\lG$ (\si{\micro m}) & Tipo de gap & Uso típico \\
+\midrule
+Ge                       & 0.66 & 1.88 & indirecto & detectores IR \\
+In$_{0.53}$Ga$_{0.47}$As & 0.75 & 1.65 & directo   & detectores para fibra óptica \\
+Si                       & 1.12 & 1.11 & indirecto & fotodiodos, celdas solares \\
+InP                      & 1.35 & 0.92 & directo   & sustrato, ventanas, láseres \\
+GaAs                     & 1.42 & 0.87 & directo   & LEDs IR, láseres, celdas III-V \\
+GaP                      & 2.26 & 0.55 & indirecto & LEDs (dopado con N) \\
+SiC (6H)                 & 3.0  & 0.41 & indirecto & LEDs azules (antiguos) \\
+GaN                      & 3.4  & 0.36 & directo   & LEDs azules/blancos (con InGaN) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{ojo}[gap del GaP \diapo{6}]
+La tabla de la diapositiva pinta al GaP (\SI{2.3}{\eV}) de verde como si fuera un emisor
+natural de verde. El GaP es de \textbf{gap indirecto}: sólo emite con eficiencia razonable
+gracias a impurezas \emph{isoelectrónicas} (N, o el par Zn--O) que se agregan a propósito
+(ver sección~\ref{sec:led}). Los valores de la diapo están redondeados:
+Ge \SI{0.66}{\eV}, Si \SI{1.12}{\eV}, GaAs \SI{1.42}{\eV}.
+\end{ojo}
+
+\subsection{Absorción en semiconductores de gap directo e indirecto}
+
+En la absorción hay que conservar la \textbf{energía} y el \textbf{momento cristalino}
+($\hbar k$). El momento de un fotón es despreciable: $k_{\text{fotón}}=2\pi/\lambda\sim
+\SI{e5}{cm^{-1}}$, mientras que la zona de Brillouin se extiende hasta $k\sim\pi/a\sim
+\SI{e8}{cm^{-1}}$. Por eso, en un diagrama $E$--$k$, \emph{la transición debida sólo al
+fotón es vertical}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+  % ---------- (a) gap directo ----------
+  \begin{scope}
+    \draw[flecha] (-2,0) -- (2.2,0) node[right] {$k$};
+    \draw[flecha] (0,-1.8) -- (0,3.2) node[above] {$E$};
+    \draw[bandac,domain=-1.5:1.5,smooth] plot (\x,{1.4+0.6*\x*\x});
+    \draw[bandav,domain=-1.6:1.6,smooth] plot (\x,{-0.15-0.45*\x*\x});
+    \node[colEc,right] at (1.5,2.75) {BC};
+    \node[colEv,right] at (1.6,-1.3) {BV};
+    \node[elec] (e) at (0,1.4) {};
+    \node[hueco] (h) at (0,-0.15) {};
+    \draw[flecha,colFoton,line width=1pt] (0,-0.05) -- (0,1.28);
+    \draw[foton] (-1.7,0.9) -- (-0.15,0.65);
+    \node[colFoton,font=\small] at (-1.3,1.3) {$h\nu$};
+    \draw[<->,gris] (0.35,-0.15) -- node[right,font=\small] {$\EG$} (0.35,1.4);
+    \node[font=\small,align=center] at (0,-2.4) {(a) gap \textbf{directo}\\(GaAs, InP, GaN)};
+  \end{scope}
+  % ---------- (b) gap indirecto ----------
+  \begin{scope}[xshift=6.3cm]
+    \draw[flecha] (-2,0) -- (2.4,0) node[right] {$k$};
+    \draw[flecha] (0,-1.8) -- (0,3.2) node[above] {$E$};
+    \draw[bandac,domain=-1.6:2.3,smooth,samples=60] plot (\x,{1.1+0.75*(\x-1.2)*(\x-1.2)/(1+0.35*(\x-1.2)*(\x-1.2))});
+    \draw[bandav,domain=-1.6:1.6,smooth] plot (\x,{-0.15-0.45*\x*\x});
+    \node[colEc,right] at (2.3,1.6) {BC};
+    \node[colEv,right] at (1.6,-1.3) {BV};
+    \node[hueco] at (0,-0.15) {};
+    \node[elec] at (1.2,1.1) {};
+    % foton vertical hasta estado virtual
+    \draw[flecha,colFoton,line width=1pt] (0,-0.05) -- (0,0.95);
+    \draw[gris,dotted] (0,1.05) -- (1.1,1.05);
+    \draw[flecha,violeta,line width=0.9pt] (0.05,1.05) -- (1.08,1.1);
+    \node[violeta,font=\small] at (0.75,0.65) {fonón};
+    \draw[<->,gris] (1.75,-0.15) -- node[right,font=\small] {$\EG$} (1.75,1.1);
+    \draw[gris,dotted] (0,-0.15) -- (1.8,-0.15);
+    \node[font=\small,align=center] at (0.2,-2.4) {(b) gap \textbf{indirecto}\\(Si, Ge, GaP)};
+  \end{scope}
+\end{tikzpicture}
+\caption{Absorción de un fotón en los diagramas $E$--$k$. En (a) el mínimo de la BC está
+justo encima del máximo de la BV y basta el fotón. En (b) el electrón tiene que cambiar de
+$k$: necesita además \emph{absorber o emitir un fonón} (vibración de la red), que aporta
+el momento faltante (y una pequeña energía $E_{ph}\sim\SI{50}{meV}$).}
+\label{fig:Ek}
+\end{figure}
+
+\begin{intuicion}[por qué importa el tipo de gap]
+Un proceso que necesita fotón \emph{y} fonón a la vez es mucho menos probable que uno que
+necesita sólo el fotón. Consecuencias:
+\begin{itemize}
+  \item \textbf{Absorción:} en un material indirecto el coeficiente de absorción $\alpha$
+  crece lentamente al pasar $\lG$; hacen falta espesores grandes (en Si, una celda solar
+  necesita $\sim\SI{100}{\micro m}$ o más; en GaAs alcanzan unos pocos \si{\micro m}).
+  \item \textbf{Emisión:} es el mismo argumento al revés. En Si la recombinación
+  banda a banda radiativa es tan lenta que gana la recombinación por trampas, que
+  libera la energía como calor. Por eso \emph{no hay LEDs de silicio}.
+\end{itemize}
+Con absorción de fonón se pueden absorber fotones con $h\nu=\EG-E_{ph}$; con emisión de
+fonón, $h\nu=\EG+E_{ph}$ (las tres variantes del diagrama de la \diapo{3}).
+\end{intuicion}
+
+\subsection{Coeficiente de absorción y ley de Beer--Lambert}
+
+Supongamos un haz de luz monocromática que entra a un semiconductor por $x=0$. Cada
+unidad de longitud recorrida absorbe una fracción fija $\alpha$ de los fotones
+que quedan:
+\[
+  \frac{\dd\Phi}{\dd x} = -\alpha\,\Phi
+  \qquad\Longrightarrow\qquad
+  \Phi(x) = \Phi_0\,e^{-\alpha x},\qquad I(x)=I_0\,e^{-\alpha x},
+\]
+donde $\Phi$ es el flujo de fotones (fotones/\si{cm^2.s}) e $I$ la intensidad
+(\si{W/cm^2}). $\alpha$ [\si{cm^{-1}}] es el \textbf{coeficiente de absorción}, y
+$1/\alpha$ es la \textbf{profundidad de penetración}: la distancia en que la luz cae a
+$1/e\approx\SI{37}{\percent}$. A una profundidad de $3/\alpha$ ya se absorbió el
+\SI{95}{\percent}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{semilogyaxis}[
+  width=0.62\textwidth, height=6.4cm,
+  xmin=0.3, xmax=1.9, ymin=1, ymax=2e6,
+  xlabel={$\lambda$ (\si{\micro m})}, ylabel={$\alpha$ (\si{cm^{-1}})},
+  grid=both, minor grid style={gray!15}, major grid style={gray!30},
+  legend pos=south west, legend style={font=\small},
+  every axis plot/.append style={line width=1.1pt,smooth},
+  axis y line*=left,
+]
+\addplot[azul] coordinates {(0.30,1.7e6)(0.35,1.0e6)(0.40,9.5e4)(0.45,2.6e4)(0.50,1.1e4)(0.55,6.4e3)(0.60,4.1e3)
+  (0.65,2.8e3)(0.70,1.9e3)(0.75,1.3e3)(0.80,850)(0.85,535)(0.90,306)(0.95,157)(1.00,64)(1.05,16)(1.10,3.5)(1.12,1.2)};
+\addlegendentry{Si}
+\addplot[rojo] coordinates {(0.30,1.5e6)(0.40,7e5)(0.50,1.2e5)(0.60,5e4)(0.70,2.8e4)(0.80,1.3e4)(0.85,8e3)
+  (0.865,3e3)(0.875,4e2)(0.885,30)(0.89,1)};
+\addlegendentry{GaAs}
+\addplot[verde] coordinates {(0.40,5e5)(0.50,2e5)(0.60,8e4)(0.70,5e4)(0.80,3e4)(0.90,2e4)(0.915,6e3)(0.925,5e2)(0.935,10)(0.94,1)};
+\addlegendentry{InP}
+\addplot[naranja] coordinates {(0.40,6e5)(0.60,2e5)(0.80,6e4)(1.00,2e4)(1.20,1e4)(1.40,7e3)(1.50,4e3)(1.55,7e2)
+  (1.60,1.5e2)(1.70,30)(1.80,5)(1.86,1)};
+\addlegendentry{Ge}
+\end{semilogyaxis}
+\begin{semilogyaxis}[
+  width=0.62\textwidth, height=6.4cm,
+  xmin=0.3, xmax=1.9, ymin=1, ymax=2e6,
+  axis x line=none, axis y line*=right,
+  ytick={1e-4,1e-3,1e-2,1e-1,1,10,100,1000,10000,100000,1000000},
+  yticklabels={},
+  extra y ticks={1e2,1e3,1e4,1e5},
+  extra y tick labels={\SI{100}{\micro m},\SI{10}{\micro m},\SI{1}{\micro m},\SI{0.1}{\micro m}},
+  extra y tick style={tick label style={font=\scriptsize}},
+  ylabel={$1/\alpha$}, ylabel style={font=\small},
+]
+\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Coeficiente de absorción en función de $\lambda$ (valores aproximados a 300\,K,
+adaptado de Pierret, fig.~3.20). A la derecha, la profundidad de penetración $1/\alpha$
+correspondiente. Notar el corte \emph{abrupto} de los materiales directos (GaAs, InP) en
+$\lG$ y el corte \emph{gradual} del Si (indirecto). El Ge tiene un gap indirecto de
+\SI{0.66}{\eV} y uno directo de \SI{0.80}{\eV} ($\approx\SI{1.55}{\micro m}$): de ahí el
+escalón.}
+\label{fig:alfa}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Profundidad de penetración $1/\alpha$ en silicio. La luz azul se absorbe en la
+superficie; la infrarroja cercana penetra cientos de micrones.}
+\label{tab:penetracion}
+\begin{tabular}{lccccccc}
+\toprule
+$\lambda$ (\si{\micro m}) & 0.40 & 0.50 & 0.60 & 0.70 & 0.80 & 0.90 & 1.00 \\
+\midrule
+$\alpha$ (\si{cm^{-1}}) & \num{9.5e4} & \num{1.1e4} & \num{4.1e3} & \num{1.9e3} & 850 & 306 & 64 \\
+$1/\alpha$ (\si{\micro m}) & 0.1 & 0.9 & 2.4 & 5.3 & 12 & 33 & 156 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Fotogeneración}
+\label{sec:fotogeneracion}
+
+Cada fotón absorbido (con $\Eph>\EG$) genera un par electrón--hueco. La tasa de
+fotogeneración por unidad de volumen es entonces el número de fotones absorbidos por
+unidad de volumen y de tiempo, $-\dd\Phi/\dd x$:
+
+\begin{clave}[Tasa de fotogeneración]
+\[
+  G_L(x,\lambda) = \left.\frac{\partial n}{\partial t}\right|_{\text{luz}}
+  = \left.\frac{\partial p}{\partial t}\right|_{\text{luz}}
+  = \alpha\,\Phi_0\,e^{-\alpha x} \equiv G_{L0}\,e^{-\alpha x}
+  \qquad [\si{cm^{-3}.s^{-1}}]
+\]
+con $\Phi_0 = \dfrac{(1-R)\,P}{h\nu\,A}$ el flujo de fotones que \emph{entra} al
+semiconductor (potencia $P$ sobre área $A$, reflectividad $R$). Electrones y huecos se
+generan \textbf{de a pares}: $\Delta n=\Delta p$ en el instante de la generación.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  % bloque semiconductor
+  \fill[azulclaro] (0,0) rectangle (6,1.4);
+  \draw (0,0) rectangle (6,1.4);
+  \node[font=\small,anchor=south east] at (5.95,0.05) {semiconductor};
+  % sombreado de intensidad decreciente
+  \foreach \i in {0,...,29}{
+    \pgfmathsetmacro{\op}{0.85*exp(-\i/9)}
+    \fill[naranja,opacity=\op] ({\i*0.2},0) rectangle ({\i*0.2+0.2},1.4);
+  }
+  \foreach \y in {0.3,0.7,1.1}{
+    \draw[foton] (-1.6,\y) -- (-0.05,\y);
+  }
+  \node[colFoton,above] at (-0.9,1.4) {$h\nu$, $\lambda$};
+  % grafico debajo
+  \begin{scope}[yshift=-3.2cm]
+    \draw[flecha] (0,0) -- (6.4,0) node[right] {$x$};
+    \draw[flecha] (0,0) -- (0,2.4) node[above] {$G_L(x)$};
+    \draw[naranja,line width=1.1pt,domain=0:6,smooth,samples=60] plot (\x,{2*exp(-\x/1.8)});
+    \draw[gris,dashed] (1.8,0) node[below,black] {$1/\alpha$} -- (1.8,{2*exp(-1)});
+    \draw[gris,dashed] (0,{2*exp(-1)}) node[left,black] {$G_{L0}/e$} -- (1.8,{2*exp(-1)});
+    \node[left] at (0,2) {$G_{L0}$};
+    \node[font=\small,align=left,anchor=west] at (3.0,1.4) {$G_L=G_{L0}\,e^{-\alpha x}$\\$\alpha$ grande: todo en la superficie\\$\alpha$ chico: casi uniforme};
+  \end{scope}
+\end{tikzpicture}
+\caption{La luz se atenúa exponencialmente al penetrar y con ella la tasa de generación de
+pares \diapo{4}. Si el dispositivo es mucho más delgado que $1/\alpha$, se puede aproximar
+$G_L\approx$ constante, que es la hipótesis que usa Pierret en las deducciones de
+fotodiodos.}
+\label{fig:fotogeneracion}
+\end{figure}
+
+\paragraph{Reflexión en la superficie.} Al pasar del aire ($n_1=1$) a un semiconductor de
+índice $n$ con incidencia normal se refleja una fracción
+\[
+  R = \left(\frac{n-1}{n+1}\right)^2 .
+\]
+Para Si ($n\approx3.5$) da $R\approx\SI{31}{\percent}$: ¡casi un tercio de la luz se pierde
+antes de entrar! Por eso todos los fotodetectores y celdas llevan \textbf{capa
+antirreflectante}: una película de índice $n_{AR}\approx\sqrt{n}$ y espesor
+$\lambda/(4n_{AR})$ hace que las ondas reflejadas en sus dos caras se cancelen. Las celdas
+solares además \emph{texturizan} la superficie (pirámides) para que la luz rebotada
+vuelva a incidir sobre el semiconductor.
+
+\begin{ejemplo}[¿qué material para qué luz?]
+\textbf{a)} ¿Puede un fotodiodo de Si detectar la luz de un láser de fibra de
+\SI{1.55}{\micro m}? \quad
+$\Eph = 1.24/1.55 = \SI{0.80}{\eV} < \EG(\text{Si}) = \SI{1.12}{\eV}$. \textbf{No}: el Si
+es transparente a esa luz. Sirven Ge ($\lG=\SI{1.88}{\micro m}$) o
+In$_{0.53}$Ga$_{0.47}$As ($\lG=\SI{1.65}{\micro m}$).
+
+\textbf{b)} Luz roja de \SI{0.65}{\micro m} incide sobre Si. ¿Qué espesor absorbe el
+\SI{90}{\percent} de lo que entra? \quad Interpolando la tabla~\ref{tab:penetracion},
+$\alpha\approx\SI{2.8e3}{cm^{-1}}$. Se pide $1-e^{-\alpha d}=0.9\Rightarrow
+d=\ln 10/\alpha = 2.3/\SI{2.8e3}{cm^{-1}}\approx\SI{8}{\micro m}$.
+\end{ejemplo}
+
+\begin{ojo}[\diapo{5}]
+La frase ``el fotodiodo PN tiene una respuesta en frecuencia limitada a aprox.\
+\SI{10}{MHz}'' aparece en la diapositiva del coeficiente de absorción pero no tiene que ver
+con $\alpha$ directamente: se explica en la sección~\ref{sec:pn-velocidad} (es la lentitud
+de la difusión de los portadores generados fuera de la zona de carga espacial).
+\end{ojo}

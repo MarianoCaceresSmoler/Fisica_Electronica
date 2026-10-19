@@ -1,0 +1,294 @@
+% =====================================================================
+\section{Fotodiodo de juntura PN}
+\label{sec:pn}
+% =====================================================================
+
+\subsection{Principio de funcionamiento}
+
+Un fotodiodo es una juntura PN diseñada para que la luz llegue a la zona de la juntura.
+La clave es el \textbf{campo eléctrico de la zona de carga espacial (ZCE)}: separa los
+pares fotogenerados (electrones hacia el lado n, huecos hacia el lado p) y los convierte
+en corriente antes de que se recombinen. Como el campo apunta de n a p, la fotocorriente
+circula en sentido \textbf{inverso} (de n a p por dentro del diodo).
+
+Según dónde se genere el par, hay tres casos (figura~\ref{fig:pn-colecta}):
+\begin{enumerate}
+  \item \textbf{Dentro de la ZCE} (ancho $W$): el campo separa el par de inmediato
+  (\emph{deriva}, muy rápido). Se colecta todo.
+  \item \textbf{En la zona neutra, a menos de una longitud de difusión de la ZCE}: el
+  minoritario (electrón en p, hueco en n) \emph{difunde} al azar; con buena probabilidad
+  llega al borde de la ZCE y el campo lo barre al otro lado. Es un proceso lento.
+  \item \textbf{Lejos de la ZCE} ($\gg L_n$ o $L_p$): el minoritario se recombina antes de
+  llegar. No aporta corriente.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  % regiones
+  \fill[rojoclaro] (0,0) rectangle (5,1.6);
+  \fill[azulclaro] (6.2,0) rectangle (11.2,1.6);
+  \fill[gris!15] (5,0) rectangle (6.2,1.6);
+  \draw (0,0) rectangle (11.2,1.6);
+  \draw[dashed] (5,0) -- (5,1.6) (6.2,0) -- (6.2,1.6);
+  \node at (0.5,1.3) {p}; \node at (10.8,1.3) {n};
+  % zonas de colecta
+  \fill[verde,opacity=0.18] (2.6,0) rectangle (8.6,1.6);
+  \draw[<->] (2.6,-0.3) -- node[below,font=\small] {$L_n$} (5,-0.3);
+  \draw[<->] (5,-0.3) -- node[below,font=\small] {$W$} (6.2,-0.3);
+  \draw[<->] (6.2,-0.3) -- node[below,font=\small] {$L_p$} (8.6,-0.3);
+  \node[verde!70!black,font=\small] at (5.6,-1.0) {volumen de colecta $A(L_n+W+L_p)$};
+  % campo
+  \draw[flecha,line width=1pt] (6.05,0.25) -- (5.15,0.25);
+  \node[font=\scriptsize] at (5.6,0.48) {$\vec{\mathcal{E}}$};
+  % pares en ZCE
+  \node[elec] at (5.4,1.0) {}; \node[hueco] at (5.8,1.0) {};
+  \draw[flecha,colElec] (5.55,1.15) -- (6.1,1.15);
+  \draw[flecha,colHueco] (5.65,0.85) -- (5.1,0.85);
+  % par en p cerca: electron difunde
+  \node[elec] (e1) at (3.6,0.9) {};
+  \draw[colElec,decorate,decoration={random steps,segment length=3pt,amplitude=2pt},-{Stealth[length=4pt]}] (3.65,0.9) -- (4.95,1.05);
+  % par en n cerca: hueco difunde
+  \node[hueco] at (7.6,0.7) {};
+  \draw[colHueco,decorate,decoration={random steps,segment length=3pt,amplitude=2pt},-{Stealth[length=4pt]}] (7.5,0.7) -- (6.25,0.6);
+  % par lejos: recombina
+  \node[elec] at (1.0,0.6) {}; \node[hueco] at (1.25,0.6) {};
+  \node[font=\scriptsize,align=center] at (1.15,0.25) {se recombina};
+  \node[elec] at (10.0,0.65) {}; \node[hueco] at (10.25,0.65) {};
+  \node[font=\scriptsize,align=center] at (10.15,0.25) {se recombina};
+  % luz
+  \foreach \x in {1.2,3.6,5.6,7.6,10}{\draw[foton] (\x,2.9) -- (\x,1.7);}
+  \node[colFoton,anchor=west] at (10.2,2.6) {luz};
+\end{tikzpicture}
+\caption{Colección de portadores en un fotodiodo PN (adaptado de Pierret, fig.~9.2 y
+\diapo{8}). Sólo los pares generados en la ZCE o a menos de una longitud de difusión de ella
+contribuyen a la corriente.}
+\label{fig:pn-colecta}
+\end{figure}
+
+\subsection{Característica I--V con iluminación}
+
+\begin{clave}[Ecuación del fotodiodo]
+\[
+  I = I_0\left(e^{V_A/V_T}-1\right) - I_L,
+  \qquad
+  I_L = q\,A\,G_L\,(L_n + W + L_p)
+\]
+(Pierret escribe $I=I_{dark}+I_L$ con $I_L=-qA(L_N+W+L_P)G_L$; es lo mismo con otra
+convención de signo para $I_L$.) La luz \textbf{desplaza la curva del diodo hacia abajo}
+una cantidad $I_L$ proporcional a la intensidad de la luz, sin cambiar su forma.
+\end{clave}
+
+\paragraph{Deducción (ecuación de difusión con generación).} Tomemos el lado n
+($x\ge0$ medido desde el borde de la ZCE) con generación uniforme $G_L$. En estado
+estacionario la ecuación de difusión para huecos minoritarios queda
+\[
+  0 = D_p\frac{\dd^2\Delta p}{\dd x^2} - \frac{\Delta p}{\tau_p} + G_L,
+  \qquad
+  \Delta p(0) = p_{n0}\left(e^{V_A/V_T}-1\right),
+  \quad
+  \Delta p(\infty) = G_L\tau_p .
+\]
+La primera condición es la ley de la juntura; la segunda dice que lejos de la juntura el
+exceso es el de una muestra uniformemente iluminada \eqref{eq:dn-estacionario}. La solución es
+\[
+  \Delta p(x) = G_L\tau_p + \left[p_{n0}\left(e^{V_A/V_T}-1\right)-G_L\tau_p\right]e^{-x/L_p}.
+\]
+La corriente de huecos en el borde de la ZCE es de difusión:
+\[
+  J_p(0) = -qD_p\left.\frac{\dd\Delta p}{\dd x}\right|_0
+  = \frac{qD_p}{L_p}\,p_{n0}\left(e^{V_A/V_T}-1\right) - q\,G_L\,L_p ,
+\]
+donde se usó $D_p\tau_p/L_p=L_p$. El primer término es la corriente del diodo ideal; el
+segundo, \textbf{la generación dentro de una longitud $L_p$}. El lado p aporta análogamente
+$-qG_LL_n$, y la ZCE, donde todo lo generado se colecta, $-qG_LW$. Sumando y
+multiplicando por $A$ se obtiene la ecuación del recuadro.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth,height=7.2cm,
+  xmin=-1.1,xmax=0.75,ymin=-4.3,ymax=2.2,
+  axis lines=middle,
+  xlabel={$V_A$ (V)},ylabel={$I$ (mA)},
+  xlabel style={at={(ticklabel* cs:1)},anchor=north west},
+  ylabel style={at={(ticklabel* cs:1)},anchor=south},
+  xtick={-1,-0.5,0.5},ytick={-4,-3,-2,-1,1,2},
+  every axis plot/.append style={line width=1.1pt,samples=200},
+  clip=true,
+]
+\fill[naranjaclaro,opacity=0.7] (axis cs:0,0) rectangle (axis cs:0.75,-4.3);
+\fill[azulclaro,opacity=0.7] (axis cs:-1.1,0) rectangle (axis cs:0,-4.3);
+\fill[verdeclaro,opacity=0.7] (axis cs:0,0) rectangle (axis cs:0.75,2.2);
+\addplot[black,domain=-1.1:0.66] {1e-10*(exp(x/0.02585)-1)};
+\addplot[azul,domain=-1.1:0.68] {1e-10*(exp(x/0.02585)-1)-1};
+\addplot[violeta,domain=-1.1:0.69] {1e-10*(exp(x/0.02585)-1)-2};
+\addplot[rojo,domain=-1.1:0.7] {1e-10*(exp(x/0.02585)-1)-3};
+\node[font=\scriptsize,anchor=south west] at (axis cs:-0.85,0.03) {$G_L=0$ (oscuridad)};
+\node[font=\scriptsize,azul,anchor=south west] at (axis cs:-0.85,-0.97) {$G_L=G_0$};
+\node[font=\scriptsize,violeta,anchor=south west] at (axis cs:-0.85,-1.97) {$2G_0$};
+\node[font=\scriptsize,rojo,anchor=south west] at (axis cs:-0.85,-2.97) {$3G_0$};
+\node[font=\small,align=center,azul!80!black] at (axis cs:-0.55,-3.75) {III: \textbf{fotodetector}\\($V_A<0$, $I\propto$ luz)};
+\node[font=\small,align=center,naranja!80!black] at (axis cs:0.37,-3.75) {IV: \textbf{fotovoltaico}\\(entrega potencia)};
+\node[font=\small,align=center,verde!60!black] at (axis cs:0.27,1.6) {I: diodo directo\\(LED si es directo)};
+\end{axis}
+\end{tikzpicture}
+\caption{Característica I--V de un fotodiodo para distintos niveles de iluminación
+(Pierret, fig.~9.3). En el tercer cuadrante la corriente casi no depende de la tensión y es
+proporcional a la luz: el diodo es una \emph{fuente de corriente controlada por luz}.
+En el cuarto cuadrante $V_A>0$ e $I<0$: la potencia $P=V_AI<0$ significa que el
+dispositivo \textbf{entrega} energía (celda solar).}
+\label{fig:iv-pn}
+\end{figure}
+
+\subsection{Modos de operación}
+\label{sec:modos}
+
+\begin{description}[style=nextline,leftmargin=1.2em]
+  \item[Modo fotoconductivo (polarización inversa, 3.\textsuperscript{er} cuadrante)]
+  Es el modo normal de un fotodetector. Ventajas: la ZCE es más ancha (colecta más por
+  deriva y es más rápida), la capacidad de juntura $C_j=\epsilon A/W$ es menor (menor
+  constante $RC$) y la respuesta es lineal: $I\approx-I_0-I_L\approx-I_L$. Desventaja:
+  circula siempre la corriente de oscuridad $I_0$ (y su ruido).
+  \item[Modo fotovoltaico ($V_A>0$ fijada por la carga, 4.\textsuperscript{o} cuadrante)]
+  El diodo funciona como generador: es la \textbf{celda solar} (sección~\ref{sec:solar}).
+  Como fotodetector sin polarización (cortocircuito, $V_A=0$) no hay corriente de oscuridad
+  y el ruido es mínimo, pero es más lento.
+  \item[Polarización directa (1.\textsuperscript{er} cuadrante)] La juntura inyecta
+  portadores que se recombinan. Si el material es de gap directo, emite luz: es el
+  \textbf{LED} (sección~\ref{sec:led}).
+\end{description}
+
+\begin{ojo}[\diapo{10}]
+\begin{itemize}
+  \item ``Polarizado inverso como fotodetector (diodo PIN)'': el PIN es una
+  \emph{estructura} (sección~\ref{sec:pin}), no un modo de operación. Tanto el PN como el
+  PIN se usan en polarización inversa.
+  \item ``Polarizado directo como LED'': un fotodiodo de Si en directa \emph{no} emite luz
+  apreciable (gap indirecto). El LED es la misma física de juntura, pero hecho con un
+  material de gap directo.
+  \item ``La zona n, menos contaminada, tendrá una mayor \emph{longitud} de deplexión'':
+  se refiere al \emph{ancho} de la zona de deplexión. Como $x_nN_D=x_pN_A$, la ZCE se
+  extiende sobre todo hacia el lado menos dopado; por eso en un diodo p$^+$n casi toda la
+  ZCE (y la colección por deriva) está en el lado n.
+\end{itemize}
+\end{ojo}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.5\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.9]
+  % corte transversal fotodiodo p+n
+  \fill[azulclaro] (0,0) rectangle (6,2.2);
+  \fill[azul!35] (0,0) rectangle (6,0.5);
+  \fill[rojoclaro] (1.2,2.2) -- (1.2,1.75) arc[start angle=180,end angle=270,radius=0.25] -- (4.55,1.5) arc[start angle=270,end angle=360,radius=0.25] -- (4.8,2.2) -- cycle;
+  \draw (1.2,2.2) -- (1.2,1.75) arc[start angle=180,end angle=270,radius=0.25] -- (4.55,1.5) arc[start angle=270,end angle=360,radius=0.25] -- (4.8,2.2);
+  \draw (0,0) rectangle (6,2.2);
+  \draw (0,0.5) -- (6,0.5);
+  \node at (3,1.85) {p$^+$};
+  \node at (3,1.0) {n};
+  \node at (3,0.25) {n$^+$};
+  % SiO2 y AR
+  \fill[gris!30] (0,2.2) rectangle (1.4,2.4) (4.6,2.2) rectangle (6,2.4);
+  \fill[azul!50] (1.4,2.2) rectangle (4.6,2.32);
+  \fill[black!70] (1.0,2.4) rectangle (1.8,2.6) (4.2,2.4) rectangle (5.0,2.6);
+  \fill[black!70] (0,-0.2) rectangle (6,0);
+  \draw[foton] (3,3.4) -- (3,2.4);
+  \node[font=\scriptsize,anchor=west] at (6.05,2.3) {SiO$_2$};
+  \draw[gris] (4.0,2.27) -- (4.6,3.1) node[above,font=\scriptsize,black] {antirreflectante};
+  \draw[gris] (1.4,2.5) -- (0.6,3.1) node[above,font=\scriptsize,black] {contacto};
+  \node[font=\scriptsize,anchor=west] at (6.05,-0.1) {contacto};
+\end{tikzpicture}
+\end{minipage}%
+\begin{minipage}{0.48\textwidth}
+\centering
+\begin{circuitikz}[scale=0.9,transform shape]
+  \draw (0,0) to[battery1,l=$V_R$] (0,3) -- (2.6,3);
+  \draw (2.6,0) to[photodiode] (2.6,3);
+  \draw (2.6,0) to[R,l=$R_L$] (0,0);
+  \draw[flecha,azul] (3.3,2.3) -- node[right,font=\small] {$I_L$} (3.3,0.7);
+\end{circuitikz}
+\end{minipage}
+\caption{Izquierda: corte de un fotodiodo planar p$^+$--n \diapo{10}: capa p$^+$ muy
+delgada, ventana con antirreflectante y contacto en forma de anillo. Derecha: símbolo y
+polarización inversa.}
+\label{fig:pn-corte}
+\end{figure}
+
+\begin{ojo}[``el material P debe ser transparente'' \diapo{12}]
+En un fotodiodo de Si el lado p también es Si: \emph{no puede} ser transparente a la luz
+que el Si absorbe. Lo que se hace es una capa p$^+$ \textbf{muy delgada} (mucho menor que
+$1/\alpha$), para que la mayor parte de la luz atraviese esa capa y se absorba en la ZCE o
+cerca de ella. Una capa superior realmente transparente requiere otro material de gap
+mayor (una \emph{heteroestructura}, como la ventana de InP del fotodiodo de InGaAs,
+sección~\ref{sec:materiales-pin}). Tampoco es cierto que ``cada fotón al llegar a la ZCE
+produce un par'' \diapo{11}: la absorción es probabilística (ley exponencial) y ocurre en
+todo el material; la ZCE sólo determina \emph{cómo} se colectan los portadores.
+\end{ojo}
+
+\subsection{Respuesta espectral}
+
+La respuesta espectral indica cómo varía $I_L$ con $\lambda$ a potencia óptica constante.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.62\textwidth,height=5.2cm,
+  xmin=0.4,xmax=1.25,ymin=0,ymax=1.1,
+  xlabel={$\lambda$ (\si{\micro m})},ylabel={$I_L/I_{L,\max}$},
+  grid=major,grid style={gray!25},
+]
+\addplot[azul,line width=1.2pt,smooth] coordinates {(0.45,0.10)(0.5,0.18)(0.55,0.28)(0.6,0.40)(0.65,0.53)(0.7,0.67)(0.75,0.80)
+  (0.8,0.91)(0.85,0.98)(0.88,1.0)(0.92,0.97)(0.96,0.85)(1.0,0.62)(1.04,0.35)(1.08,0.12)(1.11,0.02)(1.14,0)};
+\draw[gris,dashed] (axis cs:1.107,0) -- (axis cs:1.107,1.1) node[below left,font=\scriptsize] {$\lG(\text{Si})$};
+\node[font=\scriptsize,align=center] at (axis cs:0.55,0.75) {$\lambda$ corta:\\absorción en la\\superficie};
+\node[font=\scriptsize,align=center] at (axis cs:1.14,0.6) {$\Eph<\EG$:\\transparente};
+\end{axis}
+\end{tikzpicture}
+\caption{Respuesta espectral típica de un fotodiodo PN de Si (Pierret, fig.~9.4 y \diapo{9}).}
+\label{fig:resp-espectral}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Corte en $\lambda$ larga:} para $\lambda>\lG$ ($\Eph<\EG$) no hay absorción.
+  Para Si, $\lG=1.24/1.12\approx\SI{1.1}{\micro m}$.
+  \item \textbf{Caída en $\lambda$ corta}, por dos motivos:
+  \begin{enumerate}
+    \item A potencia constante, cada fotón lleva más energía, así que llegan \emph{menos
+    fotones por segundo}: $\Phi = P/h\nu = P\lambda/hc$.
+    \item $\alpha$ crece mucho y la luz se absorbe muy cerca de la superficie, lejos de la
+    ZCE y donde la recombinación superficial es alta: muchos pares se pierden.
+  \end{enumerate}
+\end{itemize}
+
+\begin{ojo}[\diapo{9}]
+Dice que la respuesta disminuye a $\lambda$ bajas ``debido a que se incrementa la $E_G$ al
+bajar $\lG$''. Es incorrecto: $\EG$ es una propiedad fija del material. Lo que aumenta
+al bajar $\lambda$ es la \textbf{energía de cada fotón}, $\Eph=1.24/\lambda$; a potencia
+constante eso implica menos fotones por segundo y, por lo tanto, menos pares.
+\end{ojo}
+
+\subsection{Velocidad de respuesta}
+\label{sec:pn-velocidad}
+
+Los portadores generados en la ZCE cruzan por deriva, normalmente a la velocidad de
+saturación ($\vsat\approx\SI{e7}{cm/s}$ en Si), y tardan
+$t_{tr}=W/\vsat\approx\SI{10}{ps}$ para $W=\SI{1}{\micro m}$. Los generados en las zonas
+neutras tienen que \emph{difundir}, y un camino de longitud $L$ por difusión tarda
+\[
+  t_{dif}\sim\frac{L^2}{2D}\qquad
+  \text{p.\,ej. } \frac{(\SI{10}{\micro m})^2}{2\cdot\SI{35}{cm^2/s}}\approx\SI{14}{ns}.
+\]
+Esa ``cola'' lenta limita al fotodiodo PN a frecuencias del orden de
+\textbf{decenas de MHz}. Como en un PN la ZCE es delgada ($W\lesssim\SI{1}{\micro m}$) y
+$1/\alpha$ suele ser de varios micrones, la mayoría de los pares se genera en zonas
+neutras. El PIN resuelve exactamente este problema.
+
+\begin{ojo}[velocidad de saturación \diapo{10}]
+La diapositiva da $\vsat\approx\SI{e5}{cm/s}$. El valor correcto para electrones y huecos
+en Si es del orden de $\SI{e7}{cm/s}$ ($=\SI{e5}{m/s}$; probablemente se mezclaron las
+unidades).
+\end{ojo}

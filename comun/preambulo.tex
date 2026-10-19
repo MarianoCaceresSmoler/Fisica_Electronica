@@ -1,0 +1,133 @@
+% =====================================================================
+%  Preámbulo común para los apuntes de Física Electrónica
+%  Uso (desde unidades/XX-nombre/archivo.tex):
+%     \documentclass[11pt,a4paper]{article}
+%     \input{../../comun/preambulo.tex}
+% =====================================================================
+
+% ---------- Idioma y tipografía ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{parskip}
+\setlength{\parskip}{0.55em}
+
+% ---------- Matemática y unidades ----------
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage[per-mode=symbol,output-decimal-marker={.},separate-uncertainty]{siunitx}
+\sisetup{range-phrase={\text{--}},range-units=single}
+\DeclareSIUnit{\eV}{eV}
+
+% ---------- Gráficos ----------
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,decorations.markings,
+  patterns,calc,positioning,shapes.geometric,fit,backgrounds,shadings}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{fillbetween}
+\usepackage[siunitx,RPvoltages]{circuitikz}
+
+% ---------- Tablas, listas, figuras ----------
+\usepackage{booktabs,array,tabularx,multirow}
+\usepackage{enumitem}
+\setlist{itemsep=0.2em,topsep=0.3em}
+\usepackage{caption,subcaption}
+\captionsetup{font=small,labelfont=bf,format=hang}
+\usepackage{float}
+\usepackage{wrapfig}
+
+% ---------- Colores ----------
+\definecolor{azul}{HTML}{1F4E79}
+\definecolor{azulclaro}{HTML}{DCE9F5}
+\definecolor{verde}{HTML}{2E7D32}
+\definecolor{verdeclaro}{HTML}{E3F2E1}
+\definecolor{naranja}{HTML}{C55A11}
+\definecolor{naranjaclaro}{HTML}{FBE9DB}
+\definecolor{rojo}{HTML}{B71C1C}
+\definecolor{rojoclaro}{HTML}{FDECEA}
+\definecolor{violeta}{HTML}{5E35B1}
+\definecolor{violetaclaro}{HTML}{EDE7F6}
+\definecolor{gris}{HTML}{555555}
+% colores para dibujos de bandas / portadores
+\colorlet{colEc}{azul}
+\colorlet{colEv}{rojo}
+\colorlet{colElec}{azul}
+\colorlet{colHueco}{rojo}
+\colorlet{colFoton}{naranja}
+
+% ---------- Cajas didácticas ----------
+\usepackage[most]{tcolorbox}
+\tcbset{
+  base/.style={enhanced,breakable,arc=2pt,boxrule=0.6pt,left=6pt,right=6pt,
+    top=4pt,bottom=4pt,fonttitle=\bfseries\small,before skip=8pt,after skip=8pt}
+}
+% Definición
+\newtcolorbox{definicion}[1][]{base,colback=azulclaro,colframe=azul,
+  title={Definición\ifx\relax#1\relax\else: #1\fi}}
+% Resultado / fórmula clave
+\newtcolorbox{clave}[1][]{base,colback=verdeclaro,colframe=verde,
+  title={\ifx\relax#1\relax Resultado clave\else #1\fi}}
+% Ejemplo resuelto
+\newtcolorbox{ejemplo}[1][]{base,colback=white,colframe=violeta,
+  coltitle=white,colbacktitle=violeta,
+  title={Ejemplo\ifx\relax#1\relax\else: #1\fi}}
+% Corrección / aclaración respecto de las diapositivas
+\newtcolorbox{ojo}[1][]{base,colback=rojoclaro,colframe=rojo,
+  title={\ensuremath{\triangle}\ Ojo\ifx\relax#1\relax\else: #1\fi}}
+% Intuición física / comentario
+\newtcolorbox{intuicion}[1][]{base,colback=naranjaclaro,colframe=naranja,
+  title={Idea física\ifx\relax#1\relax\else: #1\fi}}
+
+% ---------- Encabezados ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{gris}Física Electrónica}
+\fancyhead[R]{\small\color{gris}\unidadtitulo}
+\fancyfoot[C]{\small\thepage}
+\newcommand{\unidadtitulo}{}
+\newcommand{\unidad}[1]{\renewcommand{\unidadtitulo}{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{azul!80!black}}{\thesubsubsection}{0.6em}{}
+
+\usepackage[hidelinks,bookmarksnumbered]{hyperref}
+\usepackage{bookmark}
+
+% ---------- Macros físicas ----------
+\newcommand{\EG}{E_G}
+\newcommand{\Ec}{E_c}
+\newcommand{\Ev}{E_v}
+\newcommand{\EF}{E_F}
+\newcommand{\Eph}{E_{\mathrm{ph}}}
+\newcommand{\lG}{\lambda_G}
+\newcommand{\VT}{V_T}
+\newcommand{\Popt}{P_{\mathrm{opt}}}
+\newcommand{\Resp}{\mathcal{R}}
+\newcommand{\vsat}{v_{\mathrm{sat}}}
+\newcommand{\Voc}{V_{oc}}
+\newcommand{\Isc}{I_{sc}}
+\newcommand{\diapo}[1]{{\small\textsf{[diapo~#1]}}}
+\newcommand{\dd}{\,\mathrm{d}}
+
+% ---------- Estilos TikZ comunes ----------
+\tikzset{
+  banda/.style={line width=1.1pt},
+  bandac/.style={banda,colEc},
+  bandav/.style={banda,colEv},
+  fermi/.style={dashed,gris,line width=0.6pt},
+  elec/.style={circle,fill=colElec,inner sep=0pt,minimum size=5pt},
+  hueco/.style={circle,draw=colHueco,fill=white,line width=0.9pt,inner sep=0pt,minimum size=5pt},
+  foton/.style={colFoton,line width=0.9pt,decorate,
+    decoration={snake,amplitude=1.6pt,segment length=5pt,post length=3pt},-{Stealth[length=5pt]}},
+  flecha/.style={-{Stealth[length=5pt]},line width=0.7pt},
+}

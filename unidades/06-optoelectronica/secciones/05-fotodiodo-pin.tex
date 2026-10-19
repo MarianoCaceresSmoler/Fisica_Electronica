@@ -1,0 +1,333 @@
+% =====================================================================
+\section{Fotodiodo PIN}
+\label{sec:pin}
+% =====================================================================
+
+\subsection{Idea: agrandar la zona de campo}
+
+En el fotodiodo PN la ZCE es angosta y la mayoría de los pares se genera en zonas neutras
+(colección lenta, por difusión, y con pérdidas por recombinación). El \textbf{PIN} intercala
+entre un p$^+$ y un n$^+$ una capa \textbf{intrínseca} (en la práctica, muy poco dopada,
+p$^-$ o n$^-$) de ancho $W_i$:
+
+\begin{itemize}
+  \item Como la capa i casi no tiene carga fija, se vacía por completo con muy poca tensión
+  inversa (o incluso sin polarizar) y \textbf{la ZCE ocupa toda la capa i}: $W\approx W_i$,
+  independiente de la tensión aplicada.
+  \item Las capas p$^+$ y n$^+$, muy dopadas, casi no se vacían (la carga se concentra en
+  láminas delgadas en sus bordes) y prácticamente toda la tensión cae sobre la capa i.
+  \item El campo en la capa i es \textbf{aproximadamente constante}: $\mathcal E\approx
+  (V_{bi}+V_R)/W_i$.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % dispositivo
+  \fill[rojoclaro] (0,0) rectangle (1.2,1);
+  \fill[gris!12] (1.2,0) rectangle (7.2,1);
+  \fill[azulclaro] (7.2,0) rectangle (8.6,1);
+  \draw (0,0) rectangle (8.6,1);
+  \draw (1.2,0) -- (1.2,1) (7.2,0) -- (7.2,1);
+  \node at (0.6,0.5) {p$^+$}; \node at (4.2,0.5) {i (n$^-$)}; \node at (7.9,0.5) {n$^+$};
+  \foreach \x in {0.3,0.7}{\draw[foton] (\x-0.6,1.9) -- (\x,1.05);}
+  \node[colFoton,font=\small] at (-0.6,1.6) {luz};
+  % rho(x)
+  \begin{scope}[yshift=-2.3cm]
+    \draw[flecha] (-0.3,0) -- (9,0) node[right] {$x$};
+    \draw[flecha] (-0.3,-1) -- (-0.3,1.1) node[above] {$\rho(x)$};
+    \fill[rojo!50] (0.95,0) rectangle (1.2,-0.9);
+    \fill[azul!50] (7.2,0) rectangle (7.45,0.9);
+    \fill[azul!20] (1.2,0) rectangle (7.2,0.06);
+    \node[font=\scriptsize,anchor=west] at (1.25,-0.7) {$-qN_A$ (lámina delgada)};
+    \node[font=\scriptsize,anchor=east] at (7.15,0.7) {$+qN_D$};
+    \node[font=\scriptsize] at (4.2,0.3) {carga casi nula};
+  \end{scope}
+  % E(x)
+  \begin{scope}[yshift=-6.0cm]
+    \draw[flecha] (-0.3,0) -- (9,0) node[right] {$x$};
+    \draw[flecha] (-0.3,-0.2) -- (-0.3,1.7) node[above] {$|\mathcal{E}(x)|$};
+    \fill[verde!25] (0.95,0) -- (1.2,1.2) -- (7.2,1.3) -- (7.45,0) -- cycle;
+    \draw[verde!60!black,line width=1.1pt] (0.6,0) -- (0.95,0) -- (1.2,1.2) -- (7.2,1.3) -- (7.45,0) -- (8.6,0);
+    \draw[gris,dashed,line width=0.9pt] (3.9,0) -- (4.4,1.9) -- (4.9,0);
+    \node[gris,font=\scriptsize,align=left,anchor=west] at (4.6,1.95) {PN común (sin capa i): triangular y angosto};
+    \node[verde!60!black,font=\scriptsize] at (2.5,0.6) {PIN: casi constante};
+    \draw[<->] (1.2,-0.35) -- node[below,font=\small] {$W\approx W_i$} (7.2,-0.35);
+  \end{scope}
+\end{tikzpicture}
+\caption{Estructura del PIN, densidad de carga y campo eléctrico \diapo{13--14}. El área
+bajo $|\mathcal E|$ es la tensión total $V_{bi}+V_R$: para la misma tensión, el PIN
+reparte el campo en una zona mucho más ancha.}
+\label{fig:pin-campo}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  % bandas con polarizacion inversa
+  \draw[bandac] (0,3.0) -- (1.2,3.0) -- (7.2,0.6) -- (8.6,0.6) node[right,font=\small] {$\Ec$};
+  \draw[bandav] (0,1.9) -- (1.2,1.9) -- (7.2,-0.5) -- (8.6,-0.5) node[right,font=\small] {$\Ev$};
+  \draw[fermi] (0,1.75) node[left,font=\scriptsize,black] {$E_{Fp}$} -- (1.2,1.75);
+  \draw[fermi] (7.2,0.45) -- (8.6,0.45) node[pos=0.5,below,font=\scriptsize,black] {$E_{Fn}$};
+  \draw[<->,gris] (8.9,1.75) -- node[right,font=\small,black] {$q(V_{bi}+V_R)$} (8.9,0.45);
+  \draw[gris,dotted] (1.2,1.75) -- (8.9,1.75) (8.6,0.45) -- (8.9,0.45);
+  % generacion en i
+  \draw[foton] (2.2,4.0) -- (3.4,2.65);
+  \node[colFoton,font=\small] at (2.0,4.2) {$h\nu$};
+  \node[elec] at (3.5,2.08) {};
+  \node[hueco] at (3.5,0.98) {};
+  \draw[flecha] (3.5,1.08) -- (3.5,1.98);
+  \draw[flecha,colElec,line width=0.9pt] (3.65,2.0) -- (5.6,1.25) node[midway,above right,font=\scriptsize] {e$^-$ hacia n};
+  \draw[flecha,colHueco,line width=0.9pt] (3.35,0.98) -- (1.9,1.55);
+  \node[colHueco,font=\scriptsize] at (2.5,0.85) {hueco hacia p};
+  \draw[dashed] (1.2,-0.9) -- (1.2,3.5) (7.2,-0.9) -- (7.2,3.5);
+  \node[font=\small] at (0.6,-0.8) {p$^+$}; \node[font=\small] at (4.2,-0.8) {capa i};
+  \node[font=\small] at (7.9,-0.8) {n$^+$};
+\end{tikzpicture}
+\caption{Diagrama de bandas de un PIN en inversa (Pierret, fig.~9.5b). El fotón genera un
+par en la capa i; el campo (pendiente de las bandas) acelera al electrón ``cuesta abajo''
+hacia n$^+$ y al hueco ``cuesta arriba'' hacia p$^+$.}
+\label{fig:pin-bandas}
+\end{figure}
+
+\subsection{Ventajas: eficiencia y velocidad}
+
+\begin{enumerate}
+  \item \textbf{Ancho a medida.} Se elige $W_i\gtrsim1/\alpha$ para la $\lambda$ de trabajo,
+  de modo que casi toda la luz se absorba \emph{dentro} de la zona de campo.
+  \item \textbf{Velocidad.} Los portadores se colectan por deriva a $\vsat$. El límite es el
+  tiempo de tránsito por la capa i:
+  \begin{clave}[Frecuencia máxima del PIN]
+  \[
+    f_{\max}\approx\frac{1}{t_{tr}} = \frac{\vsat}{W_i}
+    \qquad\text{p.\,ej. } W_i=\SI{5}{\micro m},\ \vsat=\SI{e7}{cm/s}
+    \;\Rightarrow\; f_{\max}\approx\SI{20}{GHz}
+  \]
+  \end{clave}
+  \item \textbf{Capacidad baja y constante:} $C_j=\epsilon A/W_i$ no depende de la tensión
+  y es chica, lo que reduce la constante de tiempo $RC$.
+\end{enumerate}
+
+\begin{intuicion}[el compromiso del ancho $W_i$]
+Si $W_i$ es grande se absorbe más luz (mejor $\eta$) pero el tránsito es más lento.
+Si $W_i$ es muy chico, el tránsito es rápido pero se absorbe poca luz \emph{y} crece la
+capacidad $C_j\propto1/W_i$, de modo que termina limitando $RC$. Hay un óptimo para cada
+$\lambda$ y cada aplicación.
+\end{intuicion}
+
+\subsection{Eficiencia cuántica}
+
+\begin{definicion}[eficiencia cuántica de un fotodiodo]
+\[
+  \eta = \frac{\text{pares e--h colectados (que generan corriente) por segundo}}
+              {\text{fotones incidentes por segundo}}
+       = \frac{I_L/q}{\Popt/h\nu}
+\]
+En un fotodiodo ideal $\eta=1$: cada fotón produce un electrón de corriente.
+\end{definicion}
+
+Calculemos $\eta$ para un PIN \diapo{18}. Llega una potencia $P$; en la superficie se
+refleja la fracción $R$, entra $(1-R)P$ y se atenúa como $e^{-\alpha x}$. La potencia
+absorbida dentro de la capa de ancho $W$ es $(1-R)P\,(1-e^{-\alpha W})$, así que
+
+\begin{clave}[Eficiencia cuántica del PIN]
+\[
+  \eta = \eta_i\,(1-R)\left(1-e^{-\alpha W}\right)
+  \qquad\Bigl[\text{con capa p}^+\text{ de espesor } d:\
+  \eta = \eta_i\,(1-R)\,e^{-\alpha d}\left(1-e^{-\alpha W}\right)\Bigr]
+\]
+\begin{itemize}[nosep]
+  \item $(1-R)$: pérdida por reflexión $\Rightarrow$ capa antirreflectante ($R\to0$).
+  \item $(1-e^{-\alpha W})$: luz que atraviesa sin absorberse $\Rightarrow$ $\alpha W\gg1$.
+  \item $e^{-\alpha d}$: luz absorbida en la capa superior (se pierde) $\Rightarrow$ capa
+  p$^+$ delgada o transparente.
+  \item $\eta_i$ (eficiencia interna): fracción de los pares generados en la ZCE que
+  efectivamente llega a los contactos (algunos se recombinan).
+\end{itemize}
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.8\textwidth,height=5.2cm,
+  xmin=-1.5,xmax=9,ymin=0,ymax=1.15,
+  axis lines=left,
+  xlabel={$x$},ylabel={$P(x)/P$},
+  xtick={0,6},xticklabels={$0$,$W$},
+  ytick={0.7,1},yticklabels={$(1-R)$,$1$},
+  clip=false,
+]
+\fill[naranjaclaro] (axis cs:0,0) rectangle (axis cs:6,1.15);
+\node[naranja!80!black,font=\small] at (axis cs:3,1.05) {zona de absorción útil (ZCE / capa i)};
+\addplot[black,line width=1.2pt] coordinates {(-1.5,1)(0,1)};
+\draw[gris,dashed] (axis cs:0,1) -- (axis cs:0,0.7);
+\addplot[naranja,line width=1.2pt,domain=0:9,samples=80] {0.7*exp(-x/3)};
+\draw[<->,azul] (axis cs:6.3,0) -- (axis cs:6.3,{0.7*exp(-2)});
+\draw[azul] (axis cs:6.3,0.05) -- (axis cs:7.0,0.35) node[above,font=\small,align=center] {$(1-R)P\,e^{-\alpha W}$\\(se pierde)};
+\draw[<->,verde!60!black] (axis cs:-0.5,0.7) -- node[right,font=\small] {$RP$} (axis cs:-0.5,1);
+\node[font=\small,align=center] at (axis cs:3.2,0.6) {absorbida:\\$(1-R)P\,(1-e^{-\alpha W})$};
+\end{axis}
+\end{tikzpicture}
+\caption{Potencia óptica dentro del fotodiodo. Sólo la parte absorbida en $0<x<W$ se
+colecta eficientemente.}
+\label{fig:pin-potencia}
+\end{figure}
+
+\subsection{Responsividad}
+
+En la práctica interesa cuánta corriente se obtiene por cada watt de luz.
+
+\begin{clave}[Responsividad]
+\[
+  \Resp = \frac{I_L}{\Popt} = \frac{\eta\,q}{h\nu}
+  = \eta\,\frac{q\lambda}{hc}
+  \quad\Longrightarrow\quad
+  \Resp\,[\si{A/W}] = \eta\,\frac{\lambda\,[\si{\micro m}]}{1.24}
+\]
+Para una señal modulada, $i(t)=\Resp\,P(t)$: el fotodiodo es un \emph{detector
+cuadrático} (la corriente es proporcional a la potencia, es decir al cuadrado de la amplitud
+del campo eléctrico de la onda).
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.6\textwidth,height=6cm,
+  xmin=0.4,xmax=1.9,ymin=0,ymax=1.4,
+  xlabel={$\lambda$ (\si{\micro m})},ylabel={$\Resp$ (\si{A/W})},
+  grid=major,grid style={gray!25},
+  legend pos=outer north east,legend style={font=\small},
+  every axis plot/.append style={line width=1.1pt},
+]
+\addplot[black,dashed,domain=0.4:1.75] {x/1.24};
+\addlegendentry{$\eta=1$ (ideal)}
+\addplot[azul,smooth] coordinates {(0.4,0.12)(0.5,0.25)(0.6,0.36)(0.7,0.46)(0.8,0.55)(0.9,0.6)(0.95,0.56)(1.0,0.42)(1.05,0.22)(1.1,0.05)(1.12,0)};
+\addlegendentry{Si}
+\addplot[naranja,smooth] coordinates {(0.8,0.25)(1.0,0.4)(1.2,0.55)(1.4,0.66)(1.55,0.72)(1.6,0.68)(1.65,0.5)(1.7,0.25)(1.75,0.08)(1.8,0)};
+\addlegendentry{Ge}
+\addplot[verde,smooth] coordinates {(0.93,0)(0.97,0.3)(1.0,0.55)(1.1,0.7)(1.3,0.85)(1.55,0.95)(1.6,0.96)(1.64,0.75)(1.67,0.35)(1.70,0.05)(1.71,0)};
+\addlegendentry{InGaAs (con ventana InP)}
+\end{axis}
+\end{tikzpicture}
+\caption{Responsividad de fotodiodos típicos (valores aproximados, \diapo{21}). La recta
+$\eta=1$ crece con $\lambda$ porque, a igual potencia, a mayor $\lambda$ llegan más fotones
+(cada uno con menos energía). Cada curva real cae a cero en su $\lG$.}
+\label{fig:responsividad}
+\end{figure}
+
+\paragraph{Por qué cae la responsividad en los extremos \diapo{21}:}
+\begin{itemize}
+  \item \textbf{$\lambda$ cortas} (fotones de mucha energía): $\alpha$ es tan grande que la luz
+  se absorbe en la capa superior (p$^+$) antes de llegar a la ZCE; si esa capa es de otro
+  material de mayor gap, para estas energías deja de ser transparente. En ambos casos
+  $\eta$ baja.
+  \item \textbf{$\lambda$ largas} (cerca de $\lG$): $\alpha$ es tan chico que la luz atraviesa
+  toda la capa i sin absorberse ($\alpha W\ll1$), y para $\lambda>\lG$ no se absorbe en
+  absoluto.
+\end{itemize}
+
+\begin{ojo}[definición de responsividad \diapo{20}]
+\begin{itemize}
+  \item La diapo la define como ``la corriente obtenida por unidad de \emph{energía}
+  luminosa incidente''. Es por unidad de \textbf{potencia} óptica: $[\Resp]=\si{A/W}$
+  (amperes por watt, no por joule).
+  \item ``Tiene la misma información que $\eta$ pero además tiene información de la
+  frecuencia'': se refiere a la frecuencia \emph{de la luz} $\nu=c/\lambda$ (aparece en
+  $h\nu$), no a la frecuencia de modulación de la señal. La velocidad de respuesta del
+  detector es otro tema (tiempo de tránsito, $RC$).
+\end{itemize}
+\end{ojo}
+
+\begin{ejemplo}[diseño de un PIN de Si para \SI{0.8}{\micro m}]
+A $\lambda=\SI{0.8}{\micro m}$ el Si tiene $\alpha\approx\SI{850}{cm^{-1}}$
+($1/\alpha\approx\SI{12}{\micro m}$). Sea $W=\SI{10}{\micro m}$ y $\eta_i=1$.
+
+\textbf{Sin antirreflectante} ($R=0.31$): $\alpha W=0.85$,
+$\eta=0.69\,(1-e^{-0.85})=0.69\cdot0.57\approx0.39$.
+
+\textbf{Con antirreflectante} ($R\approx0$): $\eta\approx0.57$, y
+$\Resp=0.57\cdot0.8/1.24\approx\SI{0.37}{A/W}$. Con $\Popt=\SI{10}{\micro W}$:
+$I_L\approx\SI{3.7}{\micro A}$.
+
+\textbf{¿Qué $W$ hace falta para $\eta=0.9$?} $1-e^{-\alpha W}=0.9\Rightarrow
+W=\ln10/\alpha\approx\SI{27}{\micro m}$. Entonces
+$t_{tr}=W/\vsat=\SI{27e-4}{cm}/\SI{e7}{cm/s}=\SI{0.27}{ns}$ y
+$f_{\max}\approx\SI{3.7}{GHz}$, contra $\approx\SI{10}{GHz}$ con $W=\SI{10}{\micro m}$:
+el compromiso eficiencia--velocidad en números.
+\end{ejemplo}
+
+\subsection{Corriente de oscuridad y ruido}
+
+Aunque no haya luz circula la \textbf{corriente de oscuridad} $I_{dark}$: la corriente
+inversa del diodo. En un PIN de Si a temperatura ambiente suele dominar la generación
+térmica en la ZCE, $I_{gen}\approx qAn_iW/(2\tau_0)$ (por eso crece con $W$), y como
+depende de $n_i$ crece rápidamente con la temperatura (en Si, aproximadamente se duplica cada
+\SIrange{8}{10}{\celsius}).
+
+\begin{ojo}[``la corriente de oscuridad es continua y se puede filtrar fácilmente'' \diapo{19}]
+Su \emph{valor medio} es continuo y se puede quitar con un capacitor de acople, sí. Pero
+como toda corriente formada por portadores discretos, tiene \textbf{ruido de granalla}
+(\emph{shot noise}) de valor eficaz $i_n=\sqrt{2q\,I_{dark}\,B}$ en un ancho de banda $B$,
+que cae en la misma banda que la señal y \textbf{no se puede filtrar}. Ese ruido fija la
+mínima potencia óptica detectable: por eso se busca $I_{dark}$ chica (materiales de gap
+grande, buena pasivación superficial, baja temperatura).
+\end{ojo}
+
+\subsection{Materiales para PIN: Si, Ge e InGaAs}
+\label{sec:materiales-pin}
+
+Las comunicaciones por fibra óptica usan \SI{1.31}{\micro m} (mínima dispersión de la
+fibra) y \SI{1.55}{\micro m} (mínima atenuación). Ambas están por encima de
+$\lG(\text{Si})=\SI{1.1}{\micro m}$, así que hace falta otro material.
+
+El material elegido es la aleación \textbf{In$_{0.53}$Ga$_{0.47}$As}: gap directo de
+\SI{0.75}{\eV} ($\lG=\SI{1.65}{\micro m}$) y, con esa composición, la \emph{misma constante
+de red} que el InP (\diapo{15}, Pierret fig.~9.6). Que las constantes de red coincidan
+(\emph{lattice matching}) permite crecer capas cristalinas de buena calidad, sin
+dislocaciones, sobre sustratos de InP. En el gráfico $\EG$ vs.\ constante de red, cada
+aleación ternaria ocupa la curva que une a sus dos compuestos binarios; las aleaciones
+que sirven sobre un sustrato dado son las que caen sobre la vertical de su constante de red.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+  \fill[black!70] (0,4.6) rectangle (1.3,4.85) (3.7,4.6) rectangle (5,4.85);
+  \fill[gris!40] (0,4.35) rectangle (5,4.6);
+  \fill[rojoclaro] (1.1,4.35) -- (1.1,4.1) -- (3.9,4.1) -- (3.9,4.35) -- cycle;
+  \fill[violetaclaro] (0,2.7) rectangle (5,4.35);
+  \fill[azulclaro] (0,1.9) rectangle (5,2.7);
+  \fill[azul!30] (0,0.4) rectangle (5,1.9);
+  \fill[black!70] (0,0.15) rectangle (1.8,0.4) (3.2,0.15) rectangle (5,0.4);
+  \draw (0,0.4) rectangle (5,4.6) (0,1.9) -- (5,1.9) (0,2.7) -- (5,2.7) (0,4.35) -- (5,4.35);
+  \draw[densely dashed] (1.1,4.35) -- (1.1,4.1) -- (3.9,4.1) -- (3.9,4.35);
+  \node[font=\small] at (2.5,4.22) {p$^+$};
+  \node[font=\small] at (2.5,3.4) {i (n$^-$) -- In$_{0.53}$Ga$_{0.47}$As};
+  \node[font=\small] at (2.5,2.3) {n -- InP (buffer)};
+  \node[font=\small] at (2.5,1.15) {n$^+$ -- InP (sustrato)};
+  \draw[foton] (2.5,-0.8) -- (2.5,0.35);
+  \node[colFoton,font=\small,anchor=west] at (2.6,-0.6) {$h\nu$ (1.3 o \SI{1.55}{\micro m})};
+  \draw[gris] (5,4.5) -- (5.6,4.9) node[right,font=\scriptsize,black] {nitruro de silicio (pasivación)};
+  \draw[gris] (5,4.4) -- (5.6,4.4) node[right,font=\scriptsize,black] {InGaAsP (capa de cobertura)};
+  \node[font=\scriptsize,align=left,anchor=west] at (5.3,1.15) {InP: $\lG=\SI{0.92}{\micro m}$\\$\Rightarrow$ \textbf{transparente} a\\1.3 y \SI{1.55}{\micro m} (``ventana'')};
+\end{tikzpicture}
+\caption{Fotodiodo PIN de InGaAs (Pierret, fig.~9.7 y \diapo{16}). La luz entra
+\emph{por el sustrato}: el InP, de gap mayor, es transparente a esas longitudes de onda y
+la luz llega intacta a la capa i de InGaAs, que la absorbe. Este sí es un caso en el que
+la capa que atraviesa la luz es realmente transparente.}
+\label{fig:ingaas}
+\end{figure}
+
+\subsection{Fotodiodo de avalancha (APD)}
+\label{sec:apd}
+
+Complemento (Pierret 9.2.2): un APD es un fotodiodo (PN o PIN) polarizado \emph{cerca de la
+tensión de ruptura}. Los portadores fotogenerados ganan tanta energía en el campo que
+producen nuevos pares por \textbf{ionización por impacto} (figura~\ref{fig:rg}f), y cada
+par fotogenerado se multiplica por un factor $M$ (de 10 a 100 típicamente):
+$I_L^{APD}=M\,I_L$. Llevan un \emph{anillo de guarda} para que la ruptura no ocurra antes
+en los bordes de la juntura. La ventaja es que la ganancia ocurre \emph{antes} del
+amplificador, así que mejora la relación señal/ruido cuando domina el ruido del circuito
+receptor; la desventaja es que la multiplicación agrega su propio ruido y requiere
+tensiones altas y estables.

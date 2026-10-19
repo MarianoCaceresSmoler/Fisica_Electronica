@@ -1,0 +1,149 @@
+% =====================================================================
+\section{Fotoconductores}
+\label{sec:fotoconductor}
+% =====================================================================
+
+El fotoconductor es el fotodetector más simple: una pastilla de semiconductor
+homogéneo (tipo n o p, sin juntura) con dos contactos óhmicos. La luz genera pares,
+aumenta la conductividad y, a tensión fija, aumenta la corriente. Ejemplos típicos son las
+LDR (\emph{light dependent resistors}) de CdS o CdSe para luz visible, y las de PbS o
+PbSe para infrarrojo.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.95,transform shape]
+  % pastilla semiconductora (vista en perspectiva)
+  \fill[azulclaro] (3,1) rectangle (4.2,4);
+  \fill[azul!35] (4.2,1) -- (4.6,1.4) -- (4.6,4.4) -- (4.2,4) -- cycle;
+  \fill[gris!60] (3,4) -- (4.2,4) -- (4.6,4.4) -- (3.4,4.4) -- cycle;
+  \draw (3,1) rectangle (4.2,4) (4.2,1) -- (4.6,1.4) -- (4.6,4.4) -- (4.2,4) (3,4) -- (3.4,4.4) -- (4.6,4.4);
+  \fill[gris!60] (3,1) rectangle (4.2,0.85);
+  \draw (3,1) rectangle (4.2,0.85);
+  \node[font=\small,anchor=south west] at (4.6,4.3) {área $A$};
+  \draw[<->] (2.75,1) -- node[left] {$L$} (2.75,4);
+  \foreach \y in {1.8,2.5,3.2}{\draw[foton] (6.1,\y+0.3) -- (4.75,\y);}
+  \node[colFoton] at (6.5,3.6) {luz};
+  % circuito
+  \draw (3.8,4.2) -- (3.8,5.2) to[short,i_=$I$] (0,5.2) to[battery1,l_=$V$] (0,-1.4) node[ground]{};
+  \draw (3.6,0.85) -- (3.6,0.2) to[R,l_=$R_L$,*-] (3.6,-1.4) node[ground]{};
+  \draw (3.6,0.2) -- (5,0.2) to[C,l=$C$,-o] (7,0.2) node[right] {$v_o$};
+\end{circuitikz}
+\caption{Fotoconductor polarizado con una fuente $V$ y una resistencia de carga $R_L$
+\diapo{44}. El capacitor deja pasar a la salida sólo la parte variable de la señal
+(la luz modulada), bloqueando la corriente de oscuridad.}
+\label{fig:fotoconductor}
+\end{figure}
+
+\subsection{Cambio de conductividad}
+
+Sin luz la conductividad es $\sigma_0=q(\mu_n n_0+\mu_p p_0)$. Con luz aparecen excesos
+$\Delta n=\Delta p$ (se generan de a pares):
+\[
+  \sigma = q\left[\mu_n(n_0+\Delta n)+\mu_p(p_0+\Delta p)\right]
+  \quad\Longrightarrow\quad
+  \Delta\sigma = q(\mu_n+\mu_p)\,\Delta n .
+\]
+En estado estacionario y con generación uniforme, por \eqref{eq:dn-estacionario},
+$\Delta n=G_L\tau$, donde $\tau$ es la vida media de los minoritarios
+(supondremos material tipo p, así que $\tau=\tau_n$). La corriente adicional con una
+tensión $V$ aplicada sobre la longitud $L$ (campo $\mathcal{E}=V/L$) es
+\begin{equation}
+  \Delta I = \Delta\sigma\,\mathcal{E}\,A = q(\mu_n+\mu_p)\,G_L\tau_n\,\frac{A\,V}{L}.
+  \label{eq:dI-fotoconductor}
+\end{equation}
+
+\begin{ojo}[resistencia del fotoconductor \diapo{44}]
+La diapositiva escribe $\Delta R = L/(\Delta\sigma A)$. Eso \textbf{no} es la variación de
+resistencia: $L/(\Delta\sigma A)$ es la resistencia de un conductor ``imaginario'' que sólo
+tuviera la conductividad agregada por la luz. Lo que es aditivo es la
+\emph{conductancia}, porque ambas conducciones están en paralelo:
+\[
+  G_0=\frac{\sigma_0 A}{L},\qquad G=\frac{(\sigma_0+\Delta\sigma)A}{L}
+  \;\Rightarrow\; \Delta G = \frac{\Delta\sigma\,A}{L},
+  \qquad
+  R=\frac{L}{(\sigma_0+\Delta\sigma)A}=\frac{R_0}{1+\Delta\sigma/\sigma_0}.
+\]
+La resistencia \emph{disminuye} con la luz; la variación real es
+$\Delta R = R-R_0 = -R_0\,\dfrac{\Delta\sigma}{\sigma_0+\Delta\sigma}$.
+\end{ojo}
+
+\subsection{Eficiencia cuántica y ganancia}
+
+\begin{definicion}[eficiencia cuántica $\eta$]
+\[
+  \eta = \frac{\text{pares e--h generados por segundo}}{\text{fotones incidentes por segundo}}
+  = \frac{G_L\,A\,L}{\Popt/h\nu}
+  \qquad (0\le\eta\le 1)
+\]
+$G_L A L$ es la generación total en el volumen $A\,L$ del dispositivo y $\Popt/h\nu$ el
+número de fotones que llegan por segundo (potencia óptica sobre energía por fotón).
+\end{definicion}
+
+Si cada par generado aportara \emph{una} carga $q$ al circuito, la corriente sería
+\[
+  I_n \equiv q\,G_L A L = q\,\eta\,\frac{\Popt}{h\nu}
+  \qquad\text{(``corriente primaria'')}.
+\]
+Pero el fotoconductor entrega más que eso:
+
+\begin{definicion}[ganancia óptica (fotoconductiva)]
+\[
+  G_{opt} = \frac{\Delta I}{I_n}
+  = \frac{\text{corriente que entrega el dispositivo}}{\text{carga generada por la luz por unidad de tiempo}}
+\]
+\end{definicion}
+
+Usando \eqref{eq:dI-fotoconductor}:
+\[
+  G_{opt} = \frac{q(\mu_n+\mu_p)G_L\tau_n\,AV/L}{q\,G_L A L}
+  = \frac{(\mu_n+\mu_p)\,\tau_n V}{L^2}.
+\]
+Definiendo el \textbf{tiempo de tránsito} de un electrón entre contactos,
+$t_{tr,n} = L/v_n = L/(\mu_n\mathcal{E}) = L^2/(\mu_n V)$:
+
+\begin{clave}[Ganancia del fotoconductor]
+\[
+  G_{opt} = \frac{\tau_n}{t_{tr,n}}\left(1+\frac{\mu_p}{\mu_n}\right)
+  \;\approx\; \frac{\tau_n}{t_{tr,n}} = \frac{\tau_n\,\mu_n\,\mathcal{E}}{L}
+  \qquad(\text{si }\mu_n\gg\mu_p)
+\]
+La ganancia es el cociente entre cuánto vive un portador y cuánto tarda en cruzar el
+dispositivo.
+\end{clave}
+
+\begin{ojo}[\diapo{46}]
+La diapositiva llega a $G_{opt}=\tau_n\mu_n\mathcal{E}/L$ partiendo de una expresión que
+tiene $(\mu_n+\mu_p)$. Al reemplazar se ``pierde'' el término de huecos: el resultado
+exacto (con las mismas hipótesis) es $G_{opt}=\tau_n(\mu_n+\mu_p)\mathcal{E}/L$. La forma
+de la diapo es una aproximación válida si $\mu_n\gg\mu_p$ o si los huecos quedan atrapados
+y no contribuyen. Además, en la expresión de $I_n$ de la diapo~45 sobra el ``$\cdot$'' antes
+del igual (errata).
+\end{ojo}
+
+\begin{intuicion}[¿cómo puede haber ganancia mayor que 1?]
+Un electrón fotogenerado cruza la muestra en $t_{tr}$ y sale por el contacto positivo.
+Como la muestra tiene que seguir siendo neutra (su hueco compañero sigue adentro), el
+contacto negativo \emph{inyecta otro electrón} de inmediato. Ese electrón vuelve a cruzar,
+y así sucesivamente, hasta que el hueco se recombina (en un tiempo $\sim\tau$). Cada par
+fotogenerado hace circular $\tau/t_{tr}$ electrones por el circuito.
+
+El precio es la velocidad: la señal tarda $\sim\tau$ en subir y bajar
+(figura~\ref{fig:transitorio}). Aumentar $\tau$ aumenta la ganancia pero empeora el ancho
+de banda $B\sim1/(2\pi\tau)$; el producto \emph{ganancia $\times$ ancho de banda}
+$\sim 1/(2\pi t_{tr})$ queda fijo por la geometría y la tensión. Por eso los
+fotoconductores son sensibles pero lentos (típicamente ms en CdS).
+\end{intuicion}
+
+\begin{ejemplo}[ganancia de un fotoconductor de Si]
+Pastilla de Si tipo p, $L=\SI{1}{mm}$, $V=\SI{10}{V}$, $\mu_n=\SI{1350}{cm^2/V.s}$,
+$\mu_p=\SI{480}{cm^2/V.s}$, $\tau_n=\SI{10}{\micro s}$.
+\[
+  t_{tr,n}=\frac{L^2}{\mu_n V}=\frac{(\SI{0.1}{cm})^2}{\SI{1350}{cm^2/V.s}\cdot\SI{10}{V}}
+  =\SI{0.74}{\micro s},
+  \qquad
+  G_{opt}=\frac{\SI{10}{\micro s}}{\SI{0.74}{\micro s}}\left(1+\frac{480}{1350}\right)\approx 18 .
+\]
+(Con la fórmula aproximada daría $\approx13.5$.) El tiempo de respuesta es del orden de
+$\tau_n=\SI{10}{\micro s}$, o sea un ancho de banda de apenas
+$\sim1/(2\pi\tau_n)\approx\SI{16}{kHz}$.
+\end{ejemplo}

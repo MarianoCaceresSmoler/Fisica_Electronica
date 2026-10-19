@@ -1,0 +1,438 @@
+% =====================================================================
+\section{Celdas solares}
+\label{sec:solar}
+% =====================================================================
+
+Una celda solar es, en esencia, un fotodiodo PN de área grande que trabaja en el
+\textbf{cuarto cuadrante}: tensión positiva y corriente negativa, es decir, entrega
+potencia a una carga. La física es la misma que en la sección~\ref{sec:pn}; lo que cambia
+son los objetivos de diseño.
+
+\begin{table}[H]
+\centering\small
+\caption{Fotodiodo vs.\ celda solar \diapo{27}.}
+\label{tab:fd-vs-celda}
+\begin{tabular}{p{0.28\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+ & \textbf{Fotodiodo} & \textbf{Celda solar} \\
+\midrule
+Luz            & haz de $\lambda$ definida, potencia chica & espectro solar completo, mucha potencia \\
+Área           & chica (mínima capacidad, velocidad) & muy grande (captar potencia) \\
+Polarización   & inversa (3.\textsuperscript{er} cuadrante) & ninguna; la carga fija el punto (4.\textsuperscript{o} cuadrante) \\
+Figura de mérito & $\eta$, $\Resp$, velocidad, ruido & rendimiento de potencia $\eta=P_m/P_{in}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Característica I--V y parámetros}
+
+Con la convención de la celda como \emph{generador} (corriente positiva saliendo por el
+terminal p hacia la carga) la ecuación del fotodiodo se escribe
+\[
+  I = I_L - I_0\left(e^{V/V_T}-1\right),
+  \qquad
+  P = V\,I = I_L V - I_0 V\left(e^{V/V_T}-1\right).
+\]
+Es la misma ecuación de la sección~\ref{sec:pn} con el signo de $I$ cambiado: por eso la
+curva se dibuja ``dada vuelta'' (Pierret, fig.~9.9).
+
+\begin{clave}[Parámetros de la celda solar]
+\begin{itemize}[nosep]
+  \item \textbf{Corriente de cortocircuito} ($V=0$): $\Isc = I_L$, proporcional a la
+  irradiancia.
+  \item \textbf{Tensión de circuito abierto} ($I=0$):
+  \[
+    \Voc = V_T\ln\!\left(1+\frac{I_L}{I_0}\right)\approx V_T\ln\frac{I_L}{I_0}.
+  \]
+  Crece sólo logarítmicamente con la luz y \emph{disminuye} con la temperatura (porque
+  $I_0\propto n_i^2$ crece muy rápido); en Si, unos \SI{-2}{mV/\celsius}.
+  \item \textbf{Punto de máxima potencia} $(V_m,I_m)$: donde $\dd P/\dd V=0$.
+  \item \textbf{Factor de forma} (\emph{fill factor}):
+  \[
+    FF = \frac{P_m}{\Isc\Voc} = \frac{V_mI_m}{\Isc\Voc} < 1 .
+  \]
+  \item \textbf{Rendimiento} (eficiencia de conversión):
+  \[
+    \eta = \frac{P_m}{P_{in}} = \frac{FF\,\Isc\,\Voc}{P_{in}} .
+  \]
+\end{itemize}
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth,height=6.8cm,
+  xmin=0,xmax=0.7,ymin=0,ymax=4.2,
+  axis lines=left,
+  xtick={0,0.1,0.2,0.3,0.4},ytick={0,1,2},
+  xlabel={$V$ (V)},ylabel={$I$ (A)},
+  ylabel style={azul},
+  every axis plot/.append style={samples=300},
+  clip=false,
+]
+\fill[verde!20] (axis cs:0,0) rectangle (axis cs:0.5475,3.342);
+\draw[verde!60!black,pattern=north east lines,pattern color=verde!50] (axis cs:0,0) rectangle (axis cs:0.5475,3.342);
+\draw[gris,dashed] (axis cs:0,3.5) -- (axis cs:0.6276,3.5) -- (axis cs:0.6276,0);
+\addplot[azul,line width=1.3pt,domain=0:0.6276] {3.5-1e-10*(exp(x/0.02585)-1)};
+\fill[azul] (axis cs:0.5475,3.342) circle (2pt);
+\node[font=\small,anchor=south west] at (axis cs:0.5475,3.342) {$P_m$};
+\node[font=\small,anchor=south east] at (axis cs:0,3.45) {$\Isc$};
+\node[font=\small,anchor=north east] at (axis cs:0,3.40) {$I_m$};
+\node[font=\small,anchor=north] at (axis cs:0.5475,0) {$V_m$};
+\node[font=\small,anchor=north] at (axis cs:0.6276,0) {$\Voc$};
+\node[verde!40!black,font=\small,align=center,fill=white,inner sep=2pt] at (axis cs:0.26,1.6) {rectángulo de\\máxima potencia\\$P_m=V_mI_m$};
+\node[gris,font=\scriptsize,align=center] at (axis cs:0.3,3.85) {rectángulo $\Isc\Voc$\quad($FF$ = verde / punteado)};
+\end{axis}
+\begin{axis}[
+  width=0.78\textwidth,height=6.8cm,
+  xmin=0,xmax=0.7,ymin=0,ymax=2.2,
+  axis x line=none,axis y line*=right,
+  ylabel={$P$ (W)},ylabel style={rojo},
+  every axis plot/.append style={samples=300},
+]
+\addplot[rojo,line width=1.1pt,dashed,domain=0:0.6276] {x*(3.5-1e-10*(exp(x/0.02585)-1))};
+\end{axis}
+\end{tikzpicture}
+\caption{Curva I--V (azul, eje izquierdo) y potencia entregada $P=VI$ (rojo, eje derecho)
+de la celda del ejemplo de abajo. El factor de forma mide qué tan ``cuadrada'' es la curva.}
+\label{fig:iv-celda}
+\end{figure}
+
+\paragraph{Punto de máxima potencia.} Derivando $P$:
+\[
+  \frac{\dd P}{\dd V}=0
+  \;\Rightarrow\;
+  \left(1+\frac{V_m}{V_T}\right)e^{V_m/V_T} = 1+\frac{I_L}{I_0}
+  \;\Rightarrow\;
+  V_m = \Voc - V_T\ln\!\left(1+\frac{V_m}{V_T}\right).
+\]
+Es una ecuación trascendente; se resuelve iterando (empezando con $V_m=\Voc$). Una
+aproximación empírica muy usada (Green) para el factor de forma ideal es
+\[
+  FF\approx\frac{v_{oc}-\ln(v_{oc}+0.72)}{v_{oc}+1},\qquad v_{oc}=\Voc/V_T .
+\]
+
+\begin{ejemplo}[celda de Si de \SI{10}{cm}$\times$\SI{10}{cm}]
+$A=\SI{100}{cm^2}$, $J_{sc}=\SI{35}{mA/cm^2}$ bajo \SI{1000}{W/m^2}
+($P_{in}=\SI{100}{mW/cm^2}\cdot\SI{100}{cm^2}=\SI{10}{W}$), $I_0=\SI{e-10}{A}$, $T=\SI{300}{K}$.
+\begin{itemize}[nosep]
+  \item $\Isc=I_L=\SI{3.5}{A}$.
+  \item $\Voc=0.02585\ln(3.5/10^{-10})=0.02585\cdot24.28=\SI{0.628}{V}$.
+  \item Iterando: $V_m\approx0.628-0.02585\ln(1+0.628/0.02585)\approx\SI{0.545}{V}$; una
+  segunda vuelta da $V_m\approx\SI{0.547}{V}$, $I_m=3.5-10^{-10}e^{0.547/0.02585}\approx\SI{3.34}{A}$.
+  \item $P_m\approx\SI{1.83}{W}$, \quad $FF=1.83/(3.5\cdot0.628)\approx0.83$,
+  \quad $\eta=1.83/10\approx\SI{18}{\percent}$.
+\end{itemize}
+\end{ejemplo}
+
+\begin{ojo}[\diapo{27}]
+\begin{itemize}
+  \item En $P = IV = I_sV(e^{V/V_T}-1)-I_LV$ está usada la convención del diodo
+  (corriente positiva entrando por p); con ella $P<0$ en el cuarto cuadrante significa
+  potencia \emph{entregada}. Es correcto, pero conviene no mezclar convenciones.
+  \item ``$\eta$ está entre el 30 y 35\,\% con semiconductores III-V'': eso vale para celdas
+  \emph{multijuntura} (ver más abajo; los récords superan el \SI{39}{\percent}, y bajo
+  concentración el \SI{47}{\percent}). Una celda III-V de una sola juntura (GaAs) llega a
+  $\approx\SI{29}{\percent}$.
+  \item ``Las celdas de Si tienen menor rendimiento por ser de banda indirecta'': el gap
+  del Si (\SI{1.12}{\eV}) está prácticamente en el óptimo teórico (figura~\ref{fig:sq}). Lo
+  que implica el gap indirecto es un $\alpha$ chico, que obliga a usar obleas gruesas
+  ($\sim\SI{150}{\micro m}$) de muy alta calidad (largas $L_n$) y técnicas de atrapamiento
+  de luz. El récord de Si de una juntura ronda el \SI{27}{\percent}.
+\end{itemize}
+\end{ojo}
+
+\subsection{Circuito equivalente y resistencias parásitas}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{circuitikz}[scale=0.85,transform shape]
+  \draw (0,0) to[I,l=$I_L$,invert] (0,3)
+        -- (2,3) to[D*,l=$D$,-*] (2,0)
+        (2,3) -- (4,3) to[R,l=$R_{sh}$] (4,0)
+        (4,3) to[R,l=$R_s$,-o] (6.5,3)
+        (6.5,3) to[R,l=$R_L$] (6.5,0) -- (0,0);
+  \draw (2,0) -- (4,0);
+  \draw[flecha] (5.4,3.4) -- node[above,font=\small] {$I$} (6.2,3.4);
+\end{circuitikz}
+\end{minipage}%
+\begin{minipage}{0.53\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\textwidth,height=5.5cm,
+  xmin=0,xmax=0.66,ymin=0,ymax=3.9,
+  xlabel={$V$ (V)},ylabel={$I$ (A)},axis lines=left,
+  legend pos=south west,legend columns=2,legend style={font=\scriptsize},
+  every axis plot/.append style={line width=1.1pt},
+]
+\addplot[black,domain=0:0.6276,samples=200] {3.5-1e-10*(exp(x/0.02585)-1)};
+\addlegendentry{ideal}
+\addplot[azul] coordinates {(0,3.5)(0.3,3.5)(0.36,3.498)(0.4,3.492)(0.42,3.483)(0.44,3.464)(0.46,3.424)(0.48,3.346)(0.5,3.201)(0.52,2.961)(0.54,2.61)(0.56,2.149)(0.58,1.594)(0.6,0.964)(0.62,0.275)(0.6276,0)};
+\addlegendentry{$R_s=\SI{20}{m\ohm}$}
+\addplot[violeta] coordinates {(0,3.5)(0.2,3.5)(0.26,3.498)(0.3,3.491)(0.32,3.48)(0.34,3.459)(0.36,3.417)(0.38,3.344)(0.4,3.229)(0.42,3.069)(0.44,2.868)(0.46,2.631)(0.48,2.368)(0.5,2.084)(0.52,1.784)(0.54,1.47)(0.56,1.147)(0.58,0.815)(0.6,0.476)(0.62,0.132)(0.6276,0)};
+\addlegendentry{$R_s=\SI{50}{m\ohm}$}
+\addplot[naranja] coordinates {(0,3.5)(0.1,3.3)(0.2,3.1)(0.3,2.9)(0.4,2.699)(0.44,2.618)(0.48,2.528)(0.5,2.475)(0.52,2.406)(0.54,2.302)(0.56,2.124)(0.58,1.785)(0.6,1.097)(0.617,0)};
+\addlegendentry{$R_{sh}=\SI{0.5}{\ohm}$}
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\caption{Izquierda: circuito equivalente de una celda real. Derecha: efecto de las
+resistencias parásitas sobre la celda del ejemplo. $R_s$ (contactos, dedos, emisor)
+inclina la curva cerca de $\Voc$; una $R_{sh}$ baja (fugas por bordes o defectos) la
+inclina cerca de $\Isc$. Ambas reducen el $FF$.}
+\label{fig:circuito-celda}
+\end{figure}
+
+Con resistencias parásitas la ecuación queda implícita:
+\[
+  I = I_L - I_0\left(e^{(V+IR_s)/V_T}-1\right) - \frac{V+IR_s}{R_{sh}} .
+\]
+Una celda buena tiene $R_s$ lo más chica posible y $R_{sh}$ lo más grande posible.
+Notar lo sensible que es: con $R_s=\SI{50}{m\ohm}$ y $I\approx\SI{3.3}{A}$ se pierden
+$\approx\SI{170}{mV}$ en la resistencia, casi un tercio de $V_m$.
+
+\subsection{El espectro solar y los límites del rendimiento}
+
+Fuera de la atmósfera el Sol entrega $\approx\SI{1360}{W/m^2}$ (espectro \textbf{AM0}). Al
+atravesar la atmósfera se pierde parte (absorción de O$_3$, H$_2$O, CO$_2$): el espectro
+estándar terrestre \textbf{AM1.5} se normaliza a \SI{1000}{W/m^2} (\SI{100}{mW/cm^2}).
+\emph{AM} (\emph{air mass}) indica cuántas ``atmósferas'' atraviesa la luz; 1.5 corresponde
+al Sol a unos \ang{48} del cenit.
+
+Dos mecanismos fundamentales limitan cualquier celda de una sola juntura:
+\begin{enumerate}
+  \item \textbf{Pérdida por transparencia:} los fotones con $\Eph<\EG$ ($\lambda>\lG$) no se
+  absorben. En Si se pierde así $\sim\SI{20}{\percent}$ de la energía incidente; en GaAs,
+  $\sim\SI{35}{\percent}$.
+  \item \textbf{Pérdida por termalización:} un fotón con $\Eph>\EG$ genera \emph{un} par; el
+  exceso $\Eph-\EG$ se pierde como calor en $\sim$\si{ps} (los portadores ``caen'' al
+  borde de banda). De cada fotón sólo se aprovecha $\EG$.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.8\textwidth,height=6.2cm,
+  xmin=0.25,xmax=2.5,ymin=0,ymax=2200,
+  xlabel={$\lambda$ (\si{\micro m})},ylabel={Irradiancia espectral (\si{W/m^2.\micro m})},
+  axis lines=left,
+]
+\addplot[name path=sol,black,line width=1.1pt,domain=0.25:2.5,samples=200] {8101/(x^5*(exp(2.49/x)-1))};
+
+\addplot[name path=util,draw=none,domain=0.25:1.107,samples=150] {8101/(x^5*(exp(2.49/x)-1))*x/1.107};
+\addplot[name path=eje,draw=none,domain=0.25:2.5] {0};
+\addplot[verde!50] fill between[of=util and eje,soft clip={domain=0.25:1.107}];
+\node[verde!40!black,font=\small] at (axis cs:0.62,350) {aprovechable};
+\addplot[naranja!50] fill between[of=sol and util,soft clip={domain=0.25:1.107}];
+\node[naranja!60!black,font=\small] at (axis cs:0.53,1250) {termalización};
+\addplot[azul!30] fill between[of=sol and eje,soft clip={domain=1.107:2.5}];
+\node[azul!70!black,font=\small,align=center] (na) at (axis cs:1.85,750) {no absorbida\\($\lambda>\lG$)};
+\draw[azul!70!black,-{Stealth[length=4pt]}] (na) -- (axis cs:1.45,120);
+\node[font=\small,align=center] (sl) at (axis cs:1.75,1650) {Sol: cuerpo negro\\a \SI{5800}{K} ($\approx$AM0)};
+\draw[-{Stealth[length=4pt]}] (sl) -- (axis cs:0.64,1650);
+\draw[gris,dashed] (axis cs:1.107,0) -- (axis cs:1.107,1000) node[above,font=\scriptsize,black] {$\lG(\text{Si})$};
+\draw[gris,dashed] (axis cs:0.873,0) -- (axis cs:0.873,1200) node[above,font=\scriptsize,black] {$\lG(\text{GaAs})$};
+\end{axis}
+\end{tikzpicture}
+\caption{Espectro solar aproximado (cuerpo negro; el real tiene bandas de absorción
+atmosféricas, ver Pierret fig.~9.10 y \diapo{28}) y su reparto para una celda de Si: de un
+fotón de longitud de onda $\lambda<\lG$ sólo se aprovecha la fracción
+$\EG/\Eph=\lambda/\lG$.}
+\label{fig:espectro-solar}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.62\textwidth,height=5.4cm,
+  xmin=0.4,xmax=3.6,ymin=0,ymax=50,
+  xlabel={$\EG$ (\si{\eV})},ylabel={rendimiento máximo (\%)},
+  grid=major,grid style={gray!25},axis lines=left,
+]
+\addplot[azul,line width=1.2pt,smooth] coordinates {(0.5,31.7)(0.7,38.9)(0.9,42.9)(1.0,43.7)(1.1,43.9)(1.2,43.5)(1.4,41.3)(1.6,37.9)(1.8,33.8)(2.0,29.4)(2.2,25.0)(2.5,19.1)(3.0,11.3)(3.5,6.3)};
+\node[azul,font=\scriptsize,anchor=south west] at (axis cs:1.5,41) {sólo pérdidas espectrales};
+\draw[rojo,dashed,line width=1pt] (axis cs:1.34,7) -- (axis cs:1.34,33.7);
+\fill[rojo] (axis cs:1.34,33.7) circle (2pt);
+\node[rojo,font=\scriptsize,align=center] (sq) at (axis cs:3.0,32) {Shockley--Queisser:\\\SI{33.7}{\percent} en \SI{1.34}{\eV}};
+\draw[rojo,-{Stealth[length=4pt]}] (sq) -- (axis cs:1.40,33.7);
+\draw[gris] (axis cs:0.66,0) -- (axis cs:0.66,4) node[above,font=\scriptsize,black] {Ge};
+\draw[gris] (axis cs:1.12,0) -- (axis cs:1.12,4) node[above,font=\scriptsize,black] {Si};
+\draw[gris] (axis cs:1.42,0) -- (axis cs:1.42,4) node[above,font=\scriptsize,black] {GaAs};
+\draw[gris] (axis cs:2.26,0) -- (axis cs:2.26,4) node[above,font=\scriptsize,black] {GaP};
+\end{axis}
+\end{tikzpicture}
+\caption{Rendimiento máximo de una celda de una juntura en función de $\EG$. La curva azul
+considera sólo las dos pérdidas espectrales (calculada con el espectro de cuerpo negro): un
+gap chico absorbe casi todo pero termaliza mucho; un gap grande termaliza poco pero deja
+pasar la mayoría de los fotones. Agregando la recombinación radiativa inevitable se obtiene
+el límite de Shockley--Queisser, $\approx\SI{33.7}{\percent}$ en
+$\EG\approx\SI{1.34}{\eV}$. Si y GaAs están cerca del óptimo.}
+\label{fig:sq}
+\end{figure}
+
+\subsection{Diseño de la celda de Si}
+
+Además de las pérdidas fundamentales hay pérdidas tecnológicas que el diseño ataca
+(Pierret 9.3.2, figura de la \diapo{30}):
+
+\begin{itemize}
+  \item \textbf{Sombreado vs.\ resistencia serie:} el contacto frontal se hace con
+  \emph{dedos} (\emph{fingers}) metálicos finos unidos por \emph{bus bars}. Dedos más
+  anchos o juntos bajan $R_s$ pero tapan más luz.
+  \item \textbf{Reflexión:} una superficie de Si plana refleja $\sim\SI{30}{\percent}$. Con
+  \textbf{texturizado} (pirámides, por ataque químico anisotrópico) y antirreflectante se
+  baja a menos del \SI{1}{\percent}.
+  \item \textbf{Atrapamiento de luz:} el contacto trasero (con un óxido) actúa como espejo;
+  la luz infrarroja, poco absorbida, rebota varias veces dentro de la celda.
+  \item \textbf{Recombinación:} se usan obleas con vidas medias tan largas que $L_n$ supera
+  el espesor de la celda, y superficies pasivadas (óxido), para que casi todo par
+  generado llegue a la juntura.
+\end{itemize}
+
+\paragraph{Respuesta espectral de la celda \diapo{29}.} Cada región aporta en un rango
+distinto: los fotones de alta energía (azul) se absorben en el emisor n$^+$ superficial,
+donde la recombinación (superficial y por el alto dopaje) es alta; los de menor energía
+llegan a la base p, que aporta la mayor parte de la corriente. La ZCE es delgada y aporta
+poco. Por eso las mejoras apuntan a la superficie (``celda violeta'' con emisor muy
+delgado) y a la cara trasera (BSF).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+  % n+ | p | p+
+  \draw[bandac] (0,2.4) -- (1,2.4) to[out=0,in=180] (2.2,3.4) -- (7,3.4) to[out=0,in=180] (7.6,3.6) -- (8.8,3.6) node[right,font=\small] {$\Ec$};
+  \draw[bandav] (0,1.3) -- (1,1.3) to[out=0,in=180] (2.2,2.3) -- (7,2.3) to[out=0,in=180] (7.6,2.5) -- (8.8,2.5) node[right,font=\small] {$\Ev$};
+  \draw[fermi] (0,2.45) node[left,font=\scriptsize,black] {$\EF$} -- (8.8,2.45);
+  \draw[dashed,gris] (1.6,0.7) -- (1.6,4.3) (7.3,0.7) -- (7.3,4.3);
+  \node[font=\small] at (0.6,0.8) {n$^+$}; \node[font=\small] at (4.5,0.8) {p (base)};
+  \node[font=\small] at (8.1,0.8) {p$^+$ (BSF)};
+  % electron rebotando
+  \node[elec] at (6.3,3.4) {};
+  \draw[flecha,colElec] (6.45,3.5) -- (7.1,3.55);
+  \draw[flecha,colElec] (7.1,3.65) to[out=150,in=30] (5.8,3.65);
+  \node[colElec,font=\scriptsize,align=center] at (6.5,4.25) {el escalón refleja\\a los electrones};
+  \node[elec] at (3.2,3.4) {};
+  \draw[flecha,colElec] (3.05,3.4) -- (2.0,2.95);
+  \node[colElec,font=\scriptsize] at (2.9,3.8) {colectado};
+\end{tikzpicture}
+\caption{Celda con \emph{Back Surface Field} (BSF, \diapo{31}). Una capa p$^+$ en la cara
+trasera crea un escalón en la banda de conducción (un pequeño campo) que rechaza a los
+electrones minoritarios de la base y les impide recombinarse en el contacto trasero.
+Resultado: más corriente (mejor respuesta al rojo, que se absorbe en profundidad) y mayor
+$\Voc$.}
+\label{fig:bsf}
+\end{figure}
+
+\subsection{Heterojunturas, ventanas y multijuntura}
+
+Una \textbf{heterojuntura} une dos semiconductores distintos (con $\EG$ distinto,
+idealmente con la misma constante de red). Los escalones $\Delta E_c$ y $\Delta E_v$ en las
+bandas permiten guiar portadores y separar el espectro.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+  % semiconductor A (gap grande) | B (gap chico)
+  \draw[bandac] (0,4.2) -- (2.6,4.2) to[out=0,in=180] (3.5,4.6) -- (3.5,3.6) to[out=0,in=180] (4.6,2.9) -- (8,2.9) node[right,font=\small] {$E_{c2}$};
+  \draw[bandav] (0,0.6) -- (2.6,0.6) to[out=0,in=180] (3.5,1.0) -- (3.5,1.75) to[out=0,in=180] (4.6,1.05) -- (8,1.05) node[right,font=\small] {$E_{v2}$};
+  \node[colEc,font=\small,anchor=east] at (0,4.2) {$E_{c1}$};
+  \node[colEv,font=\small,anchor=east] at (0,0.6) {$E_{v1}$};
+  \draw[fermi] (-0.6,1.2) node[left,font=\scriptsize,black] {$\EF$} -- (8,1.2);
+  \draw[<->,gris] (1.2,0.6) -- node[right,font=\small,black] {$E_{G1}$} (1.2,4.2);
+  \draw[<->,gris] (6.5,1.05) -- node[right,font=\small,black] {$E_{G2}$} (6.5,2.9);
+  \draw[<->,gris] (3.75,3.6) -- node[right,font=\scriptsize,black] {$\Delta E_c$} (3.75,4.6);
+  \draw[<->,gris] (3.75,1.0) -- node[right,font=\scriptsize,black] {$\Delta E_v$} (3.75,1.75);
+  \node[font=\small] at (1.5,5.1) {semiconductor A (ventana)};
+  \node[font=\small] at (6,5.1) {semiconductor B};
+  \draw[foton] (-1.6,2.6) -- (-0.1,2.6);
+  \node[colFoton,font=\scriptsize,align=center] at (-1,3.1) {luz};
+\end{tikzpicture}
+\caption{Heterojuntura con $E_{G1}>E_{G2}$ \diapo{32}. Los fotones con $\Eph>E_{G1}$ se
+absorben en A; los que tienen $E_{G2}<\Eph<E_{G1}$ atraviesan A (que para ellos es
+transparente) y se absorben en B, cerca de la juntura.}
+\label{fig:hetero}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Celda con ventana (``heteroface'', \diapo{33}):} sobre una homojuntura de GaAs
+  ($E_{G2}$) se crece una capa delgada de Al$_x$Ga$_{1-x}$As de gap mayor ($E_{G1}$). Esa
+  ventana deja pasar casi toda la luz útil y \emph{pasiva} la superficie: los electrones
+  generados en el GaAs no pueden llegar a la superficie (donde se recombinarían) porque
+  el escalón $\Delta E_c$ los refleja. Mejora la respuesta al azul. Cuanto más Al ($x$),
+  mayor $E_{G1}$ y más se extiende la respuesta hacia energías altas.
+  \item \textbf{Multijuntura (tándem):} se apilan celdas de gap decreciente (la de mayor gap
+  arriba). Cada una aprovecha la porción del espectro justo por encima de su gap, reduciendo a
+  la vez la termalización y la transparencia. Es la forma de superar el límite de
+  Shockley--Queisser: son las celdas III-V de \SIrange{30}{47}{\percent}, usadas en
+  satélites y en sistemas de concentración.
+  \item \textbf{Concentradores:} lentes o espejos concentran la luz sobre una celda chica y
+  cara. Al aumentar $I_L$, aumenta $\Voc$ (logarítmicamente) y la eficiencia; el problema es
+  disipar el calor.
+  \item \textbf{Película delgada:} Si amorfo (a-Si), CdTe, CIGS. Son de gap directo o casi
+  (alto $\alpha$), así que alcanzan pocos micrones de material: más baratas y de gran área,
+  pero con menor rendimiento.
+\end{itemize}
+
+\subsection{Tecnologías comerciales de paneles}
+
+Un panel (módulo) conecta celdas en serie para sumar tensión (una celda de Si da
+$\approx\SI{0.5}{V}$ en $V_m$; un panel de 60--72 celdas da \SIrange{30}{40}{V}). Los datos
+de catálogo se miden en \textbf{condiciones estándar (STC)}: \SI{1000}{W/m^2}, espectro
+AM1.5 y celda a \SI{25}{\celsius}. El rendimiento del panel es
+$\eta=P_{\max}/(\text{área}\cdot\SI{1000}{W/m^2})$.
+
+\begin{table}[H]
+\centering\small
+\caption{Comparación de tecnologías de paneles (valores de las \diapo{37--42}, típicos de
+2020--2021). ``C.\,temp.'': coeficiente de temperatura de la potencia; ``Degr.'':
+pérdida de potencia en 25 años.}
+\label{tab:paneles}
+\begin{tabularx}{\textwidth}{lccccX}
+\toprule
+Tecnología & Oblea & $P_{\max}$ & $\eta$ & C.\,temp. & Característica \\
+           &       &           &        & (\%/\si{\celsius}) & \\
+\midrule
+Policristalino           & p & \SI{285}{W} & 16--17\,\% & $-0.40$ & fabricación más barata; degr.\ 20\,\% \\
+Mono PERC \emph{half cell} & p & \SI{345}{W} & 18--20\,\% & $-0.35$ & capa pasivante + reflector trasero; celdas partidas \\
+Shingled mono PERC       & p & \SI{390}{W} & 19--20.5\,\% & $-0.28$ & tiras solapadas, sin cintas: menos sombra y microrroturas \\
+Mono PERC half cell MBB  & p & \SI{405}{W} & 19--21\,\% & $-0.35$ & múltiples \emph{bus bars}, obleas grandes M10/M12 \\
+HJT (heterojuntura)      & n & \SI{380}{W} & 20--22\,\% & $-0.26$ & c-Si + capas de a-Si; ideal para climas muy cálidos; degr.\ 8\,\% \\
+IBC                      & n & \SI{400}{W} & 20--23\,\% & $-0.27$ & todos los contactos atrás: cara frontal sin sombra; degr.\ 8\,\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{PERC} (\emph{Passivated Emitter and Rear Cell}): agrega una capa dieléctrica
+  en la cara trasera que pasiva la superficie (menos recombinación) y refleja la luz que no
+  se absorbió para darle una segunda pasada. Es la versión industrial de las ideas de
+  la figura de la \diapo{30}.
+  \item \textbf{Half cell}: cada celda se corta en dos. La corriente por celda se reduce a la
+  mitad, y como las pérdidas óhmicas son $I^2R$, se reducen a la cuarta parte por celda.
+  Además el panel se arma como dos mitades en paralelo, que toleran mejor las sombras
+  parciales.
+  \item \textbf{Oblea tipo n} (HJT, IBC): no sufre la degradación inducida por la luz
+  (LID) asociada al boro de las obleas p, de ahí la menor degradación a 25 años.
+\end{itemize}
+
+\begin{ojo}[\diapo{38}]
+``La célula partida ayuda a reducir las pérdidas por resistencia \emph{térmica}'': las
+pérdidas que se reducen son las \textbf{óhmicas} ($I^2R$ en dedos, cintas y contactos), al
+reducirse la corriente a la mitad. La menor temperatura de operación es una consecuencia,
+no la causa.
+\end{ojo}
+
+\begin{ejemplo}[efecto de la temperatura, \diapo{37}]
+Un panel policristalino de \SI{285}{W} (STC) con coeficiente \SI{-0.40}{\percent/\celsius}
+trabaja con las celdas a \SI{50}{\celsius} (normal en verano):
+$\Delta T=\SI{25}{\celsius}$ $\Rightarrow$ pérdida $25\cdot\SI{0.40}{\percent}=\SI{10}{\percent}$,
+es decir $\SI{28.5}{W}$: entrega $\approx\SI{256}{W}$. Un panel HJT
+(\SI{-0.26}{\percent/\celsius}) perdería sólo \SI{6.5}{\percent}. La causa física es la
+caída de $\Voc$ con la temperatura ($I_0\propto n_i^2$ crece exponencialmente).
+\end{ejemplo}

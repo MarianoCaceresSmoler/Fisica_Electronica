@@ -1,0 +1,115 @@
+% =====================================================================
+\section{Resumen y repaso}
+% =====================================================================
+
+\subsection{Comparación de dispositivos}
+
+\begin{table}[H]
+\centering\small
+\caption{Los dispositivos de la unidad de un vistazo.}
+\label{tab:comparacion}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}p{2.6cm}c>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Dispositivo & Polarización & Cuadrante & Figura de mérito & Limitación principal \\
+\midrule
+Fotoconductor & cualquiera (sin juntura) & -- & ganancia $G_{opt}=\tau/t_{tr}$ & lento ($\sim\tau$) \\
+Fotodiodo PN  & inversa & III & $\eta$, $\Resp$ & difusión: decenas de MHz \\
+Fotodiodo PIN & inversa & III & $\eta$, $\Resp$, $f_{\max}=\vsat/W_i$ & compromiso $\eta$--velocidad \\
+APD           & inversa, cerca de ruptura & III & ganancia $M$ & ruido de multiplicación, alta tensión \\
+Celda solar   & ninguna (carga) & IV & $\eta=P_m/P_{in}$, $FF$, $\Voc$, $\Isc$ & termalización, transparencia, $R_s$ \\
+LED           & directa & I & $\eta_{ext}$, $\lambda\approx1.24/\EG$ & extracción, gap directo \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Fórmulas clave}
+
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Formulario}]
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.33\linewidth}X}
+Energía del fotón & $\Eph=h\nu=\dfrac{hc}{\lambda}$,\quad $\lambda[\si{\micro m}]=\dfrac{1.24}{\Eph[\si{\eV}]}$,\quad $\lG=\dfrac{1.24}{\EG}$ \\
+Absorción (Beer--Lambert) & $\Phi(x)=\Phi_0e^{-\alpha x}$,\quad penetración $1/\alpha$ \\
+Fotogeneración & $G_L(x)=\alpha\Phi_0e^{-\alpha x}$,\quad $\Phi_0=\dfrac{(1-R)P}{h\nu A}$ \\
+Reflexión normal & $R=\left(\dfrac{n-1}{n+1}\right)^2$ \\
+Exceso estacionario & $\Delta n=\Delta p=G_L\tau$ \\
+Fotoconductor & $\Delta\sigma=q(\mu_n+\mu_p)\Delta n$,\quad $G_{opt}=\dfrac{\tau_n}{t_{tr}}\left(1+\dfrac{\mu_p}{\mu_n}\right)$,\quad $t_{tr}=\dfrac{L^2}{\mu_nV}$ \\
+Fotodiodo PN & $I=I_0(e^{V_A/V_T}-1)-I_L$,\quad $I_L=qAG_L(L_n+W+L_p)$ \\
+Eficiencia cuántica & $\eta=\dfrac{I_L/q}{\Popt/h\nu}$;\quad PIN: $\eta=\eta_i(1-R)(1-e^{-\alpha W})$ \\
+Responsividad & $\Resp=\dfrac{I_L}{\Popt}=\dfrac{\eta q}{h\nu}=\eta\dfrac{\lambda[\si{\micro m}]}{1.24}$ [\si{A/W}] \\
+Velocidad del PIN & $f_{\max}\approx\vsat/W_i$,\quad $C_j=\epsilon A/W_i$ \\
+Celda solar & $\Isc=I_L$,\quad $\Voc=V_T\ln(1+I_L/I_0)$ \\
+ & $FF=\dfrac{V_mI_m}{\Isc\Voc}$,\quad $\eta=\dfrac{FF\,\Isc\Voc}{P_{in}}$ \\
+LED & $\lambda\approx1.24/\EG$,\quad $\eta_{ext}=\eta_{iny}\eta_{int}\eta_{extr}$ \\
+Extracción & $\sin\theta_c=n_2/n_1$,\quad $\overline{T}\approx\dfrac{2}{n_r(1+n_r)^2}$ \\
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Preguntas de repaso}
+
+\begin{enumerate}
+  \item \textbf{¿Por qué un fotodiodo de Si no detecta \SI{1.55}{\micro m}?}\\
+  Porque $\Eph=\SI{0.8}{\eV}<\EG=\SI{1.12}{\eV}$: el Si es transparente a esa luz.
+  \item \textbf{¿Por qué la responsividad ideal crece linealmente con $\lambda$?}\\
+  Porque a igual potencia llegan más fotones cuanto menor es su energía, y cada fotón
+  aporta (como mucho) un electrón: $\Resp=\eta\lambda/1.24$.
+  \item \textbf{¿Por qué el fotodiodo PN es lento y el PIN rápido?}\\
+  En el PN la mayoría de los pares se genera en zonas neutras y llega a la juntura por
+  difusión (ns). En el PIN se genera en la capa i, donde hay campo, y se colecta por deriva
+  a $\vsat$ (ps).
+  \item \textbf{¿Qué pasa con $\Voc$ e $\Isc$ de una celda si se duplica la luz?}\\
+  $\Isc$ se duplica; $\Voc$ aumenta sólo $V_T\ln2\approx\SI{18}{mV}$.
+  \item \textbf{¿Y si sube la temperatura?}\\
+  $I_0$ crece mucho (como $n_i^2$), $\Voc$ baja (unos \SI{2}{mV/\celsius} en Si) y con ella la
+  potencia, aunque $\Isc$ aumente levemente (baja $\EG$).
+  \item \textbf{¿Por qué un gap muy chico o muy grande es malo para una celda?}\\
+  Muy chico: se absorbe casi todo pero cada fotón aporta poco ($\EG$) y el resto se pierde
+  como calor; además $\Voc$ es chica. Muy grande: se aprovecha bien cada fotón absorbido,
+  pero la mayoría de los fotones no se absorbe.
+  \item \textbf{¿Cómo puede un fotoconductor tener ganancia mayor que 1 y un fotodiodo no?}\\
+  En el fotoconductor los contactos óhmicos reponen portadores: un electrón circula
+  $\tau/t_{tr}$ veces antes de que su par se recombine. En el fotodiodo cada par se
+  separa una sola vez (salvo multiplicación por avalancha).
+  \item \textbf{¿Por qué los LEDs se hacen con materiales de gap directo, y cómo emite
+  luz el GaP, que es indirecto?}\\
+  En gap directo la recombinación radiativa es rápida y le gana a la no radiativa. En GaP
+  se agregan centros isoelectrónicos (N, Zn--O) que localizan al electrón y relajan la
+  conservación del momento.
+  \item \textbf{¿Para qué sirve la doble heteroestructura?}\\
+  Confina portadores en la capa activa (más recombinación radiativa), evita la
+  reabsorción (capas de gap mayor) y guía la luz (mayor índice).
+\end{enumerate}
+
+\subsection{Correcciones a las diapositivas (resumen)}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+Diapo & Corrección \\
+\midrule
+6  & GaP es de gap \emph{indirecto} (no emite verde por sí solo). \\
+9  & Al bajar $\lambda$ no aumenta $\EG$: aumenta la energía del fotón (menos fotones por watt). \\
+10 & $\vsat\approx\SI{e7}{cm/s}$, no \SI{e5}{cm/s}. El PIN es una estructura, no un modo. ``Longitud de deplexión'' $\to$ ancho de la ZCE. \\
+11--12 & El lado p de una homojuntura no es transparente: se hace delgado. La absorción no ocurre sólo en la ZCE. \\
+19 & La corriente de oscuridad se filtra en continua, pero su ruido de granalla no. \\
+20 & $\Resp$ es por unidad de \emph{potencia} [\si{A/W}]; la ``frecuencia'' es la de la luz. \\
+24 & Las capas n y p son eléctricamente neutras. \\
+27 & 30--35\,\% corresponde a celdas III-V multijuntura; el gap del Si está cerca del óptimo. \\
+38 & La celda partida reduce pérdidas óhmicas ($I^2R$), no ``térmicas''. \\
+44 & $\Delta R\neq L/(\Delta\sigma A)$: lo aditivo es la conductancia. \\
+46 & Exacto: $G_{opt}=\tau_n(\mu_n+\mu_p)\mathcal{E}/L$; la diapo desprecia $\mu_p$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Bibliografía}
+\begin{itemize}[nosep]
+  \item R.~F.~Pierret, \emph{Semiconductor Device Fundamentals}, Addison-Wesley, 1996:
+  §3.3 (R--G, fotogeneración) y cap.~9 (diodos optoelectrónicos).
+  \item A.~S.~Sedra, K.~C.~Smith, \emph{Microelectronic Circuits}, 7.\textsuperscript{a} ed.,
+  Oxford, 2015: cap.~15.
+  \item R.~N.~Selva, \emph{Dispositivos Electrónicos}, 2.\textsuperscript{a} ed., Nueva
+  Librería, 2008: cap.~15.1 (fotoconductores).
+  \item PVEducation: \texttt{https://www.pveducation.org} (celdas solares).
+  \item Diapositivas de clase ``Física Electrónica -- Optoelectrónica'', Ing.~E.~D.~Baez, ITBA, 2026.
+\end{itemize}

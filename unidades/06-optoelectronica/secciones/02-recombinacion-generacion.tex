@@ -1,0 +1,159 @@
+% =====================================================================
+\section{Recombinación y generación}
+\label{sec:rg}
+% =====================================================================
+
+En equilibrio térmico la generación y la recombinación de pares se compensan
+($np=n_i^2$). Cuando la luz (o la inyección de una juntura) saca al semiconductor del
+equilibrio, los mecanismos de recombinación--generación (R--G) son los que intentan
+devolverlo. Conocerlos explica, por ejemplo, por qué el Si no emite luz y por qué la
+fotocorriente depende de la vida media $\tau$.
+
+\subsection{Mecanismos}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.92,
+  ec/.style={bandac},ev/.style={bandav}]
+  % helper: dibuja bandas
+  \newcommand{\bandas}[1]{%
+    \draw[ec] (#1,2) -- ++(2.6,0) node[right,font=\scriptsize] {$\Ec$};
+    \draw[ev] (#1,0) -- ++(2.6,0) node[right,font=\scriptsize] {$\Ev$};}
+  % ======= fila superior: recombinacion =======
+  \node[font=\bfseries\small,anchor=west] at (-1.6,3.2) {Recombinación};
+  % (a) banda a banda
+  \bandas{0}
+  \node[elec] at (0.9,2) {}; \node[hueco] at (0.9,0) {};
+  \draw[flecha] (0.9,1.9) -- (0.9,0.12);
+  \draw[foton] (1.05,1) -- (2.4,1);
+  \node[colFoton,font=\scriptsize] at (1.75,0.7) {fotón};
+  \node[font=\scriptsize,align=center] at (1.3,-0.6) {(a) banda a banda\\(directa, \textbf{radiativa})};
+  % (b) centro R-G
+  \bandas{4}
+  \draw[fermi] (4,1) -- (6.6,1) node[right,font=\scriptsize,black] {$E_T$};
+  \node[elec] at (4.6,2) {}; \node[hueco] at (5.7,0) {};
+  \draw[flecha] (4.6,1.9) -- (4.6,1.05);
+  \node[elec] at (4.6,1) {};
+  \draw[flecha,dashed] (4.75,1) -- (5.6,1);
+  \draw[flecha] (5.7,0.95) -- (5.7,0.12);
+  \draw[flecha,decorate,decoration={snake,amplitude=1pt,segment length=4pt},gris] (4.75,1.5) -- (5.35,1.5);
+  \node[gris,font=\scriptsize,anchor=west] at (5.35,1.5) {calor};
+  \node[font=\scriptsize,align=center] at (5.3,-0.6) {(b) por centros R--G\\(trampas, SRH)};
+  % (c) Auger
+  \bandas{8}
+  \node[elec] (e1) at (8.7,2) {}; \node[elec] at (9.3,2) {};
+  \node[hueco] at (8.7,0) {};
+  \draw[flecha] (8.7,1.9) -- (8.7,0.12);
+  \draw[flecha] (9.3,2.05) -- (9.3,2.9) node[above,font=\scriptsize] {$e^-$ ``caliente''};
+  \foreach \yy in {2.75,2.55,2.35,2.15}{\draw[gris] (9.55,\yy) -- ++(0.25,0);}
+  \node[font=\scriptsize,align=center] at (9.3,-0.6) {(c) Auger\\(3 portadores)};
+  % ======= fila inferior: generacion =======
+  \begin{scope}[yshift=-4.4cm]
+  \node[font=\bfseries\small,anchor=west] at (-1.6,3.2) {Generación};
+  \bandas{0}
+  \node[elec] at (0.9,2) {}; \node[hueco] at (0.9,0) {};
+  \draw[flecha] (0.9,0.12) -- (0.9,1.9);
+  \draw[foton] (2.4,1) -- (1.05,1);
+  \node[colFoton,font=\scriptsize,align=center] at (1.85,1.55) {luz o calor};
+  \node[font=\scriptsize,align=center] at (1.3,-0.6) {(d) banda a banda\\(\textbf{fotogeneración})};
+  \bandas{4}
+  \draw[fermi] (4,1) -- (6.6,1) node[right,font=\scriptsize,black] {$E_T$};
+  \node[elec] at (4.6,2) {}; \node[hueco] at (5.7,0) {};
+  \draw[flecha] (4.6,1.05) -- (4.6,1.9);
+  \draw[flecha] (5.7,0.12) -- (5.7,0.95);
+  \node[font=\scriptsize,align=center] at (5.3,-0.6) {(e) por centros R--G\\(térmica)};
+  \bandas{8}
+  \draw[flecha] (8.3,2.9) node[elec] {} -- (9.0,2.1);
+  \node[elec] at (9.2,2) {}; \node[elec] at (9.8,2) {}; \node[hueco] at (9.8,0) {};
+  \draw[flecha] (9.8,0.12) -- (9.8,1.9);
+  \node[font=\scriptsize,align=center] at (9.3,-0.6) {(f) ionización por impacto\\(avalancha)};
+  \end{scope}
+\end{tikzpicture}
+\caption{Procesos de recombinación (arriba) y generación (abajo) \diapo{2}. Electrones:
+círculos llenos; huecos: círculos vacíos. Cada proceso de generación es el inverso del
+de recombinación que tiene encima.}
+\label{fig:rg}
+\end{figure}
+
+\begin{description}[style=nextline,leftmargin=1.2em]
+  \item[Banda a banda (radiativa)] El electrón cae directamente de la BC a la BV y emite un
+  fotón con $h\nu\approx\EG$. Es el mecanismo dominante en semiconductores de \emph{gap
+  directo} y es la base del LED y del láser. Su inverso es la \textbf{fotogeneración}.
+  \item[Por centros R--G (Shockley--Read--Hall)] Impurezas o defectos introducen niveles
+  $E_T$ cerca del medio del gap. El electrón cae en dos escalones y la energía se entrega a
+  la red como vibraciones (\textbf{calor}). Domina en Si y Ge (gap indirecto). Es el
+  mecanismo que fija la vida media $\tau$ en dispositivos de Si.
+  \item[Auger] La energía de la recombinación la recibe un \emph{tercer} portador, que
+  queda ``caliente'' y la pierde luego por choques. Importa con dopajes o
+  inyecciones muy altas (limita la eficiencia de LEDs a alta corriente y de celdas de Si
+  de alta calidad).
+  \item[Ionización por impacto] Un portador muy acelerado por un campo intenso choca con
+  la red y arranca un electrón de la BV. Es la base de la ruptura por avalancha y del
+  fotodiodo de avalancha (sección~\ref{sec:apd}).
+\end{description}
+
+\subsection{Vida media y ecuación de continuidad}
+
+Para \emph{baja inyección} (perturbación pequeña frente a los mayoritarios), la
+recombinación neta de minoritarios es proporcional al exceso. Por ejemplo, para
+electrones en un material tipo p:
+\[
+  \left.\frac{\partial \Delta n}{\partial t}\right|_{\text{R--G}} = -\frac{\Delta n}{\tau_n},
+\]
+donde $\tau_n$ es la \textbf{vida media} de los minoritarios: el tiempo promedio que un
+electrón en exceso sobrevive antes de recombinarse. Juntando deriva, difusión,
+recombinación y luz se obtiene la ecuación de difusión de minoritarios:
+
+\begin{clave}[Ecuación de difusión de minoritarios con luz]
+\[
+  \frac{\partial \Delta n_p}{\partial t}
+  = D_n\frac{\partial^2 \Delta n_p}{\partial x^2}
+  - \frac{\Delta n_p}{\tau_n}
+  + G_L
+\]
+(análoga para huecos en material n con $D_p$, $\tau_p$).
+La \textbf{longitud de difusión} $L_n=\sqrt{D_n\tau_n}$ es la distancia media que difunde
+un minoritario antes de recombinarse.
+\end{clave}
+
+\paragraph{Caso uniforme y estacionario.} Si $G_L$ es uniforme y no hay gradientes,
+$0 = -\Delta n/\tau_n + G_L$, es decir
+\begin{equation}
+  \boxed{\Delta n = \Delta p = G_L\,\tau_n}
+  \label{eq:dn-estacionario}
+\end{equation}
+El exceso de portadores es ``lo que se genera por segundo'' multiplicado por ``cuánto
+dura cada uno''. Este resultado es la base del fotoconductor.
+
+\paragraph{Transitorio.} Si se enciende la luz en $t=0$ y se apaga en $t=t_1$:
+\[
+  \Delta n(t) = G_L\tau_n\left(1-e^{-t/\tau_n}\right)\quad(0<t<t_1),
+  \qquad
+  \Delta n(t) = \Delta n(t_1)\,e^{-(t-t_1)/\tau_n}\quad(t>t_1).
+\]
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.7\textwidth,height=4.6cm,
+  xmin=0,xmax=12,ymin=0,ymax=1.35,
+  xlabel={$t/\tau_n$},ylabel={$\Delta n/(G_L\tau_n)$},
+  xtick={0,2,4,6,8,10,12},ytick={0,0.5,1},
+  axis lines=left,
+]
+\fill[naranjaclaro] (axis cs:1,0) rectangle (axis cs:6,1.35);
+\node[naranja,font=\small] at (axis cs:3.5,1.22) {luz encendida};
+\addplot[azul,line width=1.2pt,domain=0:1] {0};
+\addplot[azul,line width=1.2pt,domain=1:6,samples=60] {1-exp(-(x-1))};
+\addplot[azul,line width=1.2pt,domain=6:12,samples=60] {(1-exp(-5))*exp(-(x-6))};
+\draw[gris,dashed] (axis cs:0,1) -- (axis cs:12,1);
+\draw[gris,dashed] (axis cs:2,0) -- (axis cs:2,{1-exp(-1)});
+\node[gris,font=\scriptsize,anchor=west] at (axis cs:2.1,0.45) {$\tau_n$: \SI{63}{\percent}};
+\end{axis}
+\end{tikzpicture}
+\caption{Respuesta del exceso de portadores a un pulso de luz. La vida media fija tanto el
+nivel de señal ($G_L\tau_n$) como la velocidad de respuesta: hay un compromiso
+\emph{sensibilidad--velocidad} que reaparece en el fotoconductor.}
+\label{fig:transitorio}
+\end{figure}

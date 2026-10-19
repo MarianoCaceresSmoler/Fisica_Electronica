@@ -1,0 +1,310 @@
+% =====================================================================
+\section{Diodos emisores de luz (LED)}
+\label{sec:led}
+% =====================================================================
+
+\subsection{Principio de funcionamiento}
+
+El LED es el proceso inverso al fotodiodo. Al polarizar en \textbf{directa} una juntura PN,
+la barrera baja y se \emph{inyectan} minoritarios: electrones del lado n hacia el lado p y
+huecos del lado p hacia el lado n. Esos portadores en exceso se recombinan a pocas
+longitudes de difusión de la juntura. Si la recombinación es \textbf{banda a banda
+radiativa}, cada recombinación emite un fotón de energía $h\nu\approx\EG$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  \draw[bandac] (0,3.4) -- (3,3.4) to[out=0,in=180] (5,2.4) -- (9,2.4) node[right,font=\small] {$\Ec$};
+  \draw[bandav] (0,1.4) -- (3,1.4) to[out=0,in=180] (5,0.4) -- (9,0.4) node[right,font=\small] {$\Ev$};
+  \draw[fermi] (0,1.6) -- (4.6,1.6) node[above,font=\scriptsize,black,pos=0.15] {$E_{Fp}$};
+  \draw[fermi] (3.4,2.2) -- (9,2.2) node[below,font=\scriptsize,black,pos=0.85] {$E_{Fn}$};
+  \draw[<->,gris] (9.9,1.6) -- node[right,font=\small,black] {$qV_A$} (9.9,2.2);
+  \draw[gris,dotted] (4.6,1.6) -- (9.9,1.6) (9,2.2) -- (9.9,2.2);
+  % electrones inyectados desde n hacia p
+  \foreach \x in {6.2,6.7,7.3}{\node[elec] at (\x,2.48) {};}
+  \draw[flecha,colElec] (5.9,2.75) -- (4.2,3.2);
+  \node[elec] at (2.3,3.4) {};
+  \draw[flecha] (2.3,3.3) -- (2.3,1.52);
+  \node[hueco] at (2.3,1.4) {};
+  \draw[foton] (2.15,2.4) -- (0.6,2.4);
+  % huecos inyectados desde p hacia n
+  \foreach \x in {1.0,1.5,0.5}{\node[hueco] at (\x,1.3) {};}
+  \draw[flecha,colHueco] (3.1,1.05) -- (4.9,0.6);
+  \node[elec] at (6.6,2.4) {};
+  \draw[flecha] (6.0,2.3) -- (6.0,0.52);
+  \node[hueco] at (6.0,0.4) {};
+  \node[elec] at (6.0,2.4) {};
+  \draw[foton] (6.15,1.4) -- (7.8,1.4);
+  \node[colFoton,font=\small] at (8.2,1.4) {$h\nu$};
+  \node[colFoton,font=\small] at (0.3,2.4) {$h\nu$};
+  \node[font=\small] at (1.2,0.2) {p}; \node[font=\small] at (8,0) {n};
+\end{tikzpicture}
+\caption{LED en polarización directa (Pierret, fig.~9.13). La barrera se reduce en $qV_A$;
+los electrones inyectados en el lado p y los huecos inyectados en el lado n se recombinan
+emitiendo fotones de energía $\approx\EG$.}
+\label{fig:led-bandas}
+\end{figure}
+
+\begin{clave}[Longitud de onda emitida]
+\[
+  h\nu \approx \EG \quad\Longrightarrow\quad \lambda\,[\si{\micro m}]\approx\frac{1.24}{\EG\,[\si{\eV}]}
+\]
+El color lo fija el \textbf{gap} del material. Como electrones y huecos se distribuyen
+con energías del orden de $kT$ alrededor de los bordes de banda, la emisión no es
+monocromática: el pico está cerca de $\EG$ y el ancho espectral es de algunos $kT$
+(típicamente \SIrange{20}{40}{nm}). Las impurezas que crean niveles dentro del gap pueden
+correr el pico por debajo de $\EG$.
+\end{clave}
+
+\begin{intuicion}[por qué no hay LEDs de silicio]
+En un material de gap indirecto (Si, Ge) el electrón en el mínimo de la BC y el hueco en el
+máximo de la BV tienen momentos cristalinos distintos (figura~\ref{fig:Ek}). La transición
+radiativa necesita un fonón y es muy lenta; antes ocurre la recombinación por centros R--G,
+que entrega la energía como calor. En un material directo (GaAs, InGaN) gran parte de los
+portadores se recombina radiativamente.
+\end{intuicion}
+
+\subsection{Materiales y colores}
+
+Un LED visible necesita, según Pierret, tres cosas:
+\begin{enumerate}[nosep]
+  \item gap en el rango visible: $\SI{0.4}{\micro m}<\lambda<\SI{0.7}{\micro m}$, o sea
+  $\SI{1.77}{\eV}<\EG<\SI{3.1}{\eV}$;
+  \item gap \textbf{directo} (o un mecanismo que lo imite);
+  \item que se pueda fabricar una juntura PN.
+\end{enumerate}
+Casi ningún semiconductor simple cumple las tres (el GaAs tiene un gap demasiado chico, el
+GaP y el SiC son indirectos, a muchos II-VI no se los puede dopar tipo p). La solución
+son las \textbf{aleaciones} y los \textbf{centros isoelectrónicos}:
+
+\begin{itemize}
+  \item \textbf{GaAs$_{1-x}$P$_x$}: variando $x$ el gap pasa del GaAs al GaP. Es directo
+  para $x<0.45$; con $x=0.4$ emite rojo (\SI{0.65}{\micro m}). Fueron los primeros LEDs
+  comerciales (displays de calculadoras de los 70).
+  \item \textbf{GaP:N, GaAsP:N} (verde, amarillo, naranja): el nitrógeno reemplaza al P (es de
+  la misma columna, no dona portadores: es \emph{isoelectrónico}) y crea una trampa de
+  electrones $\sim\SI{0.1}{\eV}$ debajo de $\Ec$. El electrón atrapado está muy
+  \emph{localizado} en el espacio, así que (por el principio de incertidumbre) su momento
+  queda muy indeterminado: puede recombinarse con un hueco sin necesidad de fonón. El
+  material se vuelve ``pseudo-directo''. Como el fotón sale con energía menor que $\EG$, el
+  resto del cristal casi no lo reabsorbe.
+  \item \textbf{AlGaAs, AlInGaP}: aleaciones de gap directo con la misma constante de red
+  que el GaAs; rojos, naranjas y amarillos de alto brillo.
+  \item \textbf{InGaN/GaN}: azul y verde. El GaN ($\EG=\SI{3.4}{\eV}$) es directo; la emisión
+  se produce en capas de InGaN de menor gap. El LED azul eficiente (década de 1990, Premio
+  Nobel 2014) completó los tres colores primarios e hizo posible el LED blanco.
+\end{itemize}
+
+\begin{table}[H]
+\centering\small
+\caption{LEDs comerciales (adaptado de Pierret, tabla~9.1, con agregados actuales).}
+\label{tab:leds}
+\begin{tabular}{llcl}
+\toprule
+Material & Color & $\lambda_{pico}$ (\si{\micro m}) & Comentario \\
+\midrule
+GaAs                 & infrarrojo  & 0.87  & controles remotos, optoacopladores \\
+GaAs$_{0.6}$P$_{0.4}$  & rojo        & 0.65  & directo, baja eficiencia (\SI{0.2}{\percent}) \\
+GaAs$_{0.35}$P$_{0.65}$:N & naranja  & 0.63  & centro isoelectrónico N \\
+GaP:Zn--O            & rojo        & 0.70  & par Zn--O, trampa a \SI{0.3}{\eV} de $\Ec$ \\
+GaP:N                & verde       & 0.565 & centro isoelectrónico N \\
+AlGaAs               & rojo        & 0.65  & ``alto brillo'', heteroestructura \\
+AlInGaP              & rojo a amarillo & 0.57--0.63 & alta eficiencia \\
+InGaN/GaN            & azul, verde & 0.45--0.53 & los más eficientes hoy \\
+InGaN + fósforo      & blanco      & --    & azul + emisión amarilla del fósforo \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{ojo}[``LED blanco'' \diapo{23}]
+No existe un semiconductor que emita blanco: el blanco es una mezcla de colores. El LED
+blanco común es un LED \textbf{azul} de InGaN cubierto por un \textbf{fósforo} (típicamente
+YAG:Ce) que absorbe parte del azul y reemite en el amarillo; la mezcla de azul y amarillo
+se percibe como blanca. La otra opción es combinar tres LEDs (rojo, verde y azul).
+\end{ojo}
+
+\subsection{Característica eléctrica y encapsulado}
+
+Eléctricamente el LED es un diodo: $I\approx I_0e^{V/(nV_T)}$. Lo particular es la
+\textbf{tensión de encendido}, aproximadamente $\EG/q$: cada electrón que atraviesa el
+diodo tiene que aportar al menos la energía del fotón que se emite ($qV\gtrsim h\nu\approx
+\EG$), y además, como $I_0\propto n_i^2\propto e^{-\EG/kT}$, cuanto mayor el gap más tensión
+hace falta para la misma corriente.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.65\textwidth,height=5.4cm,
+  xmin=0.8,xmax=3.6,ymin=0,ymax=50,
+  xlabel={$V$ (V)},ylabel={$I$ (mA)},
+  axis lines=left,grid=major,grid style={gray!25},
+  every axis plot/.append style={line width=1.2pt,samples=150},
+]
+\addplot[gris,domain=0.8:1.31] {20*exp((x-1.25)/0.06)};
+\addplot[rojo,domain=1.4:2.0] {20*exp((x-1.95)/0.07)};
+\addplot[verde!70!black,domain=2.0:2.47] {20*exp((x-2.4)/0.08)};
+\addplot[azul,domain=2.5:3.17] {20*exp((x-3.1)/0.09)};
+\node[gris,font=\small] at (axis cs:1.05,40) {IR};
+\node[rojo,font=\small,anchor=east] at (axis cs:1.86,40) {rojo};
+\node[verde!70!black,font=\small,anchor=east] at (axis cs:2.29,10) {amarillo};
+\node[azul,font=\small,anchor=east] at (axis cs:3.0,40) {azul};
+\end{axis}
+\end{tikzpicture}
+\caption{Curvas I--V aproximadas de LEDs de distintos colores: la tensión de encendido
+crece con $\EG$ (IR GaAs $\sim\SI{1.2}{V}$, rojo $\sim\SI{1.8}{V}$, azul InGaN
+$\sim\SI{3}{V}$). Compárese con el rojo de la \diapo{25}, que empieza a conducir a
+\SI{1.7}{V}.}
+\label{fig:led-iv}
+\end{figure}
+
+Como la corriente crece exponencialmente con la tensión, un LED \textbf{siempre} se
+alimenta con limitación de corriente (una resistencia en serie o una fuente de corriente):
+conectarlo directamente a una fuente de tensión lo destruye.
+
+\paragraph{Encapsulado \diapo{23--24}.} El chip (de unos \SI{250}{\micro m} de lado) se
+monta en una \emph{copa reflectora} que redirige la luz que sale por los costados; un hilo
+lo conecta al otro terminal, y todo se recubre de epoxi con forma de domo. El
+\textbf{ánodo} (lado p) es la pata más larga; el \textbf{cátodo} (lado n) se identifica por
+el lado plano del encapsulado.
+
+\begin{ojo}[\diapo{24}]
+El dibujo indica ``N-type layer: \emph{negatively charged}''. Un semiconductor tipo n es
+\textbf{eléctricamente neutro}: tiene electrones libres (negativos) pero exactamente la misma
+cantidad de donores ionizados (positivos, fijos). Lo mismo vale para el tipo p (``holes for
+electrons''). Sólo hay carga neta en la zona de carga espacial de la juntura.
+\end{ojo}
+
+\subsection{Heteroestructuras: confinamiento de portadores y de luz}
+
+Los LEDs de alto brillo (y todos los láseres) usan una \textbf{doble heteroestructura}
+\diapo{34}: una capa activa delgada (\SIrange{0.1}{0.5}{\micro m}) de gap chico, por
+ejemplo GaAs o AlGaAs con poco Al, entre dos capas de \emph{confinamiento} de gap mayor
+(Al$_x$Ga$_{1-x}$As con más Al), una n y otra p.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  % bandas en directa (simplificado, sin curvaturas)
+  \draw[bandac] (0,3.0) -- (3,3.0) -- (3,2.5) -- (5,2.5) -- (5,3.6) -- (8,3.6);
+  \draw[bandav] (0,0.6) -- (3,0.6) -- (3,1.1) -- (5,1.1) -- (5,0.0) -- (8,0.0);
+  \node[colEc,font=\small,anchor=west] at (8,3.6) {$\Ec$};
+  \node[colEv,font=\small,anchor=west] at (8,0.0) {$\Ev$};
+  \fill[pattern=north east lines,pattern color=azul!40] (3,2.5) rectangle (5,3.0);
+  \fill[pattern=north east lines,pattern color=rojo!40] (3,0.6) rectangle (5,1.1);
+  \foreach \x in {3.3,3.8,4.3,4.7}{\node[elec] at (\x,2.58) {};}
+  \foreach \x in {3.4,3.9,4.4}{\node[hueco] at (\x,1.02) {};}
+  \draw[flecha,colElec] (1,3.12) -- (2.8,2.75);
+  \node[colElec,font=\scriptsize,align=center] at (1.2,3.55) {electrones\\inyectados};
+  \draw[flecha,colHueco] (7,0.12) -- (5.2,0.9);
+  \node[colHueco,font=\scriptsize,align=center] at (6.9,0.65) {huecos\\inyectados};
+  \node[font=\scriptsize,align=center] at (6.4,3.05) {barrera para\\electrones};
+  \node[font=\scriptsize,align=center] at (1.6,1.15) {barrera para\\huecos};
+  \draw[foton] (3.9,1.8) -- (2.0,1.8);
+  \node[colFoton,font=\small] at (1.75,1.8) {$h\nu$};
+  \draw[dashed,gris] (3,-0.4) -- (3,4.0) (5,-0.4) -- (5,4.0);
+  \node[font=\scriptsize,align=center] at (1.5,-0.7) {n-AlGaAs\\(gap grande)};
+  \node[font=\scriptsize,align=center] at (4,-0.7) {capa activa\\(gap chico)};
+  \node[font=\scriptsize,align=center] at (6.5,-0.7) {p-AlGaAs\\(gap grande)};
+  % indice de refraccion
+  \begin{scope}[yshift=-3.1cm]
+    \draw[flecha] (0,0) -- (8.3,0) node[right,font=\small] {$x$};
+    \draw[flecha] (0,0) -- (0,1.3) node[above,font=\small] {$n_{\text{refr}}$};
+    \draw[azul,line width=1.1pt] (0,0.5) -- (3,0.5) -- (3,1.0) -- (5,1.0) -- (5,0.5) -- (8,0.5);
+    \node[font=\scriptsize,anchor=west] at (5.2,1.0) {mayor índice en la capa activa: guía de onda};
+  \end{scope}
+\end{tikzpicture}
+\caption{Doble heteroestructura en polarización directa (simplificada, \diapo{34}). Los
+escalones de banda atrapan electrones y huecos en la capa activa; el mayor índice de
+refracción de esa capa guía la luz.}
+\label{fig:doble-hetero}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Confinamiento de portadores:} los escalones $\Delta E_c$ y $\Delta E_v$ son
+  barreras que impiden que electrones y huecos escapen de la capa activa. Al quedar
+  concentrados en un volumen chico, su densidad es alta y la recombinación radiativa (que
+  crece con el producto $np$) le gana a la no radiativa.
+  \item \textbf{Ventanas transparentes:} las capas de confinamiento tienen gap mayor que la
+  energía de los fotones emitidos, así que no los reabsorben.
+  \item \textbf{Confinamiento óptico:} la capa activa tiene mayor índice de refracción y
+  actúa como guía de onda (imprescindible en el láser).
+\end{itemize}
+
+\subsection{Eficiencia y extracción de la luz}
+
+\begin{definicion}[eficiencias de un LED]
+\[
+  \eta_{ext} = \frac{\text{fotones que salen al exterior por segundo}}{\text{electrones que circulan por segundo}}
+  = \eta_{iny}\cdot\eta_{int}\cdot\eta_{extr}
+\]
+\begin{itemize}[nosep]
+  \item $\eta_{iny}$: fracción de la corriente que inyecta portadores en la región activa.
+  \item $\eta_{int}$ (eficiencia cuántica interna): fracción de las recombinaciones que son
+  radiativas, $\eta_{int}=R_{rad}/(R_{rad}+R_{no\,rad})$.
+  \item $\eta_{extr}$: fracción de los fotones generados que logra salir del chip.
+\end{itemize}
+La \emph{eficiencia de enchufe} (\emph{wall-plug}) es $P_{luz}/(IV)$.
+\end{definicion}
+
+\paragraph{El problema de la extracción.} Los semiconductores tienen índices de refracción
+altos ($n\approx3.4$ para GaP o GaAs). Por la ley de Snell, la luz que llega a la
+superficie con un ángulo mayor que el \textbf{ángulo crítico}
+\[
+  \sin\theta_c = \frac{n_2}{n_1}
+\]
+sufre \emph{reflexión total interna} y queda atrapada. Promediando sobre todas las
+direcciones (Pierret, ecs.~9.8--9.10), la fracción que sale es
+\[
+  \overline{T} \approx \frac{\sin^2\theta_c}{2}\,T_N
+  = \frac{2}{n_r(1+n_r)^2},
+  \qquad n_r=\frac{n_1}{n_2},
+\]
+donde $T_N=4n_r/(1+n_r)^2$ es la transmisión a incidencia normal.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.1]
+  \fill[azulclaro] (-3,-2) rectangle (3,0);
+  \draw[line width=0.8pt] (-3,0) -- (3,0);
+  \node[font=\small,anchor=west] at (-2.9,-1.75) {semiconductor, $n_1=3.4$};
+  \node[font=\small,anchor=west] at (-3,0.6) {aire, $n_2=1$};
+  \coordinate (O) at (0,-1.6);
+  \fill[naranja!35] (O) -- ({-1.6*tan(17.1)},0) -- ({1.6*tan(17.1)},0) -- cycle;
+  \draw[naranja,line width=0.8pt] (O) -- ({-1.6*tan(17.1)},0) (O) -- ({1.6*tan(17.1)},0);
+  \draw[dashed,gris] (O) -- (0,0.9);
+  \draw[flecha,naranja!80!black] (O) -- (0.2,0) -- (0.32,0.8);
+  \draw[flecha,azul] (O) -- (1.8,0) -- (3.0,-1.1);
+  \node[azul,font=\scriptsize,align=center] at (2.2,-1.5) {reflexión\\total interna};
+  \draw (0,-1.0) arc[start angle=90,end angle={90-17.1},radius=0.6];
+  \node[font=\scriptsize] at (0.33,-0.65) {$\theta_c$};
+  \node[elec,fill=colFoton] at (O) {};
+  \node[font=\scriptsize,anchor=east] at (-0.1,-1.6) {emisión};
+  \node[naranja!80!black,font=\scriptsize,align=center] at (-1.2,-1.1) {cono de\\escape};
+\end{tikzpicture}
+\caption{Cono de escape: sólo los rayos dentro del ángulo crítico pueden salir del chip.
+Para GaP--aire, $\theta_c=\ang{17.1}$.}
+\label{fig:cono}
+\end{figure}
+
+\begin{ejemplo}[extracción de luz en GaP]
+GaP ($n_1=3.4$) hacia aire ($n_2=1$): $T_N=4\cdot3.4/4.4^2=\SI{70}{\percent}$ a incidencia
+normal, pero $\theta_c=\arcsin(1/3.4)=\ang{17.1}$ y $\overline{T}=2/(3.4\cdot4.4^2)
+\approx\SI{3}{\percent}$. ¡Sólo sale el \SI{3}{\percent} de la luz generada!
+
+Con epoxi ($n_2=1.5$): $n_r=2.27$, $\theta_c=\ang{26.2}$ y
+$\overline{T}=2/(2.27\cdot3.27^2)\approx\SI{8}{\percent}$: casi el triple. El domo del
+encapsulado hace que luego la luz llegue a la interfaz epoxi--aire casi en forma normal y
+salga. Por eso los LEDs se encapsulan en epoxi en forma de domo, se usan sustratos
+transparentes y espejos traseros, y se texturizan o se dan formas especiales a los chips.
+\end{ejemplo}
+
+\subsection{Complemento: el diodo láser}
+
+Si la inyección es tan grande que en la capa activa hay más electrones en la BC que en la
+BV (\emph{inversión de población}), un fotón que pasa estimula la emisión de otro
+\emph{idéntico} (misma $\lambda$, fase y dirección): \textbf{emisión estimulada}. Con caras
+del cristal que actúan como espejos (cavidad) y por encima de una \emph{corriente umbral},
+la ganancia supera a las pérdidas y el dispositivo emite luz coherente, muy
+monocromática y direccional. La doble heteroestructura es la que hace posible alcanzar la
+inversión con corrientes razonables a temperatura ambiente.
