@@ -1,0 +1,165 @@
+% =====================================================================
+\section{Características estáticas}
+\label{sec:caracteristicas}
+% =====================================================================
+
+\subsection{Curva de entrada (emisor común)}
+
+La entrada en emisor común es la juntura E--B: la característica $I_B$ vs.\ $V_{EB}$ (con
+$V_{EC}$ fija) es la de un diodo \diapo{1.28}. Como $I_B=I_C/\beta$, la curva $I_C$ vs.\
+$V_{EB}$ (característica de \emph{transferencia}) tiene la misma forma, escalada por $\beta$.
+En Si conduce apreciablemente a partir de \SIrange{0.5}{0.6}{V}, y a corriente constante
+$V_{EB}$ \textbf{disminuye unos \SI{2}{mV/\celsius}} con la temperatura (la curva se corre a la
+izquierda al calentarse, porque $n_i^2$ crece).
+
+\begin{ojo}[\diapo{1.28}]
+Las curvas mostradas están rotuladas $i_C$ vs.\ $v_{BE}$: son curvas de transferencia, no de
+entrada. La forma es la misma (exponencial), así que la conclusión ``es la curva de un
+diodo'' vale; pero la corriente de entrada es $i_B$, $\beta$ veces menor.
+\end{ojo}
+
+\subsection{Curvas de salida (emisor común)}
+
+Las curvas de salida grafican $I_C$ en función de $V_{EC}$, una curva por cada valor de $I_B$
+\diapo{1.29}. Las de la figura~\ref{fig:salida} están calculadas con Ebers--Moll y los
+parámetros del ejemplo, agregando el efecto Early.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth,height=7cm,
+  xmin=0,xmax=10,ymin=0,ymax=2.6,
+  xlabel={$V_{EC}$ (V)},ylabel={$I_C$ (mA)},
+  axis lines=left,grid=major,grid style={gray!20},
+  every axis plot/.append style={line width=1.2pt,azul,no markers},
+  clip=false,
+]
+\fill[naranjaclaro,opacity=0.7] (axis cs:0,0) rectangle (axis cs:0.25,2.6);
+\fill[gris!15] (axis cs:0,0) rectangle (axis cs:10,0.04);
+\addplot table[x=VEC,y=IC1] {datos/salida.dat};
+\addplot table[x=VEC,y=IC2] {datos/salida.dat};
+\addplot table[x=VEC,y=IC3] {datos/salida.dat};
+\addplot table[x=VEC,y=IC4] {datos/salida.dat};
+\node[font=\scriptsize,anchor=west] at (axis cs:10,0.60) {$I_B=\SI{1}{\micro A}$};
+\node[font=\scriptsize,anchor=west] at (axis cs:10,1.20) {\SI{2}{\micro A}};
+\node[font=\scriptsize,anchor=west] at (axis cs:10,1.80) {\SI{3}{\micro A}};
+\node[font=\scriptsize,anchor=west] at (axis cs:10,2.40) {\SI{4}{\micro A}};
+\node[naranja!70!black,font=\small,anchor=west] at (axis cs:0.3,0.25) {$\leftarrow$ saturación};
+\node[font=\small] at (axis cs:5,2.05) {activa directa};
+\node[gris,font=\scriptsize,anchor=south west] at (axis cs:3,0.04) {corte ($I_B=0$)};
+\end{axis}
+\end{tikzpicture}
+\caption{Curvas de salida de un PNP en emisor común (calculadas). En activa las curvas están
+equiespaciadas ($\Delta I_C=\beta\Delta I_B$) y levemente inclinadas (efecto Early). Por
+debajo de $V_{EC}\approx\SIrange{0.1}{0.2}{V}$ la juntura C--B entra en directa y el
+transistor se satura: $I_C$ cae rápidamente a cero.}
+\label{fig:salida}
+\end{figure}
+
+\paragraph{Base común.} Si se grafica $I_C$ vs.\ $V_{CB}$ con $I_E$ como parámetro, las curvas
+son prácticamente horizontales ($I_C\approx\adc I_E$), sin efecto Early visible, y siguen
+así hasta \emph{pasar} $V_{CB}=0$: la saturación empieza recién cuando la juntura C--B entra
+claramente en directa ($V_{CB}\approx\SI{0.5}{V}$).
+
+\subsection{Corrientes de fuga: $I_{CB0}$ e $I_{CE0}$}
+
+Incluyendo la corriente inversa de la juntura C--B \diapo{2.9--2.11}:
+
+\begin{clave}[Base común y emisor común \enhoja]
+\[
+  I_C = \adc I_E + I_{CB0}
+  \qquad\Longrightarrow\qquad
+  I_C = \frac{\adc}{1-\adc}I_B + \frac{I_{CB0}}{1-\adc} = \bdc I_B + I_{CE0},
+\]
+\[
+  I_{CE0} = \frac{I_{CB0}}{1-\adc} = (\bdc+1)\,I_{CB0}.
+\]
+\begin{itemize}[nosep]
+  \item $I_{CB0}$: corriente de colector con el \textbf{emisor abierto} ($I_E=0$).
+  \item $I_{CE0}$: corriente de colector con la \textbf{base abierta} ($I_B=0$).
+\end{itemize}
+\end{clave}
+
+\begin{intuicion}[por qué $I_{CE0}\gg I_{CB0}$]
+Con la base abierta, los electrones de la corriente de fuga C--B que llegan a la base no
+tienen por dónde salir: se acumulan, polarizan en directa a la juntura E--B y el emisor
+inyecta huecos. Esa fuga actúa como una corriente de base y el transistor la
+\emph{amplifica} por $\beta+1$. Por eso, y porque $I_{CB0}$ se duplica cada \SI{10}{\celsius}
+aproximadamente, la fuga es un problema en circuitos analógicos que hay que compensar
+\diapo{2.34}.
+\end{intuicion}
+
+\begin{ojo}[$I_{CB0}$ \diapo{2.11}]
+``En nuestro desarrollo sería la $I_{Cn}$'': es una aproximación. Con Ebers--Moll, emisor
+abierto ($I_E=0$) y $V_{CB}\ll-V_T$:
+\[
+  I_{CB0} = I_{R0}\left(1-\aF\aR\right),
+\]
+que incluye $I_{Cn}$ más la pequeña corriente de huecos de la base hacia el colector. Además
+hay que sumarle la corriente de generación en la ZCE de C--B, que en Si suele dominar.
+\end{ojo}
+
+\subsection{Gummel plot y dependencia de $\beta$}
+
+$\beta$ es la figura de mérito más usada para comparar transistores, pero \textbf{no es
+constante}: depende de $I_C$ y de la temperatura \diapo{1.27}. El \emph{gráfico de
+Gummel} muestra $\log I_C$ y $\log I_B$ en función de $V_{EB}$; la distancia vertical entre
+ambas curvas es $\log\beta$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{semilogyaxis}[
+  name=gum,
+  width=0.47\textwidth,height=6.2cm,
+  xmin=0.2,xmax=0.95,ymin=1e-13,ymax=1e-1,
+  xlabel={$V_{EB}$ (V)},ylabel={corriente (A)},
+  legend pos=north west,legend style={font=\scriptsize},
+  every axis plot/.append style={line width=1.1pt},
+  ytick={1e-12,1e-10,1e-8,1e-6,1e-4,1e-2},
+]
+\addplot[azul] table[x=VEB,y=IC] {datos/gummel.dat};
+\addlegendentry{$I_C$}
+\addplot[rojo] table[x=VEB,y=IB] {datos/gummel.dat};
+\addlegendentry{$I_B$}
+\draw[<->,gris] (axis cs:0.6,2.2e-4) -- node[right,font=\scriptsize,black] {$\beta$} (axis cs:0.6,7e-7);
+\node[font=\scriptsize,align=center,rojo] at (axis cs:0.36,2e-8) {R--G en la\\ZCE E--B};
+\node[font=\scriptsize,align=center,azul] at (axis cs:0.83,1e-6) {alta\\inyección};
+\end{semilogyaxis}
+\begin{axis}[
+  at={(gum.east)},anchor=west,xshift=1.4cm,
+  width=0.47\textwidth,height=6.2cm,
+  xmode=log,xmin=1e-6,xmax=1e-1,ymin=0,ymax=360,
+  xlabel={$I_C$ (A)},ylabel={$\beta$},
+  every axis plot/.append style={line width=1.1pt,smooth},
+  legend pos=north west,legend style={font=\scriptsize},
+]
+\addplot[rojo] coordinates {(1e-6,150)(1e-5,215)(1e-4,270)(1e-3,305)(1e-2,275)(3e-2,200)(1e-1,95)};
+\addlegendentry{\SI{125}{\celsius}}
+\addplot[azul] coordinates {(1e-6,100)(1e-5,145)(1e-4,180)(1e-3,195)(1e-2,170)(3e-2,120)(1e-1,55)};
+\addlegendentry{\SI{25}{\celsius}}
+\addplot[violeta] coordinates {(1e-6,65)(1e-5,90)(1e-4,105)(1e-3,110)(1e-2,90)(3e-2,60)(1e-1,25)};
+\addlegendentry{\SI{-55}{\celsius}}
+\end{axis}
+\end{tikzpicture}
+\caption{Izquierda: gráfico de Gummel (Pierret, fig.~11.13). Derecha: $\beta$ en función de la
+corriente de colector y la temperatura (valores típicos, \diapo{1.27}). El modelo ideal sólo
+vale en el tramo central donde las dos rectas son paralelas.}
+\label{fig:gummel}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Corrientes bajas:} a $I_B$ se le suma la corriente de recombinación en la ZCE
+  de E--B, que crece como $e^{V_{EB}/2V_T}$ (pendiente mitad). $I_B$ ya no es proporcional a
+  $I_C$ y $\beta$ cae.
+  \item \textbf{Corrientes altas:} alta inyección en la base (la pendiente de $I_C$ pasa a
+  $e^{V_{EB}/2V_T}$), aglomeración de corriente en los bordes del emisor
+  (\emph{current crowding}) y caídas en las resistencias serie. $\beta$ vuelve a caer.
+  \item \textbf{Temperatura:} $\beta$ aumenta con $T$ (sobre todo porque mejora la eficiencia
+  de emisión).
+\end{itemize}
+
+Por eso, al decir ``el transistor tiene $\beta=200$'' hay que aclarar a qué corriente y
+temperatura. En la materia se toma $\beta$ constante dentro del rango de validez del modelo
+\diapo{1.31}.

@@ -1,0 +1,113 @@
+% =====================================================================
+\section{Saturación y corte: el transistor como llave}
+% =====================================================================
+
+Para usar al transistor como llave hacen falta dos estados \diapo{2.12}: \textbf{abierta}
+($I\approx0$) y \textbf{cerrada} ($V\approx0$). Corresponden a las regiones de corte y de
+saturación.
+
+\begin{itemize}
+  \item \textbf{Corte} (ambas junturas en inversa): sólo circulan corrientes de fuga del
+  orden de $I_{CB0}$ e $I_{CE0}$. La llave está abierta.
+  \item \textbf{Saturación} (ambas junturas en directa): $V_{EC}$ es muy chica
+  (\SIrange{0.05}{0.2}{V}) y la corriente la fija el circuito externo. La llave está cerrada.
+\end{itemize}
+
+\subsection{¿Cómo puede $V_{EC}$ ser menor que $V_{EB}$?}
+
+\diapo{2.12} pregunta cómo puede ser $V_{EC}<\SI{0.7}{V}$ si $V_{EB}\approx\SI{0.7}{V}$. La
+respuesta está en $V_{EC}=V_{EB}-V_{CB}$: en saturación \emph{ambas} junturas están en directa y
+sus tensiones casi se cancelan. Por ejemplo, $V_{EB}=\SI{0.64}{V}$ y $V_{CB}=\SI{0.53}{V}$ dan
+$V_{EC}=\SI{0.11}{V}$.
+
+Con Ebers--Moll, imponiendo $I_C$ e $I_B$ (las ecuaciones son lineales en $e^{V_{EB}/V_T}$ y $e^{V_{CB}/V_T}$, así que se despejan fácilmente) y despreciando los ``$-1$'', se obtiene:
+
+\begin{clave}[Tensión de saturación]
+\[
+  V_{EC,sat} = V_T\ln\left[\frac{\dfrac{1}{\aR}+\dfrac{\beta_{forz}}{\beta_R}}
+                               {1-\dfrac{\beta_{forz}}{\beta_F}}\right],
+  \qquad
+  \beta_{forz}=\frac{I_C}{I_B}<\beta_F,
+  \qquad \beta_R=\frac{\aR}{1-\aR}.
+\]
+\end{clave}
+
+\begin{ejemplo}[$V_{EC,sat}$]
+Con el transistor del ejemplo ($\beta_F=525$, $\aR=0.68$, $\beta_R=2.1$) y $I_C=\SI{1}{mA}$:
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$I_B$ & $\beta_{forz}$ & $V_{EC,sat}$ & comentario \\
+\midrule
+\SI{5}{\micro A}   & 200 & \SI{131}{mV} & saturación leve \\
+\SI{10}{\micro A}  & 100 & \SI{106}{mV} & \\
+\SI{100}{\micro A} & 10  & \SI{48}{mV}  & saturación profunda \\
+\bottomrule
+\end{tabular}
+\end{center}
+Cuanto más se ``sobreexcita'' la base, más se acerca a cero la tensión de la llave.
+(Verificado resolviendo numéricamente Ebers--Moll.)
+\end{ejemplo}
+
+\subsection{Recta de carga y transferencia}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.38\textwidth}
+\centering
+\begin{circuitikz}[scale=0.85,transform shape]
+  \draw (0,0) node[pnp](Q){};
+  \draw (Q.E) -- ++(0,0.5) node[vcc]{$V_{CC}=\SI{5}{V}$};
+  \draw (Q.C) to[R,l=$R_C$,-*] ++(0,-2) coordinate(o) -- ++(0,-0.6) node[ground]{};
+  \draw (o) to[short,-o] ++(1.2,0) node[right] {$v_o$};
+  \draw (Q.B) to[short,-o] ++(-0.8,0) node[left] {$v_{in}$};
+  \node[font=\scriptsize,align=center] at (-1.3,-1.2) {$V_{EB}=V_{CC}-v_{in}$};
+\end{circuitikz}
+\end{minipage}%
+\begin{minipage}{0.6\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\textwidth,height=5.5cm,
+  xmin=0.4,xmax=0.75,ymin=0,ymax=5.5,
+  xlabel={$V_{EB}$ (V)},ylabel={$v_o=I_CR_C$ (V)},
+  axis lines=left,grid=major,grid style={gray!20},
+]
+\fill[gris!15] (axis cs:0.4,0) rectangle (axis cs:0.58,5.5);
+\fill[naranjaclaro] (axis cs:0.682,0) rectangle (axis cs:0.75,5.5);
+\addplot[azul,line width=1.3pt] table[x=VEB,y=vo] {datos/transfer.dat};
+\node[font=\small] at (axis cs:0.49,4.5) {corte};
+\node[font=\small] at (axis cs:0.635,4.5) {activa};
+\node[font=\small,rotate=90] at (axis cs:0.715,2.5) {saturación};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\caption{Inversor con PNP ($R_C=\SI{1}{k\ohm}$) y su característica de transferencia, calculada
+con Ebers--Moll (equivalente PNP de la \diapo{2.14}). En corte $v_o\approx0$; en saturación
+$v_o\approx V_{CC}-V_{EC,sat}$. La región activa es la zona de pendiente alta: allí el circuito
+amplifica.}
+\label{fig:llave}
+\end{figure}
+
+\paragraph{La malla de salida decide la saturación \diapo{2.14}.} Con $V_{EB}$ fija en activa,
+$I_C=\beta I_B$ es independiente de $R_C$. Pero la malla de colector impone
+$V_{EC}=V_{CC}-I_CR_C$: si $\beta I_BR_C$ supera $V_{CC}$, la tensión $V_{EC}$ ``no alcanza'',
+la juntura C--B entra en directa y el transistor se satura. La corriente queda limitada a
+$I_{C,sat}\approx(V_{CC}-V_{EC,sat})/R_C<\beta I_B$. Criterio práctico de diseño: para
+asegurar saturación, $I_B>I_{C,sat}/\beta_{\min}$ con un margen.
+
+\subsection{Qué pasa con $\beta$ en saturación}
+
+En saturación las dos junturas inyectan: además del emisor, el colector inyecta huecos hacia
+la base y la base inyecta electrones hacia el colector. La corriente de colector neta
+\emph{baja} (las dos inyecciones se restan) y la corriente de base \emph{sube} (hay que
+alimentar las dos recombinaciones). Resultado: $\beta_{forz}=I_C/I_B$ cae mucho
+\diapo{2.15}. En circuitos lineales se evita a toda costa; en conmutación se la busca.
+
+\begin{intuicion}[carga almacenada y tiempo de almacenamiento]
+En saturación hay un exceso grande de huecos en toda la base (el perfil de la
+figura~\ref{fig:perfiles} ya no llega a cero en $x=W$) y también en el colector. Para apagar la
+llave primero hay que \emph{retirar esa carga}: mientras tanto el transistor sigue conduciendo.
+Ese retardo (\emph{storage time}) limita la velocidad de conmutación; por eso los circuitos
+rápidos evitan la saturación profunda (p.\,ej.\ con un diodo Schottky entre base y colector).
+\end{intuicion}

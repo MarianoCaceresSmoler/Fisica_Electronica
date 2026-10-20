@@ -1,0 +1,292 @@
+% =====================================================================
+\section{Modelos de pequeña señal}
+\label{sec:pequena-senal}
+% =====================================================================
+
+\subsection{Linealización}
+
+En un amplificador el transistor se polariza en un punto de reposo $Q$ (en MAD) y se le
+superpone una señal chica \diapo{2.16--2.17}. Notación: mayúscula con subíndice mayúscula
+para continua ($I_C$), minúscula con subíndice minúscula para la señal ($i_c$) y minúscula con
+subíndice mayúscula para el total ($i_C=I_C+i_c$).
+
+Si la señal es suficientemente chica se puede desarrollar en serie de Taylor a primer orden
+alrededor de $Q$ (emisor común: entrada $v_{be}$, salida $v_{ce}$):
+\[
+  i_b = \left.\frac{\partial I_B}{\partial V_{BE}}\right|_{Q}v_{be}
+      + \left.\frac{\partial I_B}{\partial V_{CE}}\right|_{Q}v_{ce}
+      = y_{11}v_{be}+y_{12}v_{ce},
+  \qquad
+  i_c = y_{21}v_{be}+y_{22}v_{ce}.
+\]
+Todas las derivadas tienen unidades de A/V: son \textbf{admitancias} \diapo{2.18--2.19}.
+
+\begin{intuicion}[¿qué tan chica es ``pequeña señal''?]
+Como $i_C=I_Ce^{v_{be}/V_T}=I_C(1+v_{be}/V_T+\tfrac12(v_{be}/V_T)^2+\dots)$, el término lineal
+domina si $v_{be}\ll V_T$. Con $v_{be}=\SI{5}{mV}$ el término cuadrático ya es el
+\SI{10}{\percent} del lineal: en la práctica ``pequeña señal'' significa unos pocos mV en la
+juntura base--emisor.
+\end{intuicion}
+
+\subsection{Modelo híbrido-\texorpdfstring{$\pi$}{pi} de Giacoletto}
+
+Se reescriben los parámetros $y$ con significado físico \diapo{2.20}:
+
+\begin{clave}[Parámetros del modelo híbrido-$\pi$ \enhoja]
+\[
+  g_m = \left.\frac{\partial I_C}{\partial V_{EB}}\right|_Q = \frac{I_C}{V_T}
+  \qquad(y_{21},\ \text{transconductancia})
+\]
+\[
+  r_\pi = \left(\left.\frac{\partial I_B}{\partial V_{EB}}\right|_Q\right)^{-1}
+        = \frac{V_T}{I_B} = \frac{\beta}{g_m}
+  \qquad(1/y_{11})
+\]
+\[
+  r_o = \frac{V_A}{I_C}\quad(1/y_{22},\ \text{efecto Early}),
+  \qquad
+  r_\mu\approx\beta\,r_o,
+  \qquad
+  g_mr_o = \frac{V_A}{V_T}.
+\]
+$y_{12}$ (realimentación de la salida sobre la entrada) es despreciable en primera aproximación;
+el efecto residual se representa con $r_\mu$.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.95,transform shape]
+  % entrada
+  \draw (0,3) node[left] {B} to[short,o-] (0.3,3) to[R] (2,3);
+  \node[above,font=\small] at (1.15,3.35) {$r_b$};
+  \draw (2,3) to[short,*-] (2,3) node[above left,font=\small] {B'};
+  \draw (2,3) to[C] (2,0);
+  \node[left,font=\small] at (1.6,1.5) {$C_\pi$};
+  \draw (2,3) -- (3.6,3) to[R] (3.6,0);
+  \node[right,font=\small] at (3.95,1.5) {$r_\pi$};
+  \node[font=\small,azul] at (3.0,2.5) {$+$}; \node[font=\small,azul] at (3.0,0.5) {$-$};
+  \node[font=\small,azul] at (3.0,1.5) {$v_\pi$};
+  % realimentacion
+  \draw (2,3) -- (2,4.2) -- (3.4,4.2) to[R] (6.4,4.2) -- (7.2,4.2);
+  \node[above,font=\small] at (4.9,4.55) {$r_\mu$};
+  \draw (2,4.2) -- (2,5.4) -- (3.4,5.4) to[C] (6.4,5.4) -- (7.2,5.4) -- (7.2,3);
+  \node[above,font=\small] at (4.9,5.85) {$C_\mu$};
+  \draw (7.2,4.2) to[short,*-] (7.2,4.2);
+  % salida
+  \draw (3.6,3) to[short,*-] (3.6,3);
+  \draw (7.2,3) to[short,*-] (7.2,3) to[R] (7.2,0);
+  \node[left,font=\small] at (6.85,1.5) {$r_o$};
+  \draw (7.2,3) -- (8.8,3) to[cI] (8.8,0);
+  \node[right,font=\small] at (9.3,1.5) {$g_mv_\pi$};
+  \draw (8.8,3) to[short,-o] (10.6,3) node[right] {C};
+  \draw (0.3,0) node[left] {E} to[short,o-] (10.6,0) to[short,-o] (10.6,0) node[right] {E};
+  \foreach \x in {2,3.6,7.2,8.8} \fill (\x,0) circle (1.6pt);
+\end{circuitikz}
+\caption{Modelo híbrido-$\pi$ completo (Giacoletto) \diapo{2.22}. $r_b$ es la resistencia
+distribuida entre el contacto de base y la base ``activa'' B' (debajo del emisor). El mismo
+modelo vale para PNP y NPN, porque relaciona \emph{variaciones}.}
+\label{fig:giacoletto}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.9,transform shape]
+  \draw (0,2.4) node[left] {B} to[short,o-] (1.5,2.4) to[R] (1.5,0);
+  \node[right,font=\small] at (1.85,1.2) {$r_\pi$};
+  \node[font=\small,azul] at (0.7,1.9) {$+$}; \node[font=\small,azul] at (0.7,0.5) {$-$};
+  \node[font=\small,azul] at (0.7,1.2) {$v_{be}$};
+  \draw (1.5,2.4) -- (1.5,2.4);
+  \draw (4.6,2.4) to[cI] (4.6,0);
+  \node[left,font=\small] at (4.1,1.2) {$g_mv_{be}$};
+  \draw (4.6,2.4) -- (6.4,2.4) to[R] (6.4,0);
+  \node[right,font=\small] at (6.75,1.2) {$r_o$};
+  \draw (6.4,2.4) to[short,-o] (7.6,2.4) node[right] {C};
+  \draw (0,0) node[left] {E} to[short,o-] (7.6,0) to[short,-o] (7.6,0);
+  \node[font=\small,align=left,anchor=west] at (8.6,1.4) {$i_b=v_{be}/r_\pi$\\[2pt]$i_c=g_mv_{be}+v_{ce}/r_o$};
+\end{circuitikz}
+\caption{Modelo simplificado de baja frecuencia \diapo{2.20}: el que se usa para casi todos
+los cálculos de ganancia.}
+\label{fig:pi-simple}
+\end{figure}
+
+\begin{ejemplo}[parámetros en un punto de reposo]
+$I_C=\SI{1}{mA}$, $\beta=200$, $V_A=\SI{50}{V}$, $V_T=\SI{26}{mV}$:
+\[
+  g_m=\frac{\SI{1}{mA}}{\SI{26}{mV}}=\SI{38.5}{mS},\quad
+  r_\pi=\frac{200}{\SI{38.5}{mS}}=\SI{5.2}{k\ohm},\quad
+  r_o=\frac{\SI{50}{V}}{\SI{1}{mA}}=\SI{50}{k\ohm},\quad
+  r_\mu\approx\SI{10}{M\ohm}.
+\]
+Ganancia de tensión intrínseca máxima (emisor común sin carga):
+$|A_v|=g_mr_o=V_A/V_T\approx1900$. Notar que $g_m$ depende \emph{sólo} de la corriente de
+polarización, no del transistor: es una propiedad de la ley exponencial.
+\end{ejemplo}
+
+\subsection{Capacidades internas}
+
+Cada juntura tiene una capacidad de juntura (carga en la ZCE) y una de difusión (carga de
+minoritarios en exceso). En MAD \diapo{2.21}:
+\begin{itemize}
+  \item \textbf{Juntura C--B (inversa):} sólo capacidad de juntura,
+  $C_\mu(V_{CB}) = \dfrac{C_{\mu0}}{\left(1-V_{CB}/V_{bi}\right)^{n_c}}$, con $n_c\approx1/2$
+  (abrupta) a $1/3$ (gradual).
+  \item \textbf{Juntura E--B (directa):} capacidad de juntura $C_{je}$ (en directa la fórmula
+  diverge; se usa la aproximación $C_{je}\approx2C_{je0}$) más la capacidad de difusión de la
+  base, $C_b$.
+\end{itemize}
+
+\paragraph{Capacidad de difusión de la base.} La carga de huecos en exceso en la base (perfil
+triangular, figura~\ref{fig:perfiles}) es
+\[
+  Q_B = qA\,\frac{\Delta p_B(0)\,W}{2}
+  \qquad\text{y}\qquad
+  I_C = qA\,\frac{D_B\,\Delta p_B(0)}{W}
+  \quad\Longrightarrow\quad
+  Q_B = \tau_F\,I_C,\qquad \tau_F = \frac{W^2}{2D_B}.
+\]
+$\tau_F$ es el \textbf{tiempo de tránsito} por la base: el tiempo que tarda en promedio un
+hueco en cruzarla. Derivando respecto de $V_{EB}$:
+\begin{clave}[Capacidades del modelo \enhoja]
+\[
+  C_b = \frac{\dd Q_B}{\dd V_{EB}} = \tau_F\,\frac{\dd I_C}{\dd V_{EB}} = \tau_F\,g_m,
+  \qquad
+  C_\pi = C_b + C_{je} \approx \tau_F\frac{I_C}{V_T} + 2C_{je0}.
+\]
+\end{clave}
+
+\begin{ojo}[notación de la hoja y \diapo{2.21}]
+\begin{itemize}
+  \item En la hoja de fórmulas $C_b=\tau_B\,g_m$: ahí \textbf{$\tau_B$ es el tiempo de tránsito
+  por la base} ($=\tau_F=W^2/2D_B$), \emph{no} la vida media de los huecos en la base que
+  aparece en $L_B=\sqrt{D_B\tau_B}$. Son cantidades muy distintas: en el ejemplo, la vida media
+  es \SI{1}{\micro s} y el tránsito \SI{0.4}{ns}. Su cociente es justamente
+  $\tau_B^{vida}/\tau_F=2L_B^2/W^2\approx1/(1-\aT)$.
+  \item La expresión $C_{De}=\frac{qA}{V_T}(L_En_{E0}+L_Bp_{B0})e^{V_{EB}/V_T}$ de la diapositiva
+  es la de un \emph{diodo largo}; en la base angosta de un transistor el término de la base
+  se reemplaza por $\frac{qA}{V_T}\frac{W}{2}p_{B0}e^{V_{EB}/V_T}=\tau_Fg_m$, que es el que
+  usa la propia diapo más abajo. Lo mismo para $C_{Dc}$, que en MAD es despreciable.
+\end{itemize}
+\end{ojo}
+
+\subsection{Respuesta en frecuencia: \texorpdfstring{$f_\beta$}{f-beta} y \texorpdfstring{$f_T$}{fT}}
+
+Con la salida en cortocircuito ($v_{ce}=0$) y despreciando $r_b$ y $r_\mu$, la corriente de base
+se reparte entre $r_\pi$ y $C_\pi+C_\mu$:
+\[
+  v_{be} = \frac{i_b}{1/r_\pi+j\omega(C_\pi+C_\mu)},
+  \qquad
+  i_c \approx g_mv_{be}
+  \quad\Longrightarrow\quad
+  h_{fe}(f) = \frac{i_c}{i_b} = \frac{\beta}{1+jf/f_\beta},
+\]
+con
+\[
+  f_\beta = \frac{1}{2\pi r_\pi(C_\pi+C_\mu)} .
+\]
+
+\begin{clave}[Frecuencia de transición \enhoja]
+$|h_{fe}|$ cae a 1 en
+\[
+  f_T = \beta\,f_\beta = \frac{g_m}{2\pi\,(C_\pi+C_\mu)}
+  \;\le\; \frac{1}{2\pi\tau_F}\quad(\text{límite a corriente alta}).
+\]
+Por encima de $f_\beta$, $|h_{fe}|\approx f_T/f$: el producto ganancia $\times$ ancho de banda
+es constante e igual a $f_T$, un dato que dan todas las hojas de datos.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[
+  width=0.75\textwidth,height=5.8cm,
+  xmin=1e5,xmax=3e10,ymin=0.5,ymax=500,
+  xlabel={$f$ (Hz)},ylabel={$|h_{fe}|$},
+  grid=major,grid style={gray!25},
+]
+\addplot[azul,line width=1.3pt] table[x=f,y=hfe] {datos/hfe.dat};
+\addplot[gris,dashed,domain=1e7:4e9] {2e9/x};
+\draw[gris,dashed] (axis cs:1e7,0.5) -- (axis cs:1e7,141);
+\draw[gris,dashed] (axis cs:2e9,0.5) -- (axis cs:2e9,1);
+\node[font=\small,anchor=north west] at (axis cs:2e5,180) {$h_{fe0}=\beta=200$};
+\node[font=\small,anchor=north west] at (axis cs:1.1e7,0.9) {$f_\beta$};
+\node[font=\small,anchor=north west] at (axis cs:2.1e9,0.9) {$f_T$};
+\node[gris,font=\scriptsize,anchor=west,rotate=-38] at (axis cs:1.5e8,16) {$-20$ dB/década};
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Módulo de la ganancia de corriente de cortocircuito (ejemplo de la \diapo{2.33}:
+$h_{FE}=200$, $f_T=\SI{2}{GHz}$, por lo que $f_\beta=\SI{10}{MHz}$).}
+\label{fig:hfe}
+\end{figure}
+
+\begin{ejemplo}[$f_T$ del transistor del ejemplo]
+Con $W=\SI{1}{\micro m}$ y $D_B=\SI{12.4}{cm^2/s}$: $\tau_F=W^2/(2D_B)=\SI{0.40}{ns}$. A
+$I_C=\SI{1}{mA}$: $C_b=\tau_Fg_m=\SI{0.40}{ns}\times\SI{38.5}{mS}=\SI{15.4}{pF}$. Con
+$C_{je0}=\SI{1}{pF}$ ($C_{je}\approx\SI{2}{pF}$) y $C_\mu=\SI{0.5}{pF}$:
+\[
+  f_T=\frac{\SI{38.5}{mS}}{2\pi(\SI{17.4}{pF}+\SI{0.5}{pF})}\approx\SI{340}{MHz},
+  \qquad
+  \frac{1}{2\pi\tau_F}\approx\SI{400}{MHz}.
+\]
+Para llegar a GHz hace falta una base mucho más angosta ($\tau_F\propto W^2$): con
+$W=\SI{0.1}{\micro m}$, $\tau_F$ baja 100 veces.
+\end{ejemplo}
+
+\subsection{Otros modelos: parámetros Z, Y, H y G}
+
+Un cuadripolo lineal se describe con 4 parámetros, eligiendo cuáles variables son
+independientes \diapo{2.24--2.27}:
+\[
+  \text{Z: }\begin{bmatrix}V_1\\V_2\end{bmatrix}=\begin{bmatrix}z_{11}&z_{12}\\z_{21}&z_{22}\end{bmatrix}\begin{bmatrix}I_1\\I_2\end{bmatrix}
+  \qquad
+  \text{Y: }\begin{bmatrix}I_1\\I_2\end{bmatrix}=\begin{bmatrix}y_{11}&y_{12}\\y_{21}&y_{22}\end{bmatrix}\begin{bmatrix}V_1\\V_2\end{bmatrix}
+  \qquad
+  \text{H: }\begin{bmatrix}V_1\\I_2\end{bmatrix}=\begin{bmatrix}h_{11}&h_{12}\\h_{21}&h_{22}\end{bmatrix}\begin{bmatrix}I_1\\V_2\end{bmatrix}
+\]
+(G es el inverso de H.) Los parámetros \textbf{híbridos} (H) son los clásicos de las hojas de
+datos de transistores, porque se miden fácilmente (cortocircuito a la salida, circuito
+abierto a la entrada). En emisor común se escriben con subíndice $e$:
+
+\begin{table}[H]
+\centering\small
+\caption{Parámetros $h$ en emisor común y su relación con el híbrido-$\pi$ (baja frecuencia).}
+\label{tab:hparam}
+\begin{tabular}{llll}
+\toprule
+Parámetro & Definición & Significado & Híbrido-$\pi$ \\
+\midrule
+$h_{ie}=h_{11}$ & $v_{be}/i_b$ con $v_{ce}=0$ & impedancia de entrada & $r_b+r_\pi\approx r_\pi$ \\
+$h_{re}=h_{12}$ & $v_{be}/v_{ce}$ con $i_b=0$ & transferencia inversa de tensión & $r_\pi/r_\mu\sim10^{-4}$ \\
+$h_{fe}=h_{21}$ & $i_c/i_b$ con $v_{ce}=0$ & ganancia de corriente & $g_mr_\pi=\beta$ \\
+$h_{oe}=h_{22}$ & $i_c/v_{ce}$ con $i_b=0$ & admitancia de salida & $\approx1/r_o$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{ojo}[Giacoletto no es el modelo híbrido \diapo{2.28, 2.30}]
+Al híbrido-$\pi$ a veces se lo llama ``modelo híbrido'', pero son modelos distintos: el de
+Giacoletto tiene una fuente de corriente controlada por \emph{tensión} ($g_mv_\pi$) y elementos
+con significado físico ($r_\pi$, $r_o$, capacidades); el modelo H tiene una fuente controlada
+por \emph{corriente} ($h_{fe}i_b$) y parámetros medidos en un punto de trabajo. La conversión
+entre ambos es directa (tabla~\ref{tab:hparam}). Los parámetros $h$ dependen del punto de
+trabajo y de la temperatura: los fabricantes dan curvas de corrección normalizadas
+\diapo{2.31--2.32}.
+\end{ojo}
+
+\subsection{\texorpdfstring{$h_{FE}$ vs.\ $h_{fe}$}{hFE vs hfe}}
+
+\begin{itemize}
+  \item $\beta_{DC}=h_{FE}=I_C/I_B$: cociente de continuas en el punto $Q$.
+  \item $\beta_{ac}=h_{fe}=\Delta i_C/\Delta i_B$: pendiente (cociente de variaciones).
+\end{itemize}
+Derivando $I_C=\beta_{DC}(I_C)\,I_B$ se obtiene
+\[
+  \beta_{ac} = \frac{\beta_{DC}}{1-\dfrac{I_C}{\beta_{DC}}\dfrac{\dd\beta_{DC}}{\dd I_C}} .
+\]
+Si $\beta_{DC}$ fuera constante ambos coincidirían. En la materia se toma
+$\beta=\beta_{DC}=\beta_{ac}$ \diapo{2.29}.
+
+\begin{ojo}[\diapo{2.29}]
+``$\beta_{ac}$ es levemente inferior al $\beta$ de continua'' sólo vale donde $\beta_{DC}$
+\emph{decrece} con $I_C$ (corrientes altas, figura~\ref{fig:gummel}). A corrientes bajas, donde
+$\beta_{DC}$ crece con $I_C$, resulta $\beta_{ac}>\beta_{DC}$.
+\end{ojo}

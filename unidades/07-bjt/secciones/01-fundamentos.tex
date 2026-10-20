@@ -1,0 +1,241 @@
+% =====================================================================
+\section{Fundamentos}
+% =====================================================================
+
+\subsection{Un poco de historia}
+
+El primer transistor (de punta de contacto, sobre germanio) lo construyeron Bardeen y
+Brattain en los Bell Labs en diciembre de 1947; Shockley propuso poco después el
+transistor \emph{de juntura}, que es el que estudiamos. Los tres recibieron el Nobel de
+Física en 1956 \diapo{1.2--3}. El transistor reemplazó a las válvulas de vacío: funciona con
+menos tensión, es más chico, robusto y barato, y se puede integrar.
+
+\subsection{Estructura, símbolo y convenciones}
+
+Un BJT son \textbf{dos junturas PN muy próximas} que comparten una región central angosta,
+la \textbf{base}. En un PNP: emisor p$^+$, base n, colector p. El dopaje es deliberadamente
+asimétrico:
+\[
+  N_E \gg N_B > N_C
+  \qquad(\text{típico: } \SI{e18}{} \text{ -- } \SI{e19}{},\ \SI{e16}{} \text{ -- } \SI{e17}{},\
+  \SI{e15}{} \text{ -- } \SI{e16}{cm^{-3}}).
+\]
+El emisor ``emite'' (inyecta) portadores en la base y el colector los ``colecta''. Por eso
+el dispositivo \emph{no es simétrico}: intercambiar emisor y colector da un transistor mucho
+peor (modo inverso).
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.95]
+  \fill[rojoclaro] (0,0) rectangle (2.4,1.4);
+  \fill[azulclaro] (2.4,0) rectangle (3.4,1.4);
+  \fill[rojo!8] (3.4,0) rectangle (6.4,1.4);
+  \draw (0,0) rectangle (6.4,1.4) (2.4,0) -- (2.4,1.4) (3.4,0) -- (3.4,1.4);
+  \node at (1.2,0.95) {p$^+$}; \node[font=\scriptsize] at (1.2,0.45) {emisor};
+  \node at (2.9,0.95) {n}; \node[font=\scriptsize] at (2.9,0.45) {base};
+  \node at (4.9,0.95) {p}; \node[font=\scriptsize] at (4.9,0.45) {colector};
+  \draw (0,0.7) -- (-0.6,0.7) node[left] {E};
+  \draw (6.4,0.7) -- (7.0,0.7) node[right] {C};
+  \draw (2.9,0) -- (2.9,-0.6) node[below] {B};
+  \draw[<->] (2.4,1.65) -- node[above,font=\small] {$W_B$} (3.4,1.65);
+  \node[font=\scriptsize,anchor=east] at (2.35,-0.35) {J$_{E}$ (E--B)};
+  \node[font=\scriptsize,anchor=west] at (3.45,-0.35) {J$_{C}$ (C--B)};
+\end{tikzpicture}
+\end{minipage}%
+\begin{minipage}{0.46\textwidth}
+\centering
+\begin{circuitikz}[scale=0.9,transform shape]
+  \draw (0,0) node[pnp](Q){};
+  \draw (Q.E) -- ++(0,0.4) node[above] {E};
+  \draw (Q.C) -- ++(0,-0.4) node[below] {C};
+  \draw (Q.B) -- ++(-0.4,0) node[left] {B};
+  \draw[flecha,azul] ($(Q.E)+(0.3,0.5)$) -- node[right,font=\small] {$I_E$} ($(Q.E)+(0.3,0.05)$);
+  \draw[flecha,azul] ($(Q.C)+(0.3,-0.05)$) -- node[right,font=\small] {$I_C$} ($(Q.C)+(0.3,-0.5)$);
+  \draw[flecha,azul] ($(Q.B)+(-0.2,0.25)$) -- node[above,font=\small] {$I_B$} ($(Q.B)+(-0.8,0.25)$);
+  \begin{scope}[xshift=3.2cm]
+  \draw (0,0) node[npn](Q2){};
+  \draw (Q2.C) -- ++(0,0.4) node[above] {C};
+  \draw (Q2.E) -- ++(0,-0.4) node[below] {E};
+  \draw (Q2.B) -- ++(-0.4,0) node[left] {B};
+  \node[font=\small\bfseries] at (0,-2.0) {NPN};
+  \end{scope}
+  \node[font=\small\bfseries] at (0,-2.0) {PNP};
+\end{circuitikz}
+\end{minipage}
+\caption{Estructura de un PNP (no está a escala: la base es mucho más angosta) y símbolos
+\diapo{1.4}. La flecha del símbolo está en el emisor y apunta en el sentido de la corriente
+convencional por la juntura E--B en directa: hacia adentro en el PNP, hacia afuera en el NPN.}
+\label{fig:estructura}
+\end{figure}
+
+\begin{clave}[Convenciones (PNP)]
+\[
+  I_E = I_C + I_B,
+  \qquad
+  V_{EC} = V_{EB} + V_{BC} = V_{EB} - V_{CB}.
+\]
+$I_E$ entra por el emisor; $I_C$ e $I_B$ salen por colector y base. En funcionamiento normal
+todas son positivas. Las tensiones $V_{EB}$ y $V_{CB}$ se miden respecto de la base.
+\end{clave}
+
+\paragraph{Configuraciones \diapo{1.5}.} El transistor tiene tres terminales, pero un circuito
+amplificador tiene una malla de entrada y una de salida (cuatro terminales): uno de los tres
+terminales es \textbf{común} a ambas. Hay entonces tres configuraciones: \emph{base común}
+(entrada E, salida C), \emph{emisor común} (entrada B, salida C, la más usada) y
+\emph{colector común} (entrada B, salida E; seguidor de emisor).
+
+\subsection{Regiones de operación}
+
+Cada juntura puede estar en directa o en inversa, lo que da cuatro regiones \diapo{1.6}:
+
+\begin{table}[H]
+\centering\small
+\caption{Regiones de operación del BJT (PNP: ``directa'' en E--B significa $V_{EB}>0$; en
+C--B, $V_{CB}>0$).}
+\label{tab:regiones}
+\begin{tabular}{lccl}
+\toprule
+Región & Juntura E--B & Juntura C--B & Uso \\
+\midrule
+\textbf{Activa directa (MAD)} & directa & inversa & amplificación \\
+Saturación                   & directa & directa & llave cerrada \\
+Corte                        & inversa & inversa & llave abierta \\
+Activa inversa (MAI)         & inversa & directa & casi no se usa (ganancia muy baja) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{¿Es lo mismo que dos diodos enfrentados?}
+
+\textbf{No} \diapo{1.7}. Con dos diodos discretos unidos por un cable, la corriente del diodo
+E--B (en directa) se recombina en el cable y en las zonas neutras: al diodo C--B (en
+inversa) sólo le llega su pequeña corriente de saturación. El efecto transistor aparece
+porque la base es \textbf{mucho más angosta que la longitud de difusión} de sus
+minoritarios ($W\ll L_B$): los huecos que el emisor inyecta en la base la cruzan por
+difusión \emph{casi sin recombinarse} y llegan a la juntura C--B, donde el campo los barre al
+colector. Así, una juntura en inversa conduce una corriente grande, controlada por la
+tensión de la otra juntura.
+
+\subsection{Diagramas de bandas}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.95cm,y=1cm]
+  % ---------- equilibrio ----------
+  \node[font=\small\bfseries,anchor=west] at (-0.3,3.6) {(a) Equilibrio};
+  \draw[bandac] (0,2.0) -- (2,2.0) to[out=0,in=180] (3,3.0) -- (4.2,3.0) to[out=0,in=180] (5.2,2.0) -- (7.5,2.0) node[right,font=\small] {$\Ec$};
+  \draw[bandav] (0,0.9) -- (2,0.9) to[out=0,in=180] (3,1.9) -- (4.2,1.9) to[out=0,in=180] (5.2,0.9) -- (7.5,0.9) node[right,font=\small] {$\Ev$};
+  \draw[fermi] (0,1.0) -- (7.5,1.0);
+  \node[font=\scriptsize,anchor=east] at (0,1.05) {$\EF$};
+  \foreach \x in {0.3,0.7,1.1,1.5} \node[hueco] at (\x,0.85) {};
+  \foreach \x in {5.6,6.2,6.8} \node[hueco] at (\x,0.85) {};
+  \foreach \x in {3.2,3.6,4.0} \node[elec] at (\x,3.05) {};
+  \node[font=\scriptsize] at (1,0.3) {E (p$^+$)}; \node[font=\scriptsize] at (3.6,0.3) {B (n)};
+  \node[font=\scriptsize] at (6.3,0.3) {C (p)};
+  % ---------- MAD ----------
+  \begin{scope}[xshift=8.4cm]
+  \node[font=\small\bfseries,anchor=west] at (-0.3,3.6) {(b) Activa directa};
+  \draw[bandac] (0,2.0) -- (2,2.0) to[out=0,in=180] (2.8,2.55) -- (4.2,2.55) to[out=0,in=180] (5.6,0.6) -- (7.5,0.6);
+  \draw[bandav] (0,0.9) -- (2,0.9) to[out=0,in=180] (2.8,1.45) -- (4.2,1.45) to[out=0,in=180] (5.6,-0.5) -- (7.5,-0.5);
+  \draw[fermi] (0,1.0) -- (2,1.0);
+  \draw[fermi] (5.6,-0.4) -- (7.5,-0.4);
+  \foreach \x in {0.3,0.7,1.1,1.5} \node[hueco] at (\x,0.85) {};
+  \draw[flecha,colHueco,line width=0.9pt] (1.4,1.05) to[out=20,in=180] (2.8,1.3) -- (4.0,1.3) to[out=0,in=150] (5.3,-0.2);
+  \node[colHueco,font=\scriptsize,align=center] at (3.5,0.65) {huecos inyectados\\cruzan la base};
+  \node[font=\scriptsize] at (1,0.3) {E}; \node[font=\scriptsize] at (3.5,3.0) {B};
+  \node[font=\scriptsize] at (6.6,-1.0) {C};
+  \node[font=\scriptsize,align=center,gris] at (1.6,-0.4) {barrera E--B\\baja $qV_{EB}$};
+  \node[font=\scriptsize,align=center,gris] at (6.6,1.6) {barrera C--B\\sube $q|V_{CB}|$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Diagrama de bandas de un PNP \diapo{1.8--1.10}. Los huecos tienen más energía cuanto
+más \emph{abajo} están en el diagrama: en MAD ``caen hacia arriba'' desde el emisor hacia la
+base (barrera reducida) y luego ``ruedan'' por la pendiente de la juntura C--B hacia el
+colector. En la base no hay campo (es neutra): los huecos la cruzan por \textbf{difusión}.}
+\label{fig:bandas}
+\end{figure}
+
+\subsection{Flujos de portadores en activa directa}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[rojoclaro] (0,0) rectangle (3.2,3.2);
+  \fill[gris!20] (3.2,0) rectangle (3.6,3.2);
+  \fill[azulclaro] (3.6,0) rectangle (5.6,3.2);
+  \fill[gris!20] (5.6,0) rectangle (6.4,3.2);
+  \fill[rojo!8] (6.4,0) rectangle (9.6,3.2);
+  \draw (0,0) rectangle (9.6,3.2);
+  \foreach \x in {3.2,3.6,5.6,6.4} \draw[densely dashed] (\x,0) -- (\x,3.2);
+  \node[font=\small] at (1.2,3.45) {E (p$^+$)}; \node[font=\small] at (4.6,3.45) {B (n)};
+  \node[font=\small] at (8.4,3.45) {C (p)};
+  \draw[<->] (3.6,-0.25) -- node[below,font=\small,pos=0.3] {$W$} (5.6,-0.25);
+  \draw[<->] (3.2,-0.85) -- node[below,font=\small,pos=0.25] {$W_B$} (6.4,-0.85);
+  % huecos emitidos -> colector (I_Ep -> I_Cp)
+  \foreach \y in {2.8,2.5,2.2} \draw[flecha,colHueco,line width=0.9pt] (1.6,\y) -- (8.2,\y);
+  \node[colHueco,font=\small,anchor=east] at (1.55,2.5) {$I_{Ep}$};
+  \node[colHueco,font=\small,anchor=west] at (8.25,2.5) {$I_{Cp}$};
+  % hueco que se recombina en la base
+  \draw[flecha,colHueco,line width=0.9pt] (1.6,1.75) -- (4.6,1.75);
+  \node[hueco] at (4.75,1.75) {}; \node[elec] at (4.75,1.45) {};
+  \draw[flecha,colElec] (4.75,-0.55) -- (4.75,1.3);
+  \node[colElec,font=\scriptsize,anchor=west,fill=azulclaro,inner sep=1pt] at (4.8,1.2) {$I_{B2}$};
+  % electrones base -> emisor (I_En)
+  \draw[flecha,colElec,line width=0.9pt] (4.2,1.05) -- (0.3,1.05);
+  \node[colElec,font=\small,anchor=south west] at (0.3,1.05) {$I_{En}=I_{B1}$};
+  % electrones colector -> base (I_Cn)
+  \draw[flecha,colElec,line width=0.9pt] (9.3,0.45) -- (5.2,0.45);
+  \node[colElec,font=\small,anchor=south east] at (9.3,0.45) {$I_{Cn}=I_{B3}$};
+  % terminales
+  \draw[line width=1.5pt] (0,0) -- (0,3.2) (9.6,0) -- (9.6,3.2);
+  \draw (4.75,0) -- (4.75,-1.9) node[below] {B};
+  \draw[flecha] (5.05,-1.4) -- node[right,font=\small] {$I_B$} (5.05,-1.85);
+  \draw (0,1.6) -- (-0.7,1.6) node[left] {E};
+  \draw[flecha] (-0.7,1.9) -- node[above,font=\small] {$I_E$} (-0.1,1.9);
+  \draw (9.6,1.6) -- (10.3,1.6) node[right] {C};
+  \draw[flecha] (9.7,1.9) -- node[above,font=\small] {$I_C$} (10.3,1.9);
+\end{tikzpicture}
+\caption{Componentes de corriente en un PNP en activa directa (Pierret, fig.~10.6 y
+\diapo{1.11, 1.17}). Las flechas indican el movimiento de los portadores; la corriente de
+electrones tiene sentido opuesto a su movimiento.}
+\label{fig:flujos}
+\end{figure}
+
+\begin{itemize}
+  \item $I_{Ep}$: huecos inyectados del emisor a la base. \textbf{Es la componente útil.}
+  \item $I_{Cp}$: la parte de $I_{Ep}$ que llega al colector ($I_{Cp}\lesssim I_{Ep}$).
+  \item $I_{B2}=I_{Ep}-I_{Cp}=I_{RB}$: huecos que se recombinan en la base; la base tiene que
+  aportar los electrones para esa recombinación.
+  \item $I_{En}=I_{B1}$: electrones inyectados de la base al emisor. Es inevitable (la juntura
+  E--B en directa inyecta en ambos sentidos) pero \emph{no sirve}: se busca minimizarla con
+  $N_E\gg N_B$.
+  \item $I_{Cn}=I_{B3}$: corriente inversa de la juntura C--B (electrones térmicos del
+  colector que pasan a la base). Muy chica.
+\end{itemize}
+
+\begin{clave}[Balance de corrientes]
+\[
+  I_E = I_{Ep}+I_{En},\qquad I_C = I_{Cp}+I_{Cn},\qquad
+  I_B = I_{En} + (I_{Ep}-I_{Cp}) - I_{Cn} = I_{B1}+I_{B2}-I_{B3}.
+\]
+\end{clave}
+
+\begin{intuicion}[una corriente chica controla una grande]
+En un PNP, la corriente de base está formada por \emph{electrones} (los que van al emisor y
+los que se recombinan), mientras que la corriente principal emisor--colector son
+\emph{huecos} \diapo{1.18}. Con un buen diseño $I_B$ es 100 a 300 veces menor que $I_C$.
+Ojo con la interpretación: lo que controla físicamente a $I_C$ es la \textbf{tensión}
+$V_{EB}$, que fija la altura de la barrera y por lo tanto cuántos huecos se inyectan
+($I_C\propto e^{V_{EB}/V_T}$). Que $I_C=\beta I_B$ es una consecuencia: $I_B$ y $I_C$ crecen
+juntas con $V_{EB}$, en una proporción fija.
+\end{intuicion}
+
+\begin{ojo}[``el BJT es un dispositivo controlado por corriente'' \diapo{1.31, 2.34}]
+Es una descripción \emph{de circuito} útil (modelo con $\beta$), no la física del dispositivo.
+La corriente de colector depende exponencialmente de $V_{EB}$ y \emph{no} de $I_B$ en sí
+misma; por eso la transconductancia $g_m=I_C/V_T$ es tan grande y el modelo de pequeña señal
+usa una fuente controlada por \emph{tensión} ($g_mv_{eb}$). La diferencia práctica con el FET
+es que el BJT \emph{necesita} una corriente de entrada ($I_B\neq0$) para funcionar.
+\end{ojo}

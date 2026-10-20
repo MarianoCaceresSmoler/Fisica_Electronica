@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\input{../../comun/preambulo.tex}
+\unidad{Unidades 7 y 8 -- Transistor bipolar (BJT)}
+
+\newcommand{\IFO}{I_{F0}}
+\newcommand{\IRO}{I_{R0}}
+\newcommand{\aF}{\alpha_F}
+\newcommand{\aR}{\alpha_R}
+\newcommand{\aT}{\alpha_T}
+\newcommand{\bdc}{\beta_{dc}}
+\newcommand{\adc}{\alpha_{dc}}
+\newcommand{\eVEB}{\left(e^{V_{EB}/V_T}-1\right)}
+\newcommand{\eVCB}{\left(e^{V_{CB}/V_T}-1\right)}
+
+\title{\color{azul}\textbf{Transistor bipolar de juntura (BJT)}\\[0.3em]
+  \large Funcionamiento, Ebers--Moll, efectos secundarios, saturación y modelos de pequeña señal}
+\author{Física Electrónica -- Resumen de las unidades 7 y 8}
+\date{Basado en las clases (BJT 1.\textsuperscript{a} y 2.\textsuperscript{a} parte) y en Pierret,
+\emph{Semiconductor Device Fundamentals}, caps.~10, 11 y 12}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{tcolorbox}[base,colback=white,colframe=gris,title={Cómo leer este apunte}]
+\small
+\begin{itemize}
+  \item Cajas \textcolor{azul}{\textbf{azules}}: definiciones; \textcolor{verde}{\textbf{verdes}}: resultados
+  clave; \textcolor{naranja}{\textbf{naranjas}}: intuición física; \textcolor{violeta}{\textbf{violetas}}: ejemplos;
+  \textcolor{rojo}{\textbf{rojas}} (\emph{Ojo}): errores o imprecisiones de las diapositivas y confusiones típicas.
+  \item \diapo{1.n} y \diapo{2.n} indican la diapositiva $n$ de la 1.\textsuperscript{a} o 2.\textsuperscript{a}
+  presentación de BJT.
+  \item El sello \enhojatexto{} indica que el resultado figura en la hoja de fórmulas oficial.
+  \item \textbf{Se trabaja con un transistor PNP}, igual que la hoja de fórmulas y Pierret. Algunas
+  diapositivas (tomadas de Sedra--Smith) usan NPN: la traducción está en la tabla~\ref{tab:pnp-npn}.
+  \item Los ejemplos numéricos usan los valores de la \emph{tabla de constantes} de la materia.
+\end{itemize}
+\end{tcolorbox}
+
+\tableofcontents
+\newpage
+
+\input{secciones/01-fundamentos}
+\input{secciones/02-analisis-formal}
+\input{secciones/03-parametros}
+\input{secciones/04-ebers-moll}
+\input{secciones/05-caracteristicas}
+\input{secciones/06-efectos-secundarios}
+\input{secciones/07-saturacion}
+\input{secciones/08-pequena-senal}
+\input{secciones/09-resumen}
+
+\end{document}

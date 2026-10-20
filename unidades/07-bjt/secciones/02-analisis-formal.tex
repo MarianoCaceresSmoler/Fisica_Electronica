@@ -1,0 +1,225 @@
+% =====================================================================
+\section{Análisis formal del transistor ideal}
+\label{sec:formal}
+% =====================================================================
+
+El objetivo es obtener las corrientes $I_E$, $I_C$, $I_B$ en función de $V_{EB}$ y $V_{CB}$.
+El método es el mismo que para el diodo ideal: resolver la ecuación de difusión de
+minoritarios en cada región cuasineutra y evaluar las corrientes de difusión en los bordes
+de las zonas de carga espacial.
+
+\subsection{Hipótesis y notación}
+
+\begin{itemize}
+  \item Unidimensional, estado estacionario, dopajes uniformes en cada región.
+  \item Baja inyección en todas las regiones; sin generación ni recombinación en las ZCE.
+  \item Sin campo en las regiones cuasineutras: los minoritarios se mueven sólo por difusión.
+  \item Emisor y colector ``largos'' (mucho más anchos que $L_E$, $L_C$).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[rojoclaro] (0,0) rectangle (4,1.2);
+  \fill[gris!20] (4,0) rectangle (4.5,1.2);
+  \fill[azulclaro] (4.5,0) rectangle (7,1.2);
+  \fill[gris!20] (7,0) rectangle (7.8,1.2);
+  \fill[rojo!8] (7.8,0) rectangle (11.8,1.2);
+  \draw (0,0) rectangle (11.8,1.2);
+  \node at (2,0.6) {Emisor p$^+$}; \node at (5.75,0.6) {Base n}; \node at (9.8,0.6) {Colector p};
+  \draw[flecha] (4,-0.4) -- (1.2,-0.4) node[left] {$x''$};
+  \node[below] at (4,-0.45) {$0$};
+  \draw[flecha] (4.5,-1.1) -- (7.5,-1.1) node[right] {$x$};
+  \node[below] at (4.5,-1.15) {$0$}; \node[below] at (7,-1.15) {$W$};
+  \draw (7,-1.0) -- (7,-1.2);
+  \draw[flecha] (7.8,-0.4) -- (10.6,-0.4) node[right] {$x'$};
+  \node[below] at (7.8,-0.45) {$0$};
+  \draw[<->] (4,1.45) -- node[above,font=\small] {$W_B$ (metalúrgico)} (7.8,1.45);
+  \node[font=\scriptsize,align=left,anchor=north west] at (0,-1.7) {%
+    $N_E=N_{AE}$, $D_E=D_N$, $\tau_E=\tau_n$, $L_E=L_N$, $n_{E0}=n_i^2/N_E$};
+  \node[font=\scriptsize,align=left,anchor=north west] at (0,-2.15) {%
+    $N_B=N_{DB}$, $D_B=D_P$, $\tau_B=\tau_p$, $L_B=L_P$, $p_{B0}=n_i^2/N_B$};
+  \node[font=\scriptsize,align=left,anchor=north west] at (0,-2.6) {%
+    $N_C=N_{AC}$, $D_C=D_N$, $\tau_C=\tau_n$, $L_C=L_N$, $n_{C0}=n_i^2/N_C$};
+\end{tikzpicture}
+\caption{Coordenadas y notación \diapo{1.12} (Pierret, fig.~11.2). Cada región tiene su propio
+eje con origen en el borde de la ZCE; $x''$ crece hacia el contacto de emisor y $x'$ hacia el de
+colector. $W$ es el ancho \emph{cuasineutro} de la base.}
+\label{fig:coordenadas}
+\end{figure}
+
+\begin{ojo}[$W\neq W_B$ \diapo{1.12, 1.16}]
+\[
+  W = W_B - x_{nEB} - x_{nCB}
+\]
+$W_B$ es el ancho metalúrgico (entre junturas) y $W$ el ancho \emph{cuasineutro}, lo que queda
+después de restar la parte de las dos ZCE que penetra en la base. $W$ \textbf{depende de las
+tensiones aplicadas}: es el origen del efecto Early (sección~\ref{sec:early}).
+\end{ojo}
+
+\subsection{Emisor}
+
+Ecuación de difusión (estacionaria, sin generación) y condiciones de contorno:
+\[
+  0 = D_E\frac{\dd^2\Delta n_E}{\dd x''^2} - \frac{\Delta n_E}{\tau_E},
+  \qquad
+  \Delta n_E(0) = n_{E0}\eVEB,
+  \qquad
+  \Delta n_E(x''\to\infty)=0 .
+\]
+La primera condición es la \textbf{ley de la juntura} aplicada a E--B. La solución es la del
+diodo largo:
+\[
+  \Delta n_E(x'') = n_{E0}\eVEB e^{-x''/L_E},
+  \qquad L_E=\sqrt{D_E\tau_E}.
+\]
+La corriente de electrones (que fluye en el sentido $+x$, de E hacia B, igual que $I_E$) es
+\[
+  I_{En} = -qAD_E\left.\frac{\dd\Delta n_E}{\dd x''}\right|_{x''=0}
+         = qA\frac{D_E}{L_E}\,n_{E0}\eVEB .
+\]
+
+\subsection{Colector}
+
+Análogamente, con la ley de la juntura en C--B:
+\[
+  \Delta n_C(x') = n_{C0}\eVCB e^{-x'/L_C},
+\]
+\[
+  I_{Cn} = qAD_C\left.\frac{\dd\Delta n_C}{\dd x'}\right|_{x'=0}
+         = -qA\frac{D_C}{L_C}\,n_{C0}\eVCB .
+\]
+En MAD $V_{CB}<0$, el paréntesis vale $\approx-1$ e $I_{Cn}\approx+qA(D_C/L_C)n_{C0}$: una
+corriente de saturación inversa, chica y positiva.
+
+\begin{ojo}[signo de $I_{Cn}$ \diapo{1.14}]
+La diapositiva escribe $I_{Cn}=-qAD_C\,\dd\Delta n_C/\dd x'$, pero el resultado final que
+muestra ($-qA\frac{D_C}{L_C}n_{C0}(\cdots)$, que coincide con la hoja) corresponde a
+$+qAD_C\,\dd\Delta n_C/\dd x'$. La corriente de electrones en la dirección $+x'$ es
+$J_n=+qD_n\,\dd n/\dd x'$; el signo menos aparece en el emisor porque allí $x''$ apunta al revés.
+\end{ojo}
+
+\subsection{Base}
+
+\[
+  0 = D_B\frac{\dd^2\Delta p_B}{\dd x^2} - \frac{\Delta p_B}{\tau_B},
+  \qquad
+  \Delta p_B(0) = p_{B0}\eVEB,
+  \qquad
+  \Delta p_B(W) = p_{B0}\eVCB .
+\]
+Ahora la región es \emph{corta} (ancho finito $W$) y hay una condición en cada borde. La
+solución general $Ae^{x/L_B}+Be^{-x/L_B}$, escrita con funciones hiperbólicas
+($\sinh x=\frac{e^x-e^{-x}}{2}$, $\cosh x=\frac{e^x+e^{-x}}{2}$), queda
+\begin{equation}
+  \Delta p_B(x) = \Delta p_B(0)\,\frac{\sinh\left[(W-x)/L_B\right]}{\sinh(W/L_B)}
+                + \Delta p_B(W)\,\frac{\sinh(x/L_B)}{\sinh(W/L_B)} .
+  \label{eq:pB-exacta}
+\end{equation}
+(Es fácil verificar las condiciones de contorno: en $x=0$ el segundo término se anula y el
+primero vale $\Delta p_B(0)$; en $x=W$, al revés.)
+
+Las corrientes de huecos en los bordes son corrientes de difusión, $I_p=-qAD_B\,\dd\Delta p_B/\dd x$:
+
+\begin{clave}[Corrientes de huecos en la base \enhoja]
+\[
+  I_{Ep} = qA\frac{D_B}{L_B}p_{B0}\left[\frac{e^{V_{EB}/V_T}-1}{\tanh(W/L_B)}
+         - \frac{e^{V_{CB}/V_T}-1}{\sinh(W/L_B)}\right]
+\]
+\[
+  I_{Cp} = qA\frac{D_B}{L_B}p_{B0}\left[\frac{e^{V_{EB}/V_T}-1}{\sinh(W/L_B)}
+         - \frac{e^{V_{CB}/V_T}-1}{\tanh(W/L_B)}\right]
+\]
+\end{clave}
+
+\begin{ojo}[signo de las corrientes de huecos \diapo{1.15--1.16}]
+La diapositiva 15 dice ``condiciones de contorno en el colector'' para las de la base. Y en
+la 16 se escribe $I_{Ep}=+qAD_B\,\dd\Delta p_B/\dd x|_{x=0}$: falta el signo menos de la
+corriente de difusión ($J_p=-qD_p\,\dd p/\dd x$). Como $\Delta p_B$ \emph{decrece} con $x$, la
+derivada es negativa y la corriente es positiva. Los resultados finales de la diapo son
+correctos.
+\end{ojo}
+
+\subsection{Corrientes en los terminales}
+
+\begin{clave}[Corrientes del BJT ideal \enhoja]
+\[
+  I_E = I_{Ep}+I_{En},\qquad I_C = I_{Cp}+I_{Cn},\qquad
+  I_B = I_E - I_C = I_{En}+I_{RB}-I_{Cn},\quad I_{RB}=I_{Ep}-I_{Cp}.
+\]
+\end{clave}
+
+\subsection{Aproximación de base angosta}
+\label{sec:base-angosta}
+
+En un transistor real $W\ll L_B$ (típicamente $W\sim\SI{1}{\micro m}$ y $L_B\sim$ decenas
+de \si{\micro m}). Con $\sinh u\approx u$, $\cosh u\approx 1+u^2/2$ para $u\ll1$,
+\eqref{eq:pB-exacta} se vuelve una \textbf{recta}:
+\begin{equation}
+  \Delta p_B(x) \simeq \Delta p_B(0)\left(1-\frac{x}{W}\right) + \Delta p_B(W)\,\frac{x}{W}
+  \qquad\text{\enhojatexto}
+  \label{eq:pB-lineal}
+\end{equation}
+Físicamente: si casi no hay recombinación, la corriente de difusión es la misma en toda la
+base, y eso exige un gradiente constante.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.9\textwidth,height=6.2cm,
+  xmin=-3.2,xmax=4.4,ymin=-0.08,ymax=1.15,
+  axis lines=none,clip=false,
+]
+% zonas
+\fill[rojoclaro] (axis cs:-3.2,-0.08) rectangle (axis cs:-0.3,1.15);
+\fill[gris!20] (axis cs:-0.3,-0.08) rectangle (axis cs:0,1.15);
+\fill[azulclaro] (axis cs:0,-0.08) rectangle (axis cs:1,1.15);
+\fill[gris!20] (axis cs:1,-0.08) rectangle (axis cs:1.5,1.15);
+\fill[rojo!8] (axis cs:1.5,-0.08) rectangle (axis cs:4.4,1.15);
+\draw (axis cs:-3.2,0) -- (axis cs:4.4,0);
+% base: exacta (con W/L=1 exagerado) y lineal
+\addplot[colHueco,line width=1.3pt,domain=0:1] {1-x};
+\addplot[colHueco,dashed,line width=1pt,domain=0:1,samples=40] {sinh(1.6*(1-x))/sinh(1.6)};
+% emisor: electrones (escala distinta)
+\addplot[colElec,line width=1.3pt,domain=-3.2:-0.3,samples=60] {0.35*exp((x+0.3)/0.8)};
+% colector: deficit de electrones (negativo pequeño)
+\addplot[colElec,line width=1.3pt,domain=1.5:4.4,samples=60] {-0.06*exp(-(x-1.5)/0.7)};
+\node[colHueco,font=\scriptsize,anchor=south west] at (axis cs:0.12,0.82) {$\Delta p_B(x)$};
+\node[colHueco,font=\scriptsize,align=left,anchor=west] at (axis cs:0.55,0.62) {recta si $W\ll L_B$\\(punteada: $W\sim L_B$)};
+\node[colElec,font=\scriptsize,anchor=south] at (axis cs:-1.6,0.16) {$\Delta n_E(x'')$};
+\node[colElec,font=\scriptsize,anchor=north] at (axis cs:2.9,-0.03) {$\Delta n_C(x')\approx-n_{C0}$};
+\node[font=\scriptsize,anchor=east] at (axis cs:0,1.0) {$\Delta p_B(0)$};
+\node[font=\small] at (axis cs:-1.75,1.07) {E}; \node[font=\small] at (axis cs:0.5,1.07) {B};
+\node[font=\small] at (axis cs:2.95,1.07) {C};
+\node[font=\scriptsize,anchor=north] at (axis cs:0,-0.08) {$0$};
+\node[font=\scriptsize,anchor=north] at (axis cs:1,-0.08) {$W$};
+\end{axis}
+\end{tikzpicture}
+\caption{Excesos de minoritarios en MAD (Pierret, fig.~11.3; \diapo{2.1}). Las escalas de
+cada región son distintas: como $N_E\gg N_B$, $n_{E0}\ll p_{B0}$ y la inyección hacia el emisor
+es mucho menor. En el colector (inversa) hay un pequeño \emph{defecto} de electrones.}
+\label{fig:perfiles}
+\end{figure}
+
+En MAD ($V_{CB}\ll -V_T$, $\Delta p_B(W)\approx-p_{B0}\approx0$) la corriente de colector
+queda
+\[
+  I_C \simeq I_{Cp} \simeq qA\frac{D_B}{W}\,p_{B0}\,e^{V_{EB}/V_T}
+     = \underbrace{\frac{qAD_Bn_i^2}{N_BW}}_{I_S}\,e^{V_{EB}/V_T}.
+\]
+Dos conclusiones importantes:
+\begin{enumerate}
+  \item $I_C$ depende exponencialmente de $V_{EB}$ y es \textbf{independiente de $V_{CB}$}
+  (mientras C--B esté en inversa) \diapo{1.10}.
+  \item $I_C\propto 1/W$: si $W$ cambia con la tensión, cambia $I_C$ (efecto Early).
+\end{enumerate}
+
+\paragraph{Diodo corto \diapo{1.30}.} Si además el emisor y el colector son más cortos que
+sus longitudes de difusión (lo habitual en transistores integrados), se puede despreciar la
+recombinación en las tres regiones: todos los perfiles son rectas y en las expresiones
+$L_E\to W_E'$, $L_C\to W_C'$ (anchos cuasineutros de emisor y colector), por ejemplo
+\[
+  I_{F0} = qAn_i^2\left(\frac{D_E}{N_EW_E'}+\frac{D_B}{N_BW}\right).
+\]
+Los anchos son parámetros de diseño mucho más controlables que las longitudes de difusión.

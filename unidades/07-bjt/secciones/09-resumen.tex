@@ -1,0 +1,108 @@
+% =====================================================================
+\section{Resumen y repaso}
+% =====================================================================
+
+\subsection{Las regiones de un vistazo (PNP)}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Región & Condición & Modelo & Valores típicos (Si) \\
+\midrule
+Activa directa & $V_{EB}>0$, $V_{CB}<0$ & $I_C=\beta I_B=I_Se^{V_{EB}/V_T}(1+V_{EC}/V_A)$ & $V_{EB}\approx\SIrange{0.6}{0.7}{V}$ \\
+Saturación & $V_{EB}>0$, $V_{CB}>0$ & $I_C<\beta I_B$, fijada por el circuito & $V_{EC,sat}\approx\SIrange{0.05}{0.2}{V}$ \\
+Corte & $V_{EB}<0$, $V_{CB}<0$ & $I_C\approx I_{CE0}$ o $I_{CB0}$ & $I\approx0$ \\
+Activa inversa & $V_{EB}<0$, $V_{CB}>0$ & $I_E=\beta_RI_B$ & $\beta_R\sim1$--$5$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\needspace{18\baselineskip}
+\subsection{Formulario}
+
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Formulario}]
+\renewcommand{\arraystretch}{1.8}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.17\linewidth}X}
+Base angosta\newline\enhojatexto & $\Delta p_B(x)=\Delta p_B(0)\left(1-\frac{x}{W}\right)+\Delta p_B(W)\frac{x}{W}$,\quad $\Delta p_B(0)=p_{B0}\eVEB$ \\
+Corrientes\newline\enhojatexto & $I_{En}=qA\frac{D_E}{L_E}n_{E0}\eVEB$,\quad $I_{Cn}=-qA\frac{D_C}{L_C}n_{C0}\eVCB$ \\
+ & $I_{Ep}$, $I_{Cp}$ con $\tanh$ y $\sinh$ (sección~\ref{sec:formal});\quad $I_B=I_{En}+I_{Cn}+I_{RB}$ \\
+Parámetros\newline\enhojatexto & $\gamma=\frac{I_{Ep}}{I_E}$,\quad $\aT=\frac{I_{Cp}}{I_{Ep}}\approx\frac{1}{1+\frac12(W/L_B)^2}$,\quad $\gamma\approx\frac{1}{1+\frac{D_E}{D_B}\frac{N_B}{N_E}\frac{W}{L_E}}$ \\
+ & $\alpha=\gamma\aT$,\quad $\beta=\frac{\alpha}{1-\alpha}\approx\left[\frac{D_E}{D_B}\frac{N_B}{N_E}\frac{W}{L_E}+\frac12\left(\frac{W}{L_B}\right)^2\right]^{-1}$ \\
+Ebers--Moll\newline\enhojatexto & $I_E=I_{F0}\eVEB-\aR I_{R0}\eVCB$ \\
+ & $I_C=\aF I_{F0}\eVEB-I_{R0}\eVCB$,\quad $\aF I_{F0}=\aR I_{R0}$ \\
+Fugas\newline\enhojatexto & $I_C=\alpha I_E+I_{CB0}=\beta I_B+I_{CE0}$,\quad $I_{CE0}=(\beta+1)I_{CB0}$ \\
+Ancho de base & $W=W_B-x_{nEB}-x_{nCB}$ \\
+Early\newline\enhojatexto & $r_o=V_A/I_C$,\quad $V_A\approx W/|\dd W/\dd V_{CB}|$ \\
+Avalancha & $M=\left[1-(V_{CB}/BV_{CB0})^n\right]^{-1}$,\quad $BV_{CE0}\approx BV_{CB0}\,\beta^{-1/n}$ \\
+Saturación & $V_{EC,sat}=V_T\ln\frac{1/\aR+\beta_{forz}/\beta_R}{1-\beta_{forz}/\beta_F}$,\quad $\beta_{forz}=I_C/I_B<\beta$ \\
+Pequeña señal\newline\enhojatexto & $g_m=\frac{I_C}{V_T}$,\quad $r_\pi=\frac{\beta}{g_m}$,\quad $r_o=\frac{V_A}{I_C}$,\quad $r_\mu\approx\beta r_o$,\quad $g_mr_o=\frac{V_A}{V_T}$ \\
+Capacidades\newline\enhojatexto & $C_\pi=C_b+C_{je}$,\quad $C_b=\tau_Fg_m$ ($\tau_F=\frac{W^2}{2D_B}$),\quad $C_{je}\approx2C_{je0}$,\quad $C_\mu=\frac{C_{\mu0}}{(1-V_{CB}/V_{bi})^{n_c}}$ \\
+Frecuencia\newline\enhojatexto & $f_\beta=\frac{1}{2\pi r_\pi(C_\pi+C_\mu)}$,\quad $f_T=\beta f_\beta=\frac{g_m}{2\pi(C_\pi+C_\mu)}$ \\
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Preguntas de repaso}
+
+\begin{enumerate}
+  \item \textbf{¿Por qué la base tiene que ser angosta y poco dopada respecto del emisor?}\\
+  Angosta ($W\ll L_B$) para que los portadores inyectados la crucen sin recombinarse
+  ($\aT\to1$); menos dopada que el emisor para que la juntura E--B inyecte casi sólo hacia la
+  base ($\gamma\to1$).
+  \item \textbf{¿Por qué $I_C$ no depende (casi) de $V_{CB}$ en activa?}\\
+  Porque la juntura C--B en inversa sólo ``barre'' lo que le llega; lo que llega lo fija la
+  inyección de E--B ($e^{V_{EB}/V_T}$). La dependencia residual es el efecto Early.
+  \item \textbf{¿Qué parámetro limita $\beta$ en un transistor moderno?}\\
+  La eficiencia de emisión: $1-\gamma\propto W/L_E$ suele ser mucho mayor que
+  $1-\aT\propto(W/L_B)^2$.
+  \item \textbf{¿Por qué un BJT usado al revés (colector como emisor) es tan malo?}\\
+  Porque el colector está poco dopado: la eficiencia de emisión inversa es baja
+  ($\aR\sim0.5$--$0.8$, $\beta_R\sim1$--$5$).
+  \item \textbf{¿Por qué $BV_{CE0}<BV_{CB0}$ e $I_{CE0}>I_{CB0}$?}\\
+  Con la base abierta, la corriente generada en C--B actúa como corriente de base y el
+  transistor la amplifica por $\beta+1$.
+  \item \textbf{¿Cómo puede ser $V_{EC}\approx\SI{0.1}{V}$ con $V_{EB}=\SI{0.7}{V}$?}\\
+  En saturación $V_{CB}$ también es positiva y casi igual: $V_{EC}=V_{EB}-V_{CB}$.
+  \item \textbf{¿De qué depende $g_m$?}\\
+  Sólo de la corriente de polarización: $g_m=I_C/V_T$. No depende de $\beta$, del área ni del
+  material.
+  \item \textbf{¿Qué fija la frecuencia de transición?}\\
+  La carga que hay que mover para cambiar la corriente: el tiempo de tránsito por la base
+  ($\tau_F=W^2/2D_B$) y las capacidades de juntura. A corriente alta $f_T\to1/(2\pi\tau_F)$.
+  \item \textbf{¿Por qué un transistor en saturación tarda en apagarse?}\\
+  Porque tiene mucha carga de minoritarios almacenada en la base y el colector, que hay que
+  retirar antes de que la corriente se corte.
+\end{enumerate}
+
+\subsection{Correcciones a las diapositivas (resumen)}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{cX}
+\toprule
+Diapo & Corrección \\
+\midrule
+1.14 & $I_{Cn}=+qAD_C\,\dd\Delta n_C/\dd x'$ (el resultado final de la diapo es correcto). \\
+1.15 & Las condiciones de contorno son de la \emph{base}, no del colector. \\
+1.16 & $I_{Ep}=-qAD_B\,\dd\Delta p_B/\dd x|_0$ (falta el signo de la corriente de difusión); ídem $I_{Cp}$. \\
+1.28 & Las curvas $i_C$ vs.\ $v_{BE}$ son de transferencia; la de entrada es $i_B$ vs.\ $v_{BE}$. \\
+1.31, 2.34 & ``Controlado por corriente'' es un modelo de circuito; físicamente $I_C$ lo controla $V_{EB}$. \\
+2.3 & En un PNP en MAD la condición es $V_{CB}<-5V_T$, no $V_{CB}>5V_T$. \\
+2.8 & $BV_{CE0}=0.52\,BV_{CB0}$ es un caso particular; en general $BV_{CE0}\approx BV_{CB0}\beta^{-1/n}$. \\
+2.11 & $I_{CB0}=I_{R0}(1-\aF\aR)$ (más generación en la ZCE), no sólo $I_{Cn}$. \\
+2.21 & $C_{De}$ con $L_B$ es de diodo largo; en la base angosta $C_b=\tau_Fg_m$. El $\tau_B$ de la hoja es tiempo de tránsito, no vida media. \\
+2.29 & $\beta_{ac}$ puede ser mayor o menor que $\beta_{DC}$ según la pendiente de $\beta_{DC}(I_C)$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Bibliografía}
+\begin{itemize}[nosep]
+  \item R.~F.~Pierret, \emph{Semiconductor Device Fundamentals}, Addison-Wesley, 1996: caps.~10
+  (fundamentos), 11 (características estáticas) y 12 (respuesta dinámica).
+  \item A.~S.~Sedra, K.~C.~Smith, \emph{Microelectronic Circuits}, 7.\textsuperscript{a} ed., Oxford, 2015: cap.~6.
+  \item Diapositivas de clase ``(25.18) Física Electrónica -- Transistor bipolar de juntura'',
+  1.\textsuperscript{a} y 2.\textsuperscript{a} parte, ITBA.
+  \item Hoja de fórmulas y tabla de constantes de la materia.
+\end{itemize}

@@ -1,0 +1,111 @@
+% =====================================================================
+\section{Parámetros de rendimiento}
+\label{sec:parametros}
+% =====================================================================
+
+La corriente de colector ``útil'' es la de huecos que el emisor inyecta y que llega al
+colector. Entre la corriente total de emisor y esa corriente hay dos pérdidas, que se miden
+con dos factores \diapo{1.24}:
+
+\begin{definicion}[eficiencia de emisión y factor de transporte \enhoja]
+\[
+  \gamma = \frac{I_{Ep}}{I_E} = \frac{I_{Ep}}{I_{Ep}+I_{En}}
+  \qquad\text{(qué fracción de $I_E$ son huecos inyectados en la base)}
+\]
+\[
+  \aT = \frac{I_{Cp}}{I_{Ep}}
+  \qquad\text{(qué fracción de esos huecos cruza la base sin recombinarse)}
+\]
+\end{definicion}
+
+\begin{definicion}[ganancias de corriente]
+\[
+  \adc = \frac{I_{Cp}}{I_E} = \gamma\,\aT \approx \frac{I_C}{I_E}
+  \quad\text{(base común)},
+  \qquad
+  \bdc = \frac{I_C}{I_B} = \frac{\adc}{1-\adc}
+  \quad\text{(emisor común)}.
+\]
+Como $\adc$ es apenas menor que 1, $\bdc$ es grande: $\adc=0.99\Rightarrow\bdc=99$;
+$\adc=0.995\Rightarrow\bdc=199$. Pequeñas mejoras en $\adc$ producen grandes cambios en $\bdc$.
+\end{definicion}
+
+\subsection{Expresiones exactas}
+
+Evaluando las corrientes de la sección~\ref{sec:formal} en MAD
+($e^{V_{EB}/V_T}\gg1$, $\Delta p_B(W)\approx0$) \diapo{1.25}:
+\[
+  \gamma = \frac{1}{1+\dfrac{D_E}{D_B}\dfrac{L_B}{L_E}\dfrac{N_B}{N_E}\tanh\!\left(\dfrac{W}{L_B}\right)},
+  \qquad
+  \aT = \frac{1}{\cosh(W/L_B)},
+\]
+\[
+  \adc = \frac{1}{\cosh\!\left(\frac{W}{L_B}\right)
+         + \frac{D_E}{D_B}\frac{L_B}{L_E}\frac{N_B}{N_E}\sinh\!\left(\frac{W}{L_B}\right)},
+  \qquad
+  \bdc = \frac{1}{\cosh\!\left(\frac{W}{L_B}\right)
+         + \frac{D_E}{D_B}\frac{L_B}{L_E}\frac{N_B}{N_E}\sinh\!\left(\frac{W}{L_B}\right)-1}.
+\]
+(Se usó $n_{E0}/p_{B0}=N_B/N_E$.)
+
+\subsection{Aproximación de base angosta}
+
+Con $W\ll L_B$: $\tanh u\approx u$, $\cosh u\approx1+u^2/2$, y $1/(1+\epsilon)\approx1-\epsilon$
+\diapo{1.26}:
+
+\begin{clave}[Parámetros con base angosta \enhoja]
+\[
+  \gamma \simeq \frac{1}{1+\dfrac{D_E}{D_B}\dfrac{N_B}{N_E}\dfrac{W}{L_E}},
+  \qquad
+  \aT \simeq \frac{1}{1+\dfrac{1}{2}\left(\dfrac{W}{L_B}\right)^2},
+\]
+\[
+  \adc \simeq \frac{1}{1+\dfrac{D_E}{D_B}\dfrac{N_B}{N_E}\dfrac{W}{L_E}
+          +\dfrac{1}{2}\left(\dfrac{W}{L_B}\right)^2},
+  \qquad
+  \bdc \simeq \frac{1}{\dfrac{D_E}{D_B}\dfrac{N_B}{N_E}\dfrac{W}{L_E}
+          +\dfrac{1}{2}\left(\dfrac{W}{L_B}\right)^2}.
+\]
+\end{clave}
+
+\begin{intuicion}[cómo se diseña un buen BJT]
+\begin{itemize}
+  \item \textbf{$N_E\gg N_B$} (emisor mucho más dopado que la base) hace $\gamma\to1$: la
+  juntura E--B inyecta casi sólo huecos hacia la base y casi no electrones hacia el emisor.
+  \item \textbf{$W\ll L_B$} (base angosta, con buena vida media) hace $\aT\to1$: los huecos
+  cruzan sin tiempo de recombinarse. Notar que $1-\aT\propto(W/L_B)^2$ es en general
+  mucho menor que $1-\gamma\propto W/L_E$: \textbf{en los transistores modernos $\beta$ está
+  limitado por la eficiencia de emisión}, no por la recombinación en la base.
+  \item Un PNP tiene peor $\beta$ que un NPN equivalente porque $D_B=D_p<D_n$: los huecos
+  difunden más lento. Por eso en circuitos integrados se prefieren los NPN.
+\end{itemize}
+\end{intuicion}
+
+\begin{ejemplo}[PNP de silicio]
+$N_E=\SI{e18}{cm^{-3}}$, $N_B=\SI{e16}{cm^{-3}}$, $N_C=\SI{e15}{cm^{-3}}$, $W=\SI{1}{\micro m}$,
+$\tau_E=\SI{0.1}{\micro s}$, $\tau_B=\SI{1}{\micro s}$, $A=\SI{e-4}{cm^2}$, $T=\SI{300}{K}$.
+Con las movilidades de la tabla de constantes y Einstein ($D=\mu V_T$):
+\[
+  D_E = 1350\cdot0.0259 = \SI{35.0}{cm^2/s},\quad
+  D_B = 480\cdot0.0259 = \SI{12.4}{cm^2/s},
+\]
+\[
+  L_E=\sqrt{D_E\tau_E}=\SI{18.7}{\micro m},\qquad L_B=\sqrt{D_B\tau_B}=\SI{35.3}{\micro m}.
+\]
+\[
+  1-\gamma\approx\frac{D_E}{D_B}\frac{N_B}{N_E}\frac{W}{L_E}
+  =\frac{35.0}{12.4}\cdot\frac{1}{100}\cdot\frac{1}{18.7}=\num{1.51e-3},
+  \qquad
+  1-\aT\approx\frac12\left(\frac{1}{35.3}\right)^2=\num{4.0e-4}.
+\]
+\[
+  \gamma=0.99849,\quad \aT=0.99960,\quad \adc=0.99809,\quad
+  \bdc\approx\frac{1}{\num{1.51e-3}+\num{4.0e-4}}\approx 520 .
+\]
+Las expresiones exactas dan prácticamente lo mismo ($\bdc=524$). Con
+$V_{EB}=\SI{0.65}{V}$ resulta $I_C\approx\SI{1.58}{mA}$ e $I_B\approx\SI{3.0}{\micro A}$.
+
+En un transistor real $\beta$ sería menor: en un emisor tan dopado la movilidad es bastante
+menor que la de la tabla (que es para Si poco dopado), y además el gap se achica
+(\emph{bandgap narrowing}), lo que aumenta $n_{E0}$ y empeora $\gamma$.
+\end{ejemplo}

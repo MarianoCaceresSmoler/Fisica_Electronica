@@ -41,6 +41,7 @@
 \captionsetup{font=small,labelfont=bf,format=hang}
 \usepackage{float}
 \usepackage{wrapfig}
+\usepackage{needspace}
 
 % ---------- Colores ----------
 \definecolor{azul}{HTML}{1F4E79}
@@ -118,6 +119,13 @@
 \newcommand{\Isc}{I_{sc}}
 \newcommand{\diapo}[1]{{\small\textsf{[diapo~#1]}}}
 \newcommand{\dd}{\,\mathrm{d}}
+
+% Distintivo para resultados que ya están en la hoja de fórmulas oficial.
+% Uso: en el título de una caja, \begin{clave}[Título \enhoja], o en texto con \enhojatexto.
+\newcommand{\enhojatexto}{{\scriptsize\sffamily\colorbox{verdeclaro}{\textcolor{verde!70!black}{\ensuremath{\checkmark}\,en la hoja}}}}
+\newcommand{\enhoja}{\hfill{\scriptsize\sffamily\colorbox{white}{\textcolor{verde!70!black}{\ensuremath{\checkmark}\,en la hoja}}}}
+
+\input{../../comun/constantes.tex}
 
 % ---------- Estilos TikZ comunes ----------
 \tikzset{

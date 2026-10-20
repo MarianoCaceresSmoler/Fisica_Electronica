@@ -1,0 +1,52 @@
+% =====================================================================
+%  Constantes oficiales de la materia ("Tabla de constantes.pdf").
+%  Usar SIEMPRE estos valores en los ejemplos numéricos, para que
+%  coincidan con los que se usan en clase y en el examen.
+% =====================================================================
+
+% ---------- Constantes físicas ----------
+\newcommand{\qval}{\num{1.60e-19}}          % C
+\newcommand{\kval}{\num{8.61e-5}}           % eV/K
+\newcommand{\kJval}{\num{1.38e-23}}         % J/K
+\newcommand{\hval}{\num{6.62e-34}}          % J s
+\newcommand{\heVval}{\num{4.13e-15}}        % eV s
+\newcommand{\epsval}{\num{8.85e-14}}        % F/cm
+\newcommand{\VTval}{\SI{26}{mV}}            % kT/q a 300 K (0.0259 V)
+\newcommand{\epsrox}{3.9}                   % SiO2
+
+% ---------- Silicio ----------
+\newcommand{\epsrSi}{11.8}
+\newcommand{\niSi}{\num{1.0e10}}            % cm^-3
+\newcommand{\munSi}{1350}                   % cm^2/(V s)
+\newcommand{\mupSi}{480}                    % cm^2/(V s)
+\newcommand{\EGSi}{1.12}                    % eV
+\newcommand{\NCSi}{\num{3.22e19}}           % cm^-3
+\newcommand{\NVSi}{\num{1.83e19}}           % cm^-3
+
+% ---------- Germanio ----------
+\newcommand{\epsrGe}{15.8}
+\newcommand{\niGe}{\num{2.4e13}}
+\newcommand{\munGe}{3900}
+\newcommand{\mupGe}{1900}
+\newcommand{\EGGe}{0.66}
+
+% ---------- GaAs ----------
+\newcommand{\epsrGaAs}{13.1}
+\newcommand{\niGaAs}{\num{2.1e6}}
+\newcommand{\munGaAs}{8800}
+\newcommand{\mupGaAs}{400}
+\newcommand{\EGGaAs}{1.42}
+
+% ---------- Tabla para incluir en los apuntes ----------
+\newcommand{\tablaconstantes}{%
+\begin{tabular}{lccc}
+\toprule
+ & Si & Ge & GaAs \\
+\midrule
+$\epsilon_r$                     & 11.8 & 15.8 & 13.1 \\
+$\mu_n$ (\si{cm^2/V.s})          & 1350 & 3900 & 8800 \\
+$\mu_p$ (\si{cm^2/V.s})          & 480  & 1900 & 400 \\
+$n_i$ (\si{cm^{-3}}, 300\,K)     & \num{1.0e10} & \num{2.4e13} & \num{2.1e6} \\
+$E_G$ (\si{\eV})                 & 1.12 & 0.66 & 1.42 \\
+\bottomrule
+\end{tabular}}

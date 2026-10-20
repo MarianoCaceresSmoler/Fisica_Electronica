@@ -12,7 +12,14 @@ Fundamentals*) y de las diapositivas de clase (PDFs en la raíz).
 - Se versionan el `.tex` y el `.pdf` compilado; los auxiliares están en `.gitignore`.
 
 ## Compilar
-    cd unidades/06-optoelectronica && latexmk -pdf optoelectronica.tex
+    cd unidades/<NN-unidad> && latexmk -pdf <unidad>.tex
+
+## Referencias oficiales de la materia
+- `Hojas de fórmulas.pdf`: hoja que se lleva al examen. Su notación es la canónica (p. ej. BJT en PNP,
+  `I_F0`, `α_F`, `γ`, `α_T`). Marcar con `\enhoja` (en el título de una caja) o `\enhojatexto` los
+  resultados que figuran en ella.
+- `Tabla de constantes.pdf`: valores oficiales, cargados como macros en `comun/constantes.tex`
+  (`\niSi`, `\munSi`, `\qval`, `\tablaconstantes`, ...). Usarlos en todos los ejemplos numéricos.
 
 ## Criterios de contenido
 - Apunte completo (~20–30 págs.): derivaciones, figuras TikZ/pgfplots propias, ejemplos
@@ -21,3 +28,4 @@ Fundamentals*) y de las diapositivas de clase (PDFs en la raíz).
   cajas `ojo` citando `\diapo{n}` y listarlos en la tabla final de correcciones.
 - Ojo con babel-spanish: no usar `\%` dentro de modo matemático (usar `\SI{..}{\percent}`);
   dentro de `axis` de pgfplots no usar `\foreach` con `axis cs:\x`.
+- Cada unidad terminada y compilada se commitea (tex + pdf).

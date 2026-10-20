@@ -1,0 +1,200 @@
+% =====================================================================
+\section{Apartamientos del modelo ideal}
+% =====================================================================
+
+\subsection{Modulación del ancho de base (efecto Early)}
+\label{sec:early}
+
+Al aumentar la tensión inversa $|V_{CB}|$, la ZCE de la juntura C--B se ensancha y una parte
+de ese ensanchamiento invade la base: el ancho cuasineutro
+\[
+  W = W_B - x_{nEB}(V_{EB}) - x_{nCB}(V_{CB})
+\]
+\textbf{disminuye} \diapo{2.3}. Como en MAD
+\[
+  I_C \simeq qA\frac{D_B}{W}\,p_{B0}\,e^{V_{EB}/V_T}
+  \qquad\left(\text{y también } \beta\simeq\frac{1}{\frac{D_E}{D_B}\frac{N_B}{N_E}\frac{W}{L_E}+\frac12\frac{W^2}{L_B^2}}\right),
+\]
+$I_C$ y $\beta$ \textbf{crecen} con $|V_{CB}|$ aunque $V_{EB}$ se mantenga fija. En las curvas de
+salida eso se ve como una pendiente: las rectas de la región activa, prolongadas hacia la
+izquierda, se cortan aproximadamente en un mismo punto del eje, $V_{EC}=-V_A$, donde $V_A$ es
+la \textbf{tensión de Early} \diapo{2.4}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.8\textwidth,height=6cm,
+  xmin=-45,xmax=12,ymin=0,ymax=3.2,
+  axis lines=middle,
+  xlabel={$V_{EC}$},ylabel={$I_C$},
+  xlabel style={at={(ticklabel* cs:1)},anchor=north west},
+  ytick=\empty,xtick={-40},xticklabels={$-V_A$},
+  every axis plot/.append style={line width=1.2pt},
+]
+\foreach \k in {0.6,1.2,1.8,2.4}{
+  \edef\tmp{\noexpand\addplot[azul,domain=0.4:12] {\k*(1+x/40)};
+            \noexpand\addplot[azul,dashed,thin,domain=-40:0.4] {\k*(1+x/40)};}
+  \tmp
+}
+\fill[azul] (axis cs:-40,0) circle (2pt);
+\node[font=\scriptsize,anchor=west,align=left] at (axis cs:-36,2.6) {pendiente $\dfrac{\partial I_C}{\partial V_{EC}}\simeq\dfrac{I_C}{V_A}=\dfrac{1}{r_o}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Efecto Early: las curvas de salida extrapoladas convergen en $-V_A$ (Sedra, fig.~6.18;
+\diapo{2.4}). Valores típicos: $V_A=\SIrange{20}{200}{V}$.}
+\label{fig:early}
+\end{figure}
+
+\begin{clave}[Efecto Early]
+\[
+  I_C \simeq I_S\,e^{V_{EB}/V_T}\left(1+\frac{V_{EC}}{V_A}\right),
+  \qquad
+  r_o = \left(\frac{\partial I_C}{\partial V_{EC}}\right)^{-1} = \frac{V_A}{I_C}
+  \ \text{\enhojatexto},
+  \quad
+  V_A \approx \frac{W}{\left|\dd W/\dd V_{CB}\right|}.
+\]
+\end{clave}
+
+La salida del transistor no es una fuente de corriente ideal: tiene una resistencia en paralelo
+$r_o$, finita. Para tener $V_A$ grande conviene que la ZCE de C--B penetre poco en la base, es
+decir \textbf{$N_C<N_B$} (la ZCE se extiende sobre todo hacia el colector) y una base no
+demasiado angosta. Hay un compromiso con $\beta$: base angosta = $\beta$ alto pero $V_A$ bajo.
+
+\begin{ejemplo}[tensión de Early]
+Para el transistor del ejemplo ($N_B=\SI{e16}{}$, $N_C=\SI{e15}{cm^{-3}}$, $W=\SI{1}{\micro m}$ con
+$V_{CB}=\SI{-5}{V}$). La parte de la ZCE de C--B que cae en la base es
+\[
+  x_{nCB} = \sqrt{\frac{2\epsilon_r\epsilon_0}{q}\,\frac{N_C}{N_B(N_B+N_C)}\,(V_{bi}-V_{CB})},
+  \qquad V_{bi}=V_T\ln\frac{N_BN_C}{n_i^2}=\SI{0.656}{V}.
+\]
+Con $\epsilon_r=11.8$: $x_{nCB}(\SI{-5}{V})=\SI{0.259}{\micro m}$ y
+$\dd x_{nCB}/\dd|V_{CB}|=x_{nCB}/[2(V_{bi}-V_{CB})]=\SI{0.0229}{\micro m/V}$, así que
+\[
+  V_A\approx\frac{\SI{1}{\micro m}}{\SI{0.0229}{\micro m/V}}\approx\SI{44}{V},
+  \qquad
+  r_o=\frac{V_A}{I_C}=\frac{\SI{44}{V}}{\SI{1.58}{mA}}\approx\SI{28}{k\ohm}.
+\]
+\end{ejemplo}
+
+\begin{ojo}[\diapo{2.3}]
+``Asumiendo $V_{CB}>5V_T$'': en un PNP en MAD la juntura C--B está en inversa, o sea
+$V_{CB}<0$. La condición correcta es $V_{CB}<-5V_T$ (es decir, $|V_{CB}|\gtrsim\SI{0.13}{V}$),
+que permite despreciar $e^{V_{CB}/V_T}$ frente a 1.
+\end{ojo}
+
+\subsection{Perforación (\emph{punch-through})}
+
+Si $|V_{CB}|$ sigue aumentando, la ZCE de C--B puede llegar a tocar la de E--B: $W\to0$
+\diapo{2.5--2.6}. A partir de ahí la tensión de colector actúa directamente sobre la barrera
+de la juntura E--B, la baja, y el emisor inyecta una corriente enorme que ya no controla la
+base. La corriente queda limitada sólo por el circuito externo; si la potencia excede el
+área de operación segura (SOA) el daño es irreversible.
+
+La tensión de perforación $V_{PT}$ se obtiene de $W_B - x_{nEB} - x_{nCB}(V_{PT}) = 0$.
+
+\begin{ejemplo}[¿perforación o avalancha?]
+En el transistor del ejemplo, $W_B = W + x_{nEB}+x_{nCB} = 1 + 0.155 + 0.259 = \SI{1.41}{\micro m}$
+($x_{nEB}=\SI{0.155}{\micro m}$ con $V_{EB}=\SI{0.65}{V}$, $V_{bi,EB}=\SI{0.835}{V}$). La perforación
+ocurre cuando $x_{nCB}=W_B-x_{nEB}=\SI{1.26}{\micro m}$:
+\[
+  V_{bi}-V_{PT} = \frac{(\SI{1.26e-4}{cm})^2}{\frac{2\epsilon_r\epsilon_0}{q}\frac{N_C}{N_B(N_B+N_C)}}
+  \approx\SI{134}{V}
+  \quad\Rightarrow\quad V_{CB,PT}\approx\SI{-133}{V}.
+\]
+Una juntura de Si con $N_C=\SI{e15}{cm^{-3}}$ tiene una ruptura por avalancha de unos
+\SI{300}{V}, así que en este transistor la perforación ocurriría antes. Para evitarla se
+dopa más la base o se la hace más ancha (a costa de $\beta$).
+\end{ejemplo}
+
+\subsection{Ruptura por avalancha}
+
+La juntura C--B es la que soporta la tensión alta \diapo{2.7}. Si el campo es suficientemente
+grande, los portadores que la cruzan generan pares por \textbf{ionización por impacto} y la
+corriente se multiplica por
+\[
+  M = \frac{1}{1-\left(|V_{CB}|/BV_{CB0}\right)^n}\qquad (2<n<10),
+\]
+donde $BV_{CB0}$ es la tensión de ruptura de la juntura C--B con el emisor abierto.
+
+\paragraph{Base común (emisor abierto o $I_E$ fijo).} $I_C=M(\adc I_E+I_{CB0})$: la corriente
+sólo diverge cuando $M\to\infty$, es decir en $|V_{CB}|=BV_{CB0}$.
+
+\paragraph{Emisor común con base abierta ($I_B=0$).} Ahora $I_E=I_C$, y
+\[
+  I_C = M(\adc I_C+I_{CB0})\quad\Rightarrow\quad I_C=\frac{M\,I_{CB0}}{1-M\adc},
+\]
+que diverge cuando $M\adc=1$, mucho antes de que $M\to\infty$:
+\begin{clave}[Tensión de ruptura en emisor común]
+\[
+  M\adc=1 \;\Rightarrow\; 1-\left(\frac{BV_{CE0}}{BV_{CB0}}\right)^n=\adc
+  \;\Rightarrow\;
+  BV_{CE0} = BV_{CB0}\,(1-\adc)^{1/n} \simeq \frac{BV_{CB0}}{\sqrt[n]{\beta}} .
+\]
+\end{clave}
+
+\begin{intuicion}[por qué la ruptura en emisor común es más baja]
+Es el mismo mecanismo que hace $I_{CE0}=(\beta+1)I_{CB0}$: en un PNP, los electrones generados
+por avalancha en la ZCE de C--B son arrastrados a la base; con la base abierta no tienen salida,
+polarizan más a la juntura E--B y el emisor inyecta más huecos, que generan más pares\ldots{}
+Es una realimentación positiva con ganancia $\beta$, que dispara la corriente con una
+multiplicación pequeña ($M=1/\adc\approx1.01$).
+\end{intuicion}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.75\textwidth,height=5.8cm,
+  xmin=0,xmax=105,ymin=0,ymax=5,restrict y to domain=0:6,
+  xlabel={$V_{EC}$ (V)},ylabel={$I_C$},
+  axis lines=left,ytick=\empty,
+  xtick={52,100},xticklabels={$BV_{CE0}$,$BV_{CB0}$},
+  every axis plot/.append style={line width=1.1pt,azul,samples=120},
+]
+\foreach \k in {0.0,0.8,1.6,2.4}{
+  \edef\tmp{\noexpand\addplot[domain=0.5:51.6] {(\k+0.08)*(1+x/150)/(1-(x/52)^7)};}
+  \tmp
+}
+\draw[gris,dashed] (axis cs:52,0) -- (axis cs:52,5);
+\draw[gris,dashed] (axis cs:100,0) -- (axis cs:100,5);
+\node[font=\scriptsize,anchor=west] at (axis cs:2,0.35) {$I_B=0$};
+\end{axis}
+\end{tikzpicture}
+\caption{Ruptura en emisor común (\diapo{2.8}, Pierret fig.~11.10). Todas las curvas se
+disparan cerca de $BV_{CE0}$, bastante antes que la ruptura de la juntura aislada $BV_{CB0}$.
+Con $\beta=100$ y $n\approx7$ resulta $BV_{CE0}\approx0.52\,BV_{CB0}$.}
+\label{fig:avalancha}
+\end{figure}
+
+\begin{ojo}[``$BV_{CE0}=0.52\,BV_{CB0}$'' \diapo{2.8}]
+No es una regla general: corresponde a un caso particular ($\beta\approx100$ y $n\approx7$,
+porque $100^{-1/7}=0.52$). Con $n=4$ y el mismo $\beta$ daría $0.32$. La relación general es
+$BV_{CE0}\simeq BV_{CB0}\,\beta^{-1/n}$.
+\end{ojo}
+
+\subsection{Fototransistor}
+
+Si la luz incide sobre la ZCE de C--B, los pares fotogenerados son separados por el campo: los
+huecos van al colector y los electrones a la base \diapo{2.7}. Esa fotocorriente $I_L$ cumple
+el papel de una corriente de base (aunque el terminal B esté abierto) y el transistor la
+amplifica:
+\[
+  I_C = (\beta+1)\,I_L .
+\]
+El fototransistor es mucho más sensible que un fotodiodo, pero también mucho más lento (la
+ganancia se paga con ancho de banda, como en el fotoconductor de la unidad 6).
+
+\subsection{Otras desviaciones}
+
+\begin{itemize}
+  \item \textbf{Recombinación en la ZCE de E--B}: degrada $\beta$ a corrientes bajas (Gummel).
+  \item \textbf{Alta inyección y resistencia de base}: degradan $\beta$ a corrientes altas.
+  \item \textbf{Base gradual}: en los transistores reales la base se dopa por difusión o
+  implantación y $N_B$ no es uniforme: aparece un campo interno que \emph{acelera} a los
+  minoritarios, mejora $\aT$ y la velocidad.
+  \item \textbf{Geometría real}: el ``efecto transistor'' ocurre sólo en el pequeño volumen
+  vertical debajo del emisor \diapo{2.23}; el resto agrega resistencias ($r_b$, $r_c$) y
+  capacidades parásitas.
+\end{itemize}
