@@ -1,0 +1,223 @@
+% =====================================================================
+\section{IGBT (\emph{Insulated Gate Bipolar Transistor})}
+\label{sec:igbt}
+% =====================================================================
+
+El IGBT combina lo mejor de los dos mundos: \textbf{se controla por tensión como un MOSFET}
+(compuerta aislada, potencia de excitación casi nula) y \textbf{conduce como un dispositivo bipolar}
+(región de arrastre modulada, caída casi independiente de la tensión de bloqueo) \diapo{22}. Es el
+dispositivo dominante entre $\sim\SI{600}{V}$ y $\sim\SI{6.5}{kV}$: variadores de motores, trenes,
+inversores fotovoltaicos y eólicos.
+
+\subsection{Estructura}
+
+Es un VDMOS al que se le cambió el sustrato $n^+$ por uno $p^+$ \diapo{22}:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.05cm,y=1.05cm,>=Stealth]
+  \fill[rojo!35] (0,0) rectangle (10,0.6);
+  \fill[azul!30] (0,0.6) rectangle (10,1.0);
+  \fill[azul!8] (0,1.0) rectangle (10,4.0);
+  \fill[rojo!18,rounded corners=10pt] (-0.3,2.8) rectangle (3.6,4.3);
+  \fill[rojo!18,rounded corners=10pt] (6.4,2.8) rectangle (10.3,4.3);
+  \fill[azul!40,rounded corners=5pt] (1.5,3.5) rectangle (3.0,4.2);
+  \fill[azul!40,rounded corners=5pt] (7.0,3.5) rectangle (8.5,4.2);
+  \fill[white] (-0.4,4.0) rectangle (10.4,4.4);
+  \fill[white] (-0.4,2.7) rectangle (0,4.4); \fill[white] (10,2.7) rectangle (10.4,4.4);
+  \draw (0,0) rectangle (10,4.0); \draw (0,0.6) -- (10,0.6); \draw (0,1.0) -- (10,1.0);
+  \draw[azul,line width=2pt] (3.0,3.96) -- (3.6,3.96);
+  \draw[azul,line width=2pt] (6.4,3.96) -- (7.0,3.96);
+  \fill[gris!30] (2.5,4.0) rectangle (7.5,4.12);
+  \fill[naranja!45] (2.6,4.12) rectangle (7.4,4.5);
+  \fill[gris!30] (2.35,4.0) rectangle (2.6,4.75); \fill[gris!30] (7.4,4.0) rectangle (7.65,4.75);
+  \fill[gris!30] (2.35,4.5) rectangle (7.65,4.75);
+  \fill[gris] (0,4.0) -- (2.35,4.0) -- (2.35,4.75) -- (7.65,4.75) -- (7.65,4.0) -- (10,4.0) -- (10,4.95) -- (0,4.95) -- cycle;
+  \fill[gris] (0,-0.15) rectangle (10,0);
+  \node[font=\small] at (8.6,0.3) {$p^+$ (capa de inyección)};
+  \node[font=\small] at (8.3,0.8) {$n^+$ (capa de compensación)};
+  \node[font=\small] at (8.6,1.9) {$n^-$ (arrastre)};
+  \node[font=\small,align=center] at (0.85,3.25) {cuerpo\\$p$};
+  \node[font=\small] at (2.25,3.82) {$n^+$}; \node[font=\small] at (7.75,3.82) {$n^+$};
+  \node[font=\small] at (5,4.31) {compuerta};
+  \node[font=\small,white] at (1,4.75) {E (fuente)};
+  \draw (5,-0.15) -- (5,-0.5) node[below] {C (drenaje)};
+  \draw (7.4,4.3) -- (10.6,4.3) node[right] {G};
+  % electrones
+  \draw[azul,->,line width=1.1pt] (2.4,3.85) .. controls (3.3,3.88) and (3.9,3.9) .. (4.4,3.6) -- (4.6,1.1);
+  \node[azul,font=\small] at (4.25,2.0) {$e^-$};
+  % huecos
+  \draw[rojo,->,line width=1.1pt] (5.4,0.5) -- (5.6,2.4) .. controls (5.8,2.9) and (6.6,3.0) .. (7.4,3.2) -- (8.7,3.3);
+  \draw[rojo,->,line width=1.1pt] (2.9,0.5) -- (2.6,2.5) .. controls (2.5,3.0) and (1.9,3.2) .. (1.2,3.3) -- (0.4,3.6);
+  \node[rojo,font=\small] at (6.0,1.6) {$h^+$};
+  \draw[decorate,decoration={zigzag,amplitude=1.5pt,segment length=3pt},rojo!70!black] (7.2,3.38) -- (8.4,3.38);
+  \node[rojo!70!black,font=\scriptsize] at (7.9,2.95) {$R_b$};
+\end{tikzpicture}
+\caption{Corte de una celda de IGBT (\emph{punch-through}) \diapo{22, 23}. Los electrones bajan
+por el canal como en el MOSFET; al llegar a la $p^+$, ésta inyecta huecos que inundan la región de
+arrastre. Los huecos que no se recombinan son recogidos por el cuerpo $p$ y fluyen lateralmente bajo
+la fuente $n^+$ (resistencia $R_b$) hasta el contacto: es la corriente que puede encender el
+tiristor parásito.}
+\label{fig:igbt}
+\end{figure}
+
+\begin{ojo}[Nombres de los terminales]
+Las diapositivas (siguiendo a Mohan) llaman a los terminales \emph{drenaje} y \emph{fuente}, como en
+el MOSFET; las hojas de datos los llaman \emph{colector} (C) y \emph{emisor} (E), como en el BJT. Ojo
+que el ``colector'' del IGBT es en realidad el \emph{emisor} del PNP interno (la $p^+$ que inyecta
+huecos) y el ``emisor'' del IGBT es el colector del PNP. Los nombres hablan del uso externo, no de la
+física interna.
+\end{ojo}
+
+\subsection{Funcionamiento: un MOSFET que excita un PNP}
+
+Con $V_{GE}>V_{TH}$ el canal conduce y los electrones llegan a la región de arrastre $n^-$, que es la
+\textbf{base del PNP} $p^+n^-p$ formado por la capa de inyección, la región de arrastre y el cuerpo.
+La juntura $J_1$ ($p^+$--$n^-$, o $p^+$--$n^+$ buffer) queda en directa e inyecta huecos: la región
+de arrastre se modula como en un diodo PiN y su resistencia cae varios órdenes de magnitud.
+\textbf{La resistencia de la región de arrastre depende de la tensión de compuerta} \diapo{24},
+porque la compuerta fija la corriente de electrones que alimenta la inyección.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.4\textwidth}\centering
+\begin{circuitikz}
+  \draw (0,3.8) node[above] {C} -- (0,3.4) to[D,l_=$J_1$] (0,2.2) to[R,l_=$R_{\mathrm{arr}}$] (0,1.0) -- (0,0.85);
+  \draw (0,0.4) node[nmos,anchor=D] (M) {};
+  \draw (M.G) -- ++(-0.4,0) node[left] {G};
+  \draw (M.S) -- ++(0,-0.3) node[below] {E};
+\end{circuitikz}\\[-0.2em]
+\small (a) aproximado
+\end{minipage}
+\hfill
+\begin{minipage}{0.55\textwidth}\centering
+\begin{circuitikz}
+  \draw (2.2,2.8) node[pnp] (Q1) {};
+  \draw (Q1.E) -- ++(0,0.4) node[above] {C};
+  \draw (0.6,1.0) node[npn,xscale=-1] (Q2) {};
+  \draw (Q2.C) |- (Q1.B);
+  \draw (Q1.C) |- (Q2.B);
+  \draw (Q1.C) -- (2.2,1.0) to[R,l=$R_b$,-*] (2.2,-0.6);
+  \draw (Q2.E) |- (2.2,-0.6);
+  \draw (-1.6,1.0) node[nmos] (M) {};
+  \draw (M.D) |- (-1.0,2.8) to[R,l=$R_{\mathrm{arr}}$] (Q2.C |- Q1.B);
+  \draw (M.S) |- (0.6,-0.6);
+  \draw (M.G) -- ++(-0.4,0) node[left] {G};
+  \draw (0.6,-0.6) -- (0.6,-0.9) node[below] {E};
+  \node[right,font=\small] at (Q1.text) {PNP};
+\end{circuitikz}\\[-0.2em]
+\small (b) con el tiristor parásito
+\end{minipage}
+\caption{Circuitos equivalentes del IGBT \diapo{24}. (a) Para condiciones normales: una juntura en
+directa, la región de arrastre modulada y el canal en serie. (b) Completo: el PNP principal (arriba) y el NPN
+parásito (al centro) ($n^+$ fuente -- cuerpo $p$ -- $n^-$) forman un tiristor; $R_b$ es la resistencia lateral
+del cuerpo.}
+\label{fig:igbt-equiv}
+\end{figure}
+
+\begin{clave}[Caída en conducción del IGBT]
+\[
+  V_{CE(\mathrm{on})}=V_{J1}+V_{\mathrm{arrastre}}+I_C\,R_{\mathrm{canal}}\qquad\text{\diapo{24}}
+\]
+$V_{J1}\approx\SIrange{0.7}{0.8}{V}$ (por eso la característica de salida arranca recién después de
+ese umbral, figura~\ref{fig:igbt-salida}); $V_{\mathrm{arrastre}}$ es chica gracias a la modulación.
+Comparado con un MOSFET de igual tensión, a corriente alta el IGBT cae mucho menos; a corriente muy
+baja el MOSFET gana, porque no tiene el escalón de \SI{0.7}{V}.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth, height=5.8cm,
+  xmin=0, xmax=8, ymin=0, ymax=15.5,
+  axis lines=left, xtick={0.7}, xticklabels={$\approx0.7$\,V}, ytick=\empty,
+  xlabel={$V_{CE}$}, ylabel={$I_C$},
+  every axis plot/.append style={line width=1.1pt}, samples=80,
+]
+  \addplot[rojo,domain=0:8] {(x<0.7) ? 0 : ((x-0.7<2) ? (2*(x-0.7)-(x-0.7)^2/2) : 2)*(1+0.01*x)};
+  \addplot[naranja,domain=0:8] {(x<0.7) ? 0 : ((x-0.7<3) ? (3*(x-0.7)-(x-0.7)^2/2) : 4.5)*(1+0.01*x)};
+  \addplot[verde!60!black,domain=0:8] {(x<0.7) ? 0 : ((x-0.7<4) ? (4*(x-0.7)-(x-0.7)^2/2) : 8)*(1+0.01*x)};
+  \addplot[azul,domain=0:8] {(x<0.7) ? 0 : ((x-0.7<5) ? (5*(x-0.7)-(x-0.7)^2/2) : 12.5)*(1+0.01*x)};
+  \node[font=\small,anchor=south west] at (axis cs:6.5,13.1) {$V_{GE4}$};
+  \node[font=\small,anchor=south west] at (axis cs:6.5,8.4) {$V_{GE3}$};
+  \node[font=\small,anchor=south west] at (axis cs:6.5,4.7) {$V_{GE2}$};
+  \node[font=\small,anchor=south west] at (axis cs:6.5,2.1) {$V_{GE1}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Característica de salida del IGBT \diapo{22}: como la del MOSFET pero desplazada por la
+caída de $J_1$. La característica de transferencia ($I_C$ vs.\ $V_{GE}$) es la de un MOSFET de canal
+$n$, con umbral $V_{GE(th)}$.}
+\label{fig:igbt-salida}
+\end{figure}
+
+\subsection{PT, NPT y \emph{field-stop}}
+
+\begin{itemize}
+  \item \textbf{PT} (\emph{punch-through}, figura~\ref{fig:igbt}): con capa de compensación $n^+$
+  (buffer). La región de arrastre es más delgada (campo trapezoidal, figura~\ref{fig:pt-npt}) y el
+  buffer reduce la eficiencia de inyección del PNP y acelera el apagado. Precio: casi \textbf{no
+  bloquea en inversa} ($J_1$ entre dos capas muy dopadas rompe a pocas decenas de volts).
+  \item \textbf{NPT}: sin buffer, región de arrastre gruesa y $p^+$ delgada y poco eficiente.
+  Bloquea en ambos sentidos, es robusto en cortocircuito y su $V_{CE(\mathrm{on})}$ tiene coeficiente
+  de temperatura positivo (fácil de paralelar).
+  \item \textbf{Field-stop} (moderno): combina ambos, con un buffer suave y una región de arrastre
+  delgada; es el estándar actual.
+\end{itemize}
+
+\subsection{Latch-up: el tiristor parásito}
+
+La estructura $n^+$(fuente)--$p$(cuerpo)--$n^-$--$p^+$ es un \textbf{tiristor} \diapo{23, 24}. Si el
+NPN parásito se enciende, la suma de ganancias de los dos transistores llega a 1, el tiristor se
+engancha y \textbf{la compuerta pierde el control}: el IGBT ya no se apaga y, si el circuito no limita
+la corriente, se destruye.
+
+\begin{intuicion}[¿Qué enciende al NPN parásito?]
+La corriente de huecos que recoge el cuerpo $p$ circula lateralmente bajo la fuente $n^+$ por la
+resistencia $R_b$ (figura~\ref{fig:igbt}). Esa caída polariza en directa la juntura
+$n^+$--cuerpo, que es la base--emisor del NPN parásito. Cuando $I_hR_b\gtrsim\SI{0.7}{V}$, la fuente
+inyecta electrones al cuerpo y se cierra el lazo regenerativo \diapo{24}.
+\end{intuicion}
+
+\begin{itemize}
+  \item \textbf{Latch-up estático}: ocurre en conducción, por encima de una corriente máxima
+  $I_{DM}$ que especifica el fabricante \diapo{24}.
+  \item \textbf{Latch-up dinámico}: al apagar rápido, el canal se cierra, la corriente de electrones
+  desaparece y \emph{toda} la corriente pasa a ser de huecos por el cuerpo, mientras la zona desierta
+  de $J_2$ crece y acelera su barrido. Por eso el enganche se produce con corrientes \emph{menores}
+  que $I_{DM}$ \diapo{24}. Corrientes capacitivas por $\dd v/\dd t$ alto tienen el mismo efecto.
+  \item \textbf{Remedios}: el \textbf{cortocircuito cuerpo--fuente} en la metalización \diapo{22} (ata
+  la base del NPN a su emisor), un cuerpo $p^+$ profundo bajo la fuente (baja $R_b$), fuentes $n^+$
+  cortas, y un PNP de baja ganancia (buffer, control de vida media) para que $\alpha_{npn}+\alpha_{pnp}$
+  no alcance 1.
+\end{itemize}
+
+\subsection{Apagado y corriente de cola}
+
+Al quitar la tensión de compuerta el canal se cierra en nanosegundos y la corriente cae
+bruscamente en la fracción de electrones. Pero la región de arrastre está llena de huecos y
+electrones en exceso, y es la \emph{base} de un PNP que no tiene terminal propio: nadie puede extraer
+esa carga. Desaparece por recombinación, dando una \textbf{corriente de cola} que decae con $\tau$,
+mientras $v_{CE}$ ya está alta: es la principal pérdida de conmutación del IGBT y lo que limita su
+frecuencia a $\sim\SIrange{1}{50}{kHz}$. Otra vez el compromiso de la sección~\ref{sec:recomb}: vida
+media corta (o buffer) $\Rightarrow$ cola corta pero $V_{CE(\mathrm{on})}$ más alta.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+ & MOSFET de potencia (Si) & IGBT \\
+\midrule
+Portadores en conducción & sólo electrones (unipolar) & electrones $+$ huecos (bipolar) \\
+Caída en conducción & $\RDSon I_D$, crece como $\VB^2$ & $\approx\SI{0.7}{V}+$ pequeña; casi independiente de $\VB$ \\
+Tensiones típicas & hasta $\sim\SI{600}{V}$ (\SI{900}{V} superjuntura) & \SI{600}{V} a \SI{6.5}{kV} \\
+Conmutación & muy rápida, sin cola & corriente de cola \\
+Frecuencia típica & \SI{50}{kHz} a \si{MHz} & \SIrange{1}{50}{kHz} \\
+Conducción inversa & diodo de cuerpo integrado & no (se agrega un diodo en antiparalelo) \\
+Riesgo parásito & BJT parásito ($\dd v/\dd t$) & tiristor parásito (latch-up) \\
+Control & por tensión, $\Qg$ & por tensión, $\Qg$ \\
+\bottomrule
+\end{tabularx}
+\caption{MOSFET vs.\ IGBT.}
+\label{tab:mosfet-igbt}
+\end{table}

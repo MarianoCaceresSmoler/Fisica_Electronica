@@ -1,0 +1,130 @@
+% =====================================================================
+\section{Recombinación y vida media en dispositivos de potencia}
+\label{sec:recomb}
+% =====================================================================
+
+En los dispositivos bipolares de potencia (diodo PiN, BJT, tiristor, GTO, IGBT) la vida media de los
+portadores en exceso es \emph{el} parámetro de diseño: fija cuánto se modula la región de arrastre
+(caída en conducción) y cuánta carga hay que sacar al apagar (velocidad y pérdidas de conmutación).
+
+\subsection{Repaso: equilibrio y decaimiento de los portadores en exceso}
+
+\diapo{4} En equilibrio valen la ley de acción de masas y la neutralidad \enhojatexto:
+\[
+  p_0n_0=n_i^2,\qquad p_0+N_D=n_0+N_A
+  \quad\Longrightarrow\quad
+  \text{tipo }p:\;\; p_0\approx N_A,\quad n_0\approx\frac{n_i^2}{N_A}.
+\]
+Fuera del equilibrio, con un exceso $\delta n$ y sin generación externa, la ecuación de
+generación--recombinación térmica en baja inyección es
+\[
+  \frac{\dd(\delta n)}{\dd t}=-\frac{\delta n}{\tau}
+  \quad\Longrightarrow\quad \delta n(t)=\delta n(0)\,e^{-t/\tau},
+\]
+con $\tau$ la vida media del portador minoritario en exceso.
+
+\begin{ojo}[``El $\tau$ no es una constante'']
+En baja inyección $\tau$ es una propiedad del material (trampas, temperatura). En un dispositivo de
+potencia, en cambio, se trabaja con $\delta n$ que va de $\ll N_D$ (bloqueo) a $\gg N_D$
+(conducción), y $\tau$ cambia con $\delta n$ \diapo{4}. Por eso la ecuación de arriba con $\tau$ fijo
+sólo sirve para una corriente dada.
+\end{ojo}
+
+\subsection{Los tres mecanismos}
+
+\paragraph{SRH (trampas).} Es el dominante en silicio con inyección moderada. Con trampas en el centro
+de la banda, Pierret §3.3:
+\[
+  \tau_{SRH}=\tau_{p0}\frac{n_0+n_1+\delta n}{n_0+p_0+\delta n}+\tau_{n0}\frac{p_0+p_1+\delta n}{n_0+p_0+\delta n}
+  \;\xrightarrow{\;\delta n\gg n_0\;}\;\tau_{HL}=\tau_{n0}+\tau_{p0}.
+\]
+En alta inyección la vida media \emph{aumenta} (de $\tau_{p0}$ a $\tau_{n0}+\tau_{p0}$): la
+recombinación necesita capturar los dos portadores y ambos están en exceso.
+\textbf{$\tau_{SRH}$ crece con la temperatura} \diapo{4} (aproximadamente $\propto T^{1.5}$--$T^2$):
+al subir $T$ los portadores son emitidos térmicamente desde las trampas antes de completar la
+recombinación. Consecuencia práctica: a mayor temperatura, más carga almacenada y apagados más
+lentos y con más $\Qrr$.
+
+\paragraph{Auger.} Tres partículas: un electrón y un hueco se recombinan y ceden la energía a un
+tercer portador. La tasa es $R_A=(C_nn+C_pp)(np-n_i^2)$; en alta inyección ($n=p=\delta n$)
+\[
+  \tau_A=\frac{1}{C_a\,\delta n^2},\qquad C_a=C_n+C_p\approx\SI{1.66e-30}{cm^6/s}\text{ (Si)}.
+\]
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+$\delta n$ (\si{cm^{-3}}) & $10^{16}$ & $10^{17}$ & $10^{18}$ & $10^{19}$ \\
+$\tau_A$ & \SI{6}{ms} & \SI{60}{\micro s} & \SI{0.6}{\micro s} & \SI{6}{ns} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Como $\tau_{SRH}$ típico en potencia es de \SIrange{1}{10}{\micro s}, Auger domina recién por
+encima de $\sim\SI{3e17}{cm^{-3}}$.
+
+\paragraph{Radiativa.} Despreciable en Si y SiC (gap indirecto; unidad 6).
+
+\begin{clave}[Vida media efectiva]
+\[
+  \frac{1}{\taueff}=\frac{1}{\tau_{SRH}}+\frac{1}{\tau_A}
+  \qquad\text{modelo empírico de la diapo 4:}\qquad
+  \tau=\frac{\tau_0}{1+(\delta n/n_b)^2}.
+\]
+Las dos expresiones tienen la misma forma: el término $(\delta n/n_b)^2$ es la Auger con
+$n_b=1/\sqrt{C_a\tau_0}$. A densidades muy altas $\tau$ cae, la modulación empeora y las pérdidas en
+conducción aumentan \diapo{4}: es lo que limita la densidad de corriente útil de un PiN o un tiristor.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.75\textwidth, height=5.8cm,
+  xmode=log, ymode=log,
+  xmin=1e14, xmax=1e19, ymin=1e-8, ymax=1e-4,
+  xlabel={$\delta n$ (cm$^{-3}$)}, ylabel={$\tau$ (s)},
+  grid=major, grid style={gris!20},
+  legend pos=south west, legend style={font=\small},
+  domain=1e14:1e19, samples=60,
+]
+  \addplot[gris,dashed,line width=0.9pt] {1e-5};
+  \addlegendentry{$\tau_{SRH}=\SI{10}{\micro s}$}
+  \addplot[rojo,dashed,line width=0.9pt] {1/(1.66e-30*x^2)};
+  \addlegendentry{$\tau_A=1/(C_a\delta n^2)$}
+  \addplot[azul,line width=1.2pt] {1/(1e5+1.66e-30*x^2)};
+  \addlegendentry{$\taueff$}
+  \draw[dotted] (axis cs:2.45e17,1e-8) -- (axis cs:2.45e17,1e-4);
+  \node[font=\small,anchor=west] at (axis cs:2.6e17,3e-5) {$n_b\approx\SI{2.5e17}{cm^{-3}}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Vida media efectiva en Si con $\tau_{SRH}=\SI{10}{\micro s}$. Para $\delta n<n_b$ manda SRH;
+por encima, Auger reduce $\tau$ como $\delta n^{-2}$.}
+\label{fig:tau-dn}
+\end{figure}
+
+\begin{ojo}[Dónde empieza la Auger \diapo{4}]
+La diapositiva dice que $\tau$ disminuye por Auger ``para altas densidades cercanas a
+$n_b\approx\SI{1e16}{cm^{-3}}$''. En silicio, con $C_a\approx\SI{1.7e-30}{cm^6/s}$, $\tau_A$ a
+\SI{1e16}{cm^{-3}} es de milisegundos: no compite con SRH. El quiebre ocurre en
+$n_b=1/\sqrt{C_a\tau_{SRH}}\approx\SIrange{1e17}{1e18}{cm^{-3}}$ según la vida SRH. En el modelo
+empírico $n_b$ es un parámetro de ajuste, no una constante del material.
+\end{ojo}
+
+\subsection{El compromiso de la vida media}
+
+\begin{intuicion}[Ni mucho ni poco]
+\begin{itemize}
+  \item $\tau$ \textbf{grande} $\Rightarrow$ $L_a$ grande, región de arrastre bien modulada,
+  \textbf{baja caída en conducción}; pero mucha carga almacenada ($Q\approx I\tau$),
+  \textbf{conmutación lenta} y gran $\Qrr$ \diapo{4}.
+  \item $\tau$ \textbf{chico} $\Rightarrow$ apagado rápido, pero modulación pobre y \textbf{más
+  pérdidas en conducción}.
+\end{itemize}
+El fabricante elige el punto de la curva $V_F$--$\Qrr$ (o $V_{CE(sat)}$--$E_{\mathrm{apag}}$ en IGBT)
+según la frecuencia de trabajo. Un rectificador de red (\SI{50}{Hz}) usa $\tau$ largo; un diodo de
+rueda libre de un inversor de \SI{20}{kHz}, $\tau$ corto.
+\end{intuicion}
+
+\paragraph{Control de vida media.} Se introducen deliberadamente centros de recombinación:
+difusión de oro o platino (niveles profundos), irradiación con electrones (defectos en todo el
+volumen) o con protones/helio (defectos \emph{localizados} a una profundidad elegida, por ejemplo cerca
+de la juntura para mejorar la suavidad $S$ sin empeorar mucho $V_F$).

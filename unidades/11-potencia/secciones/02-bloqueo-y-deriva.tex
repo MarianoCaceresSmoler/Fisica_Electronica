@@ -1,0 +1,161 @@
+% =====================================================================
+\section{Bloqueo de tensión y región de arrastre}
+\label{sec:deriva}
+% =====================================================================
+
+Todos los dispositivos de potencia verticales tienen la misma columna vertebral: una juntura
+$p^+n^-$ (o un contacto Schottky, o un canal MOS) seguida de una región $n^-$ gruesa y poco dopada y
+de un sustrato $n^+$ que hace de contacto \diapo{2, 20}. La $n^-$ es la \textbf{región de arrastre
+de drenaje} (\emph{drift region}): es la que \emph{soporta la tensión} en bloqueo.
+
+\subsection{Ruptura por avalancha: el campo crítico}
+
+En inversa el campo eléctrico es máximo en la juntura. Cuando llega al \textbf{campo crítico}
+$\Ecr$ los portadores ganan entre choques energía suficiente para ionizar la red y la corriente
+crece en avalancha (Pierret §6.3.1). En lo que sigue se usa el modelo simple ``ruptura cuando
+$\mathcal{E}_{\max}=\Ecr$'' con $\Ecr$ constante: para Si $\Ecr\approx\SI{3e5}{V/cm}$, para 4H-SiC
+$\Ecr\approx\SI{2e6}{V/cm}$ \diapo{29}.
+
+\begin{intuicion}[¿Por qué un semiconductor de banda ancha aguanta más campo?]
+Para ionizar hace falta que un portador gane del orden de $\EG$ (en rigor $\sim1.5\EG$) entre choques.
+Con $\EG$ tres veces mayor, el campo necesario es mucho mayor: $\Ecr$ crece aproximadamente como
+$\EG^{2}$ a $\EG^{2.5}$. Ésa es la principal razón de ser del SiC y del GaN en potencia.
+\end{intuicion}
+
+\subsection{Diseño sin perforación (NPT): campo triangular}
+
+Juntura $p^+n^-$ abrupta con $N_A\gg N_D$: la zona desierta queda casi toda en la $n^-$, de ancho
+$W$. De Poisson (hoja de fórmulas, juntura M--S o $p^+n$ \enhojatexto) el campo es lineal:
+\[
+  \mathcal{E}(x)=\frac{qN_D}{\epsilon}(W-x),\qquad \mathcal{E}_{\max}=\frac{qN_DW}{\epsilon},
+  \qquad V=\frac12\,\mathcal{E}_{\max}W .
+\]
+Imponiendo $\mathcal{E}_{\max}=\Ecr$ en la ruptura:
+
+\begin{clave}[Tensión de ruptura y ancho de la región de arrastre]
+\[
+  \VB=\frac{\epsilon\,\Ecr^2}{2qN_D},\qquad
+  W_{\VB}=\frac{2\VB}{\Ecr},\qquad
+  N_D=\frac{\epsilon\,\Ecr^2}{2q\VB}.
+\]
+Para bloquear más tensión hay que \textbf{dopar menos} ($N_D\propto1/\VB$) y \textbf{engrosar}
+($W\propto\VB$) la región de arrastre. Ésta es la ``región de arrastre del espesor $W_d$'' que
+depende de la tensión de ruptura en el diodo de la diapo~2.
+\end{clave}
+
+\subsection{La resistencia en conducción: el límite unipolar}
+
+Si en conducción esa región sólo tiene sus electrones de equilibrio ($n=N_D$), su resistencia por
+unidad de área es
+\[
+  \Ronsp=\frac{W}{q\mu_nN_D}
+  =\frac{2\VB/\Ecr}{q\mu_n\,\epsilon\Ecr^2/(2q\VB)}
+  \quad\Longrightarrow\quad
+  \boxed{\;\Ronsp=\frac{4\VB^2}{\epsilon\,\mu_n\,\Ecr^3}\;}
+\]
+que es la expresión de la diapo~30. El denominador $\epsilon\mu_n\Ecr^3$ es la \textbf{figura de
+mérito de Baliga} (BFOM) del material: depende sólo del semiconductor, y aparece al cubo el campo
+crítico.
+
+\begin{clave}[Límite unipolar]
+$\Ronsp\propto\VB^2$ (y en la práctica $\propto\VB^{2.5}$, porque $\Ecr$ baja un poco con $N_D$).
+Duplicar la tensión de bloqueo cuadruplica la resistencia: por eso el MOSFET de silicio deja de ser
+competitivo arriba de $\sim\SIrange{200}{600}{V}$ y aparecen el IGBT (modulación de conductividad) y
+el SiC (más $\Ecr$).
+\end{clave}
+
+\begin{ejemplo}[Región de arrastre para \SI{600}{V} en silicio]
+Con $\epsilon=\epsrSi\,\epsilon_0$, $\Ecr=\EcSi\,\si{V/cm}$, $\mu_n=\munSi\,\si{cm^2/V.s}$:
+\[
+  N_D=\frac{11.8\cdot\num{8.85e-14}\cdot(\num{3e5})^2}{2\cdot\num{1.6e-19}\cdot600}
+  =\SI{4.9e14}{cm^{-3}},\qquad
+  W=\frac{2\cdot600}{\num{3e5}}=\SI{40}{\micro m},
+\]
+\[
+  \Ronsp=\frac{W}{q\mu_nN_D}=\frac{\num{40e-4}}{\num{1.6e-19}\cdot1350\cdot\num{4.9e14}}
+  =\SI{0.038}{\ohm.cm^2}.
+\]
+Un MOSFET de \SI{1}{cm^2} de área activa tendría, sólo por la deriva, $\SI{38}{m\ohm}$:
+con \SI{30}{A} disipa $\SI{34}{W}$. Con 4H-SiC la misma tensión se logra con
+$\Ronsp\approx\SI{0.29}{m\ohm.cm^2}$, unas 130 veces menos (sección~\ref{sec:wbg}).
+\end{ejemplo}
+
+\subsection{Diseño con perforación (PT): campo trapezoidal}
+
+Si la $n^-$ se hace \emph{más delgada} que $W_{\VB}$ y se apoya en una capa $n^+$, la zona desierta
+``perfora'' hasta la $n^+$ antes de la ruptura y el campo queda trapezoidal
+(figura~\ref{fig:pt-npt}). La tensión es el área bajo la curva:
+\[
+  \VB^{PT}=\Ecr\,W_d-\frac{qN_DW_d^2}{2\epsilon}.
+\]
+Con el mismo $\Ecr$ se bloquea casi la misma tensión con una región más delgada (y por lo tanto
+menos resistiva y con menos carga almacenada en dispositivos bipolares). En el límite $N_D\to0$
+(capa ``intrínseca'') el campo es rectangular y $\VB=\Ecr W_d$: es la estructura PiN.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  \foreach \dx/\tit in {0/{(a) NPT: $n^-$ gruesa}, 7.6/{(b) PT: $n^-$ delgada $+$ $n^+$}} {
+    \begin{scope}[xshift=\dx cm]
+      \node[font=\small\bfseries] at (2.9,3.6) {\tit};
+      \draw[->] (0,0) -- (6.4,0) node[right] {$x$};
+      \draw[->] (0,0) -- (0,3.1) node[left] {$\mathcal{E}$};
+      \draw[dashed,gris] (0,2.6) node[left,black,font=\small] {$\Ecr$} -- (6,2.6);
+    \end{scope}
+  }
+  % NPT
+  \fill[rojo!15] (0.4,0) rectangle (0.8,-0.5);
+  \fill[azul!8] (0.8,0) rectangle (6,-0.5);
+  \node[font=\scriptsize] at (0.6,-0.25) {$p^+$};
+  \node[font=\scriptsize] at (3.4,-0.25) {$n^-$};
+  \fill[naranja!25] (0.8,0) -- (0.8,2.6) -- (5.2,0) -- cycle;
+  \draw[naranja!80!black,line width=1pt] (0.8,0) -- (0.8,2.6) -- (5.2,0);
+  \node[font=\small] at (2.0,0.8) {$\VB$};
+  \draw[<->] (0.8,-0.75) -- node[below,font=\small] {$W_{\VB}=2\VB/\Ecr$} (5.2,-0.75);
+  % PT
+  \begin{scope}[xshift=7.6cm]
+    \fill[rojo!15] (0.4,0) rectangle (0.8,-0.5);
+    \fill[azul!8] (0.8,0) rectangle (3.6,-0.5);
+    \fill[azul!30] (3.6,0) rectangle (4.4,-0.5);
+    \node[font=\scriptsize] at (0.6,-0.25) {$p^+$};
+    \node[font=\scriptsize] at (2.2,-0.25) {$n^-$};
+    \node[font=\scriptsize] at (4.0,-0.25) {$n^+$};
+    \fill[naranja!25] (0.8,0) -- (0.8,2.6) -- (3.6,1.0) -- (3.75,0) -- cycle;
+    \draw[naranja!80!black,line width=1pt] (0.8,0) -- (0.8,2.6) -- (3.6,1.0) -- (3.75,0);
+    \node[font=\small] at (2.0,0.8) {$\VB$};
+    \draw[<->] (0.8,-0.75) -- node[below,font=\small] {$W_d<W_{\VB}$} (3.6,-0.75);
+  \end{scope}
+\end{tikzpicture}
+\caption{Perfil de campo en la ruptura. El área sombreada es la tensión bloqueada. En el diseño PT la
+pendiente $qN_D/\epsilon$ es la misma pero el triángulo se ``corta'' en la capa $n^+$ (que en el IGBT
+se llama capa de compensación o \emph{buffer}, diapo~22).}
+\label{fig:pt-npt}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth, height=6.4cm,
+  xmode=log, ymode=log,
+  xmin=100, xmax=1e4, ymin=1e-2, ymax=1e4,
+  xlabel={Tensión de ruptura $\VB$ (V)},
+  ylabel={$\Ronsp$ (m$\Omega\cdot$cm$^2$)},
+  grid=major, grid style={gris!20},
+  legend pos=north west, legend style={font=\small},
+  domain=100:1e4, samples=40,
+]
+  % Ron,sp = 4 V^2/(eps mu Ec^3), en mOhm cm^2 -> *1e3
+  \addplot[rojo,line width=1.1pt]    {1e3*4*x^2/(11.8*8.85e-14*1350*(3e5)^3)};
+  \addlegendentry{Si}
+  \addplot[azul,line width=1.1pt]    {1e3*4*x^2/(9.7*8.85e-14*720*(2e6)^3)};
+  \addlegendentry{4H-SiC}
+  \addplot[verde!60!black,line width=1.1pt] {1e3*4*x^2/(9.0*8.85e-14*900*(3.3e6)^3)};
+  \addlegendentry{GaN}
+\end{axis}
+\end{tikzpicture}
+\caption{Límite unipolar $\Ronsp=4\VB^2/(\epsilon\mu_n\Ecr^3)$ con los parámetros de la diapo~29.
+Un dispositivo unipolar no puede estar por debajo de su recta (salvo trucos de estructura como la
+\emph{superjuntura}, sección~\ref{sec:mosfet}).}
+\label{fig:limite-unipolar}
+\end{figure}

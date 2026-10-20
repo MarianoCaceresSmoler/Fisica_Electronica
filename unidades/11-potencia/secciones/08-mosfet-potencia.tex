@@ -1,0 +1,219 @@
+% =====================================================================
+\section{MOSFET de potencia}
+\label{sec:mosfet}
+% =====================================================================
+
+El MOSFET de potencia es el mismo transistor de efecto de campo de la unidad de MOSFET, pero con
+una estructura \textbf{vertical} que le permite bloquear cientos de volts y conducir decenas de
+amperes: la corriente entra por la fuente arriba, cruza un canal superficial corto y \emph{baja}
+por la región de arrastre hasta el drenaje, que es todo el dorso de la pastilla \diapo{20}. Es un
+dispositivo \textbf{unipolar}: no hay carga almacenada y conmuta en decenas de nanosegundos.
+
+\subsection{Estructura VDMOS}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.05cm,y=1.05cm,>=Stealth]
+  % sustrato y deriva
+  \fill[azul!35] (0,0) rectangle (10,0.8);
+  \fill[azul!8] (0,0.8) rectangle (10,4.0);
+  % cuerpos p
+  \fill[rojo!18,rounded corners=10pt] (-0.3,2.8) rectangle (3.6,4.3);
+  \fill[rojo!18,rounded corners=10pt] (6.4,2.8) rectangle (10.3,4.3);
+  % fuentes n+
+  \fill[azul!40,rounded corners=5pt] (1.5,3.5) rectangle (3.0,4.2);
+  \fill[azul!40,rounded corners=5pt] (7.0,3.5) rectangle (8.5,4.2);
+  % tapar lo que sobresale
+  \fill[white] (-0.4,4.0) rectangle (10.4,4.4);
+  \fill[white] (-0.4,2.7) rectangle (0,4.4); \fill[white] (10,2.7) rectangle (10.4,4.4);
+  \draw (0,0) rectangle (10,4.0);
+  % canales
+  \draw[azul,line width=2pt] (3.0,3.96) -- (3.6,3.96);
+  \draw[azul,line width=2pt] (6.4,3.96) -- (7.0,3.96);
+  % óxido de compuerta, poli, óxido de aislación
+  \fill[gris!30] (2.5,4.0) rectangle (7.5,4.12);
+  \fill[naranja!45] (2.6,4.12) rectangle (7.4,4.5);
+  \fill[gris!30] (2.35,4.0) rectangle (2.6,4.75); \fill[gris!30] (7.4,4.0) rectangle (7.65,4.75);
+  \fill[gris!30] (2.35,4.5) rectangle (7.65,4.75);
+  % metal de fuente
+  \fill[gris] (0,4.0) -- (2.35,4.0) -- (2.35,4.75) -- (7.65,4.75) -- (7.65,4.0) -- (10,4.0) -- (10,4.95) -- (0,4.95) -- cycle;
+  \fill[gris] (0,-0.15) rectangle (10,0);
+  % rótulos de capas
+  \node[font=\small] at (5,0.4) {sustrato $n^+$};
+  \node[font=\small] at (8.6,1.7) {$n^-$};
+  \node[font=\small,align=center] at (0.85,3.25) {cuerpo\\$p$};
+  \node[font=\small,align=center] at (9.15,3.25) {cuerpo\\$p$};
+  \node[font=\small] at (2.25,3.82) {$n^+$}; \node[font=\small] at (7.75,3.82) {$n^+$};
+  \node[font=\small] at (5,4.31) {compuerta (poli)};
+  % terminales
+  \node[font=\small,white] at (1,4.75) {S};
+  \draw (5,-0.15) -- (5,-0.5) node[below] {D};
+  \draw (7.4,4.3) -- (10.6,4.3) node[right] {G};
+  % anotaciones
+  \draw[<-] (5.6,4.06) -- (6.2,5.4) node[above,font=\small] {óxido de compuerta};
+  \draw[<-] (2.45,4.65) -- (1.6,5.4) node[above,font=\small] {óxido de aislación};
+  \draw[<-] (3.3,3.9) -- (3.2,2.55) node[below,font=\small] {canal};
+  \draw[<->] (10.75,0.8) -- node[right,font=\small,align=left] {región de\\arrastre de\\drenaje} (10.75,4.0);
+  % camino de los electrones
+  \draw[azul,->,line width=1.1pt] (2.4,3.85) .. controls (3.3,3.88) and (3.9,3.9) .. (4.4,3.6) -- (4.6,1.0);
+  \draw[azul,->,line width=1.1pt] (7.6,3.85) .. controls (6.7,3.88) and (6.1,3.9) .. (5.6,3.6) -- (5.4,1.0);
+  \node[azul,font=\small] at (5,2.3) {$e^-$};
+  % zona JFET
+  \draw[dashed,gris] (3.6,2.8) -- (3.6,4.0); \draw[dashed,gris] (6.4,2.8) -- (6.4,4.0);
+  \node[font=\scriptsize,gris] at (5,3.3) {zona JFET};
+  % parásitos
+  \draw[rojo,line width=0.8pt] (1.2,2.85) -- (1.2,2.55);
+  \node[rojo,font=\scriptsize,align=center] at (1.2,2.1) {diodo de cuerpo\\($p$--$n^-$)};
+\end{tikzpicture}
+\caption{Corte de una celda VDMOS (\emph{double-diffused}) \diapo{20}. Con $V_{GS}>V_{TH}$ se forma
+una capa de inversión (canal) en la superficie del cuerpo $p$ bajo la compuerta; los electrones van
+de la fuente $n^+$ al canal, de ahí a la región de arrastre y bajan hasta el drenaje. La metalización
+de fuente cortocircuita la fuente $n^+$ con el cuerpo $p$. Un dispositivo real tiene miles de estas
+celdas en paralelo.}
+\label{fig:vdmos}
+\end{figure}
+
+\paragraph{Estructuras parásitas.} La estructura tiene, ``gratis'':
+\begin{itemize}
+  \item un \textbf{diodo de cuerpo} $p$--$n^-$ entre fuente (ánodo) y drenaje (cátodo), en antiparalelo
+  con el canal: el MOSFET de potencia \emph{no bloquea en inversa}, y ese diodo sirve de diodo de
+  rueda libre (aunque, siendo bipolar, tiene recuperación inversa lenta);
+  \item un \textbf{BJT parásito} $n^+pn^-$ (fuente--cuerpo--deriva). Si se encendiera, el MOSFET
+  perdería el control. Por eso el metal de fuente \textbf{cortocircuita fuente y cuerpo}: la base del
+  parásito queda atada al emisor. Aun así, un $\dd v_{DS}/\dd t$ muy alto inyecta corriente capacitiva
+  en el cuerpo que, a través de su resistencia lateral, puede polarizar la juntura base--emisor.
+\end{itemize}
+El símbolo de la diapo~20 incluye el diodo de cuerpo y, en el modelo detallado, las capacidades y el
+BJT parásito.
+
+\subsection{Física de operación y regiones}
+
+\diapo{21} Con $V_{DS}>0$ y variando $V_{GS}$:
+\begin{enumerate}
+  \item $0<V_{GS}<V_{TH}$: la compuerta repele los huecos del cuerpo y forma una zona de
+  \textbf{deplexión} bajo el óxido; no hay canal, $I_D\approx0$.
+  \item $V_{GS}=V_{TH}$: comienza la capa de inversión.
+  \item $V_{GS}>V_{TH}$: canal formado; $I_D$ crece con $V_{DS}$ (región óhmica) hasta que el canal se
+  estrangula del lado del drenaje ($V_{DS}=V_{GS}-V_{TH}$) y la corriente satura.
+\end{enumerate}
+
+\begin{ojo}[``Zona de degradación'' \diapo{21}]
+La primera figura de la diapo~21 ($V_{GS}$ chica, sin canal) está rotulada ``zona de degradación'':
+se trata de la zona de \textbf{deplexión} (vaciamiento, \emph{depletion}) bajo la compuerta. No hay
+ninguna degradación del dispositivo.
+\end{ojo}
+
+\begin{clave}[Ecuaciones del MOSFET canal $n$ \enhoja]
+\[
+  I_D=\mu_nC_{ox}\frac WL\left[(V_{GS}-V_{TH})V_{DS}-\frac{V_{DS}^2}{2}\right],\quad V_{DS}\le V_{GS}-V_{TH}
+  \qquad\text{(óhmica)}
+\]
+\[
+  I_D=\frac12\mu_nC_{ox}\frac WL(V_{GS}-V_{TH})^2,\quad V_{DS}>V_{GS}-V_{TH}
+  \qquad\text{(estrangulamiento; ``activa'' en potencia)}
+\]
+$I_D=0$ si $V_{GS}<V_{TH}$ (corte). En la región óhmica con $V_{DS}$ chico,
+$\RDSon\approx\left[\mu_nC_{ox}\frac WL(V_{GS}-V_{TH})\right]^{-1}+R_{\mathrm{resto}}$.
+\end{clave}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=6.4cm,
+  xmin=0, xmax=12.5, ymin=0, ymax=15.5,
+  axis lines=left, xtick={10}, xticklabels={$BV_{DSS}$}, ytick=\empty,
+  xlabel={$V_{DS}$}, ylabel={$I_D$},
+  every axis plot/.append style={line width=1.1pt}, domain=0:10, samples=80,
+]
+  \addplot[rojo] {(x<2) ? (2*x-x^2/2)*(1+0.01*x) : (2.0)*(1+0.01*x)};
+  \addplot[naranja] {(x<3) ? (3*x-x^2/2)*(1+0.01*x) : (4.5)*(1+0.01*x)};
+  \addplot[verde!60!black] {(x<4) ? (4*x-x^2/2)*(1+0.01*x) : (8.0)*(1+0.01*x)};
+  \addplot[azul] {(x<5) ? (5*x-x^2/2)*(1+0.01*x) : (12.5)*(1+0.01*x)};
+  \addplot[gris,dashed,domain=0:5.2] {x^2/2};
+  \addplot[black,line width=1.3pt] coordinates {(0,0.05) (10,0.05) (10.4,13.5)};
+  \node[font=\small,anchor=west] at (axis cs:10.5,11.5) {ruptura};
+  \node[font=\small,anchor=south west] at (axis cs:8.2,13.3) {$V_{GS4}$};
+  \node[font=\small,anchor=south west] at (axis cs:8.2,8.6) {$V_{GS3}$};
+  \node[font=\small,anchor=south west] at (axis cs:8.2,4.8) {$V_{GS2}$};
+  \node[font=\small,anchor=south west] at (axis cs:8.2,2.1) {$V_{GS1}$};
+  \node[font=\small,gris,anchor=south] at (axis cs:5.2,13.6) {$V_{DS}=V_{GS}-V_{TH}$};
+  \node[font=\small] at (axis cs:1.2,11) {óhmica};
+  \node[font=\small,align=center] at (axis cs:5,10.6) {activa (estrangulamiento)};
+  \node[font=\small] at (axis cs:4,0.8) {corte: $V_{GS}<V_{TH}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Característica de salida del MOSFET de potencia \diapo{20, 21}. Los nombres de las regiones
+en la bibliografía de potencia (Mohan) son ``óhmica'' y ``activa''; en la de circuitos
+(Sedra--Smith) son ``tríodo'' y ``saturación''. Como llave, el MOSFET se usa en corte y en la
+óhmica.}
+\label{fig:mosfet-salida}
+\end{figure}
+
+\begin{ojo}[Regiones en la diapo 20]
+La diapo dice ``Región de estrangulamiento cuando $V_{GS}<V_{GS(th)}$''. Con $V_{GS}<V_{TH}$ el
+dispositivo está en \textbf{corte} (no hay canal que estrangular). La región de estrangulamiento
+(activa) es la de canal formado y $V_{DS}>V_{GS}-V_{GS(th)}$. La condición de la región óhmica de la
+misma diapo ($V_{GS}-V_{GS(th)}>V_{DS}>0$) sí es correcta.
+\end{ojo}
+
+\subsection{Resistencia en conducción}
+
+Siguiendo el camino de los electrones de la figura~\ref{fig:vdmos}:
+\[
+  \RDSon=R_{n^+}+R_{\mathrm{canal}}+R_{\mathrm{acum}}+R_{\mathrm{JFET}}+R_{\mathrm{arrastre}}+R_{\mathrm{sustrato}} .
+\]
+En un MOSFET de \SI{30}{V} domina el canal (por eso se usan estructuras \emph{trench}, con la
+compuerta en una trinchera vertical que elimina la zona JFET y empaqueta más canal por
+\si{cm^2}). En uno de \SI{600}{V} domina la región de arrastre y vale el límite unipolar
+$\Ronsp\propto\VB^2$ de la sección~\ref{sec:deriva}: \textbf{la región de arrastre determina la
+tensión de ruptura} \diapo{20} y, con ella, la resistencia mínima.
+
+\begin{intuicion}[La superjuntura]
+Los MOSFET ``CoolMOS'' (como el IPP90R340C3 de la diapo~35) rompen el límite unipolar: la región de
+arrastre se hace con columnas alternadas $p$ y $n$ fuertemente dopadas. En bloqueo las columnas se
+vacían lateralmente entre sí y el campo vertical queda casi uniforme (como en un PiN), aunque el dopaje
+sea alto; en conducción la columna $n$ dopada conduce bien. El resultado es $\Ronsp\propto\VB$ en lugar
+de $\VB^2$.
+\end{intuicion}
+
+\paragraph{Coeficiente de temperatura.} $\RDSon$ \textbf{aumenta} con la temperatura (la movilidad
+baja como $T^{-2.3}$ aprox.): un MOSFET más caliente toma menos corriente. Esto hace que varios
+MOSFET en paralelo repartan la corriente solos y que no tengan segunda ruptura, a diferencia de los
+BJT de potencia.
+
+\subsection{Capacidades y carga de compuerta}
+
+La compuerta es un capacitor: el MOSFET no consume corriente de compuerta en régimen, pero en cada
+conmutación hay que cargar y descargar sus capacidades \diapo{20, 35}:
+\[
+  C_{iss}=C_{GS}+C_{GD},\qquad C_{oss}=C_{DS}+C_{GD},\qquad C_{rss}=C_{GD}.
+\]
+$C_{GD}$ (capacidad Miller) es la más importante: durante la conmutación $v_{DS}$ cambia cientos de
+volts mientras $v_{GS}$ queda fija, y toda la corriente de compuerta se usa para cargar $C_{GD}$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  \draw[->] (0,0) -- (8.2,0) node[right] {$Q_G$};
+  \draw[->] (0,0) -- (0,3.6) node[above] {$v_{GS}$};
+  \draw[azul,line width=1.2pt] (0,0) -- (2.2,1.8) -- (4.6,1.8) -- (7.6,3.1);
+  \draw[dashed,gris] (0,1.8) node[left,black,font=\small] {$V_{\mathrm{plateau}}$} -- (2.2,1.8);
+  \draw[dashed,gris] (0,0.9) node[left,black,font=\small] {$V_{TH}$} -- (1.1,0.9);
+  \draw[dashed,gris] (2.2,0) -- (2.2,1.8); \draw[dashed,gris] (4.6,0) -- (4.6,1.8);
+  \draw[dashed,gris] (7.6,0) -- (7.6,3.1); \draw[dashed,gris] (0,3.1) node[left,black,font=\small] {$V_{GG}$} -- (7.6,3.1);
+  \draw[<->] (0,-0.35) -- node[below,font=\small] {$Q_{GS}$} (2.2,-0.35);
+  \draw[<->] (2.2,-0.35) -- node[below,font=\small] {$Q_{GD}$ (Miller)} (4.6,-0.35);
+  \draw[<->] (0,-1.0) -- node[below,font=\small] {$\Qg$ total} (7.6,-1.0);
+  \node[font=\small,align=left,anchor=west] at (2.4,2.5) {meseta: $v_{DS}$ cae y\\$i_G$ carga $C_{GD}$};
+\end{tikzpicture}
+\caption{Curva de carga de compuerta. El tiempo de conmutación es aproximadamente
+$t\approx Q/i_G$: con $\Qg=\SI{94}{nC}$ y un driver de \SI{1}{A}, unos \SI{94}{ns}.}
+\label{fig:carga-compuerta}
+\end{figure}
+
+\begin{definicion}[Figura de mérito $\RDSon\cdot\Qg$]
+Un MOSFET más grande (más celdas) tiene menos $\RDSon$ pero más $\Qg$, en proporción inversa. El
+producto $\RDSon\Qg$ depende de la tecnología y no del tamaño: mide a la vez pérdidas de conducción
+($\propto\RDSon$) y de conmutación y excitación ($\propto\Qg$). Cuanto menor, mejor \diapo{35}.
+\end{definicion}

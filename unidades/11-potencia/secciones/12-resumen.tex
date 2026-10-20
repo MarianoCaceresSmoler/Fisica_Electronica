@@ -1,0 +1,152 @@
+% =====================================================================
+\clearpage
+\section{Resumen y repaso}
+% =====================================================================
+
+\subsection{Los dispositivos de un vistazo}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+Dispositivo & Tipo & Control & Bloqueo & Lo esencial \\
+\midrule
+Diodo PiN & bipolar & no controlado & directo no, inverso sí & modulación de conductividad; recuperación inversa ($\Qrr$, $\trr$) \\
+Schottky & unipolar & no controlado & inverso (Si $\lesssim\SI{200}{V}$, SiC kV) & sin carga almacenada \\
+Tiristor & bipolar & enciende por $\IG$; apaga sólo con $\IA<I_H$ & directo e inverso & $\IA=\frac{\alpha_2\IG+I_{CO}}{1-(\alpha_1+\alpha_2)}$; kV y kA, frecuencia de red \\
+Triac & bipolar & $\IG$ de cualquier signo & ambos sentidos & dos tiristores antiparalelo; baja potencia, control de fase \\
+GTO & bipolar & enciende y apaga por $\IG$ & directo (inverso casi nulo) & $\boff=\frac{\alpha_2}{\alpha_1+\alpha_2-1}$; ánodo en cortocircuito \\
+MOSFET & unipolar & tensión $V_{GS}$ & directo; diodo de cuerpo en inverso & $\Ronsp\propto\VB^2$; muy rápido \\
+IGBT & bipolar & tensión $V_{GE}$ & directo (NPT también inverso) & MOSFET $+$ PNP; cola de corriente; latch-up \\
+MOSFET SiC & unipolar & tensión ($+15/{-5}$\,V) & directo & $\Ecr$ $\times$7--10; canal de baja movilidad \\
+JFET SiC & unipolar & tensión negativa & directo & normally-on $\Rightarrow$ cascodo \\
+HEMT GaN & unipolar, lateral & tensión & directo & 2DEG por polarización; normally-on salvo $p$-GaN; MHz \\
+\bottomrule
+\end{tabularx}
+\caption{Resumen de los dispositivos de la unidad.}
+\label{tab:resumen-dispositivos}
+\end{table}
+
+\needspace{0.62\textheight}
+\subsection{Formulario}
+
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Formulario}]
+\renewcommand{\arraystretch}{1.8}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.2\linewidth}X}
+Región de arrastre (NPT) & $\VB=\dfrac{\epsilon\Ecr^2}{2qN_D}$,\quad $W=\dfrac{2\VB}{\Ecr}$,\quad
+$\Ronsp=\dfrac{W}{q\mu_nN_D}=\dfrac{4\VB^2}{\epsilon\mu_n\Ecr^3}$ \\
+Región de arrastre (PT) & $\VB=\Ecr W_d-\dfrac{qN_DW_d^2}{2\epsilon}$ \\
+Modulación & $\sigma=q(\mu_n+\mu_p)n$ con $n=p\gg N_D$;\quad $D_a=\dfrac{2D_nD_p}{D_n+D_p}$,\quad $L_a=\sqrt{D_a\tau_{HL}}$ \\
+Recuperación inversa & $\Qrr\approx\tfrac12\IRM\trr$,\quad $\IRM\approx\sqrt{2\Qrr\,\dd i/\dd t}$,\quad $S=t_b/t_a$ \\
+Vida media & $\tau_{HL}=\tau_{n0}+\tau_{p0}$,\quad $\tau_A=\dfrac{1}{C_a\delta n^2}$,\quad
+$\tau=\dfrac{\tau_0}{1+(\delta n/n_b)^2}$ \\
+Tiristor & $I_C=\alpha I_E+I_{CO}$ \enhojatexto,\quad $\IA=\dfrac{\alpha_2\IG+I_{CO1}+I_{CO2}}{1-(\alpha_1+\alpha_2)}$,\quad
+$\VAK(\mathrm{enc})=V_{J1}-V_{J2}+V_{J3}+V_{n^-}$ \\
+$\dd v/\dd t$ & $i=C_{J2}\,\dd\VAK/\dd t$ \\
+GTO & $I_G'>\IA/\boff$,\quad $\boff=\dfrac{\alpha_2}{\alpha_1+\alpha_2-1}$ \\
+Control de fase & $V_{\mathrm{med}}=\dfrac{V_m}{2\pi}(1+\cos\alpha)$ (media onda),\quad
+$V_{\mathrm{ef}}=\dfrac{V_m}{\sqrt2}\sqrt{1-\dfrac\alpha\pi+\dfrac{\sin2\alpha}{2\pi}}$ (onda completa) \\
+MOSFET \enhojatexto & $I_D=\mu_nC_{ox}\frac WL\left[(V_{GS}-V_{TH})V_{DS}-\frac{V_{DS}^2}{2}\right]$;\quad
+$I_D=\frac12\mu_nC_{ox}\frac WL(V_{GS}-V_{TH})^2$ \\
+Capacidades & $C_{iss}=C_{GS}+C_{GD}$,\quad $C_{oss}=C_{DS}+C_{GD}$,\quad $C_{rss}=C_{GD}$;\quad FOM $=\RDSon\Qg$ \\
+IGBT & $V_{CE(\mathrm{on})}=V_{J1}+V_{\mathrm{arrastre}}+I_CR_{\mathrm{canal}}$;\quad latch-up si $I_hR_b\gtrsim\SI{0.7}{V}$ \\
+WBG & $n_i=\sqrt{N_cN_v}\,e^{-\EG/2kT}$;\quad BFOM $=\epsilon\mu_n\Ecr^3$;\quad
+igual $R$: $\dfrac{V_{B2}}{V_{B1}}=\sqrt{\dfrac{\mathrm{BFOM}_2}{\mathrm{BFOM}_1}}$ \\
+Codo de un diodo & $\Delta V=V_T\ln\dfrac{n_{i1}^2}{n_{i2}^2}$ (misma $J$, distinto material) \\
+2DEG & $R_\square=\dfrac{1}{qn_s\mu}$ \\
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Preguntas de repaso}
+
+\begin{enumerate}
+  \item \textbf{¿Por qué todos los dispositivos de potencia tienen una región $n^-$ gruesa y poco
+  dopada?}\\
+  Porque la tensión de bloqueo es el área bajo el campo, y el campo no puede superar $\Ecr$: para
+  bloquear $\VB$ hace falta un ancho $W=2\VB/\Ecr$ y un dopaje bajo $N_D=\epsilon\Ecr^2/(2q\VB)$ para que
+  la zona desierta se extienda en ese ancho.
+  \item \textbf{¿Por qué el MOSFET de Si deja de servir a alta tensión y el IGBT no?}\\
+  En el MOSFET la región de arrastre conduce con sus electrones de equilibrio: $\Ronsp\propto\VB^2$.
+  En el IGBT la $p^+$ inyecta huecos que modulan la región de arrastre y su resistencia deja de
+  depender del dopaje.
+  \item \textbf{¿Qué es la inyección doble en un diodo PiN?}\\
+  En alta inyección ($\delta p>N_D$) la carga de los huecos inyectados por la $p^+$ atrae electrones
+  desde la $n^+$, que inyecta a su vez: la región de arrastre se llena de pares con $\delta n=\delta p$
+  desde ambos extremos.
+  \item \textbf{¿Por qué un diodo de potencia sigue conduciendo un tiempo después de invertirle la
+  tensión?}\\
+  Porque tiene carga almacenada ($\approx I_F\tau$) en la región de arrastre; mientras haya portadores
+  en el borde de la juntura, ésta sigue en directa. La corriente inversa dura hasta extraer o
+  recombinar esa carga ($\Qrr$).
+  \item \textbf{¿Qué compromiso fija la vida media en un dispositivo bipolar de potencia?}\\
+  $\tau$ largo: buena modulación y baja caída, pero mucha carga y conmutación lenta. $\tau$ corto: lo
+  contrario. Además $\tau$ cambia con la temperatura (SRH crece) y con la inyección (Auger la reduce).
+  \item \textbf{Explicar con el modelo de dos transistores por qué un tiristor se ``engancha''.}\\
+  El colector de cada transistor es la base del otro; si $\alpha_1+\alpha_2\to1$ la ganancia del lazo
+  llega a 1 y la corriente crece sin límite propio. Una vez encendido, la corriente de ánodo sostiene
+  los $\alpha$ altos aunque se retire $\IG$, mientras $\IA>I_H$.
+  \item \textbf{¿Qué otras cosas, además de la compuerta, pueden encender un tiristor?}\\
+  Superar $V_{BO}$ (avalancha en $J_2$), un $\dd v/\dd t$ alto ($C_{J2}\dd v/\dd t$ actúa como
+  $\IG$), la temperatura (más fugas) y la luz.
+  \item \textbf{¿Por qué hay que limitar el $\dd i/\dd t$ al encender un tiristor?}\\
+  Porque el encendido empieza en una franja junto a la compuerta y el plasma se expande a
+  $\sim\SI{0.1}{mm/\micro s}$; si la corriente sube más rápido, se concentra en esa franja y la
+  destruye.
+  \item \textbf{¿Por qué una corriente de compuerta negativa no apaga un tiristor común y sí un GTO?}\\
+  En el tiristor, la caída lateral en $p_2$ hace que la compuerta sólo afecte el borde del cátodo y el
+  centro sigue conduciendo. El GTO tiene cátodos angostos e interdigitados (poca caída lateral), un
+  $\alpha_1$ chico (ánodo en cortocircuito, vida corta) para que $\alpha_1+\alpha_2$ supere a 1 por poco,
+  y así $\boff$ es razonable.
+  \item \textbf{¿Por qué el GTO no bloquea en inversa?}\\
+  Porque los cortocircuitos $n^+$ del ánodo anulan la juntura $J_1$; sólo queda $J_3$, que rompe a
+  \SIrange{20}{30}{V}.
+  \item \textbf{¿Qué es el latch-up de un IGBT y cómo se evita?}\\
+  El encendido del tiristor parásito $n^+pn^-p^+$ cuando la corriente de huecos por $R_b$ polariza la
+  juntura fuente--cuerpo. Se evita con el corto cuerpo--fuente, un cuerpo $p^+$ profundo, fuentes
+  cortas y un PNP de baja ganancia. El dinámico ocurre al apagar, a corriente menor que la estática.
+  \item \textbf{¿De dónde viene la corriente de cola del IGBT?}\\
+  De la carga almacenada en la región de arrastre, que es la base sin terminal del PNP: al cerrarse el
+  canal nada la extrae, y desaparece por recombinación con constante $\tau$.
+  \item \textbf{¿Por qué el SiC permite hacer diodos Schottky de \SI{1200}{V} y el Si no?}\\
+  Con $\Ecr$ $\sim7$--10 veces mayor, la región de arrastre para la misma tensión se dopa unas 36 veces
+  más y es 7 veces más delgada: $\Ronsp$ baja $\sim100$ veces y un dispositivo unipolar vuelve a ser
+  competitivo.
+  \item \textbf{¿Por qué un diodo PN de SiC tiene una caída de casi \SI{3}{V}?}\\
+  Porque $I_S\propto n_i^2$ es $\sim10^{36}$ veces menor que en Si: hace falta
+  $\Delta V=V_T\ln(n_{i,\mathrm{Si}}^2/n_{i,\mathrm{SiC}}^2)\approx\SI{2.2}{V}$ más para la misma
+  corriente.
+  \item \textbf{¿Qué es el 2DEG y por qué en AlGaN/GaN no hace falta dopar?}\\
+  Un gas de electrones confinado en un pozo triangular en la heterointerfaz, libre en dos dimensiones.
+  En AlGaN/GaN la polarización espontánea y piezoeléctrica deja una carga fija positiva en la interfaz
+  que atrae $\sim\SI{1e13}{cm^{-2}}$ electrones.
+  \item \textbf{¿Por qué un JFET de SiC o un HEMT de GaN de deplexión se usan en cascodo?}\\
+  Porque son normally-on: sin tensión de compuerta conducen, lo que en un puente cortocircuita la
+  fuente al arrancar. El cascodo con un MOSFET de Si de baja tensión da una llave normally-off.
+\end{enumerate}
+
+\subsection{Correcciones a las diapositivas}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Diapo & Dice & Corrección \\
+\midrule
+4 & $\tau$ disminuye por Auger para $\delta n$ cercano a $n_b\approx\SI{1e16}{cm^{-3}}$ & En Si la Auger
+compite con SRH recién en $\sim\SIrange{1e17}{1e18}{cm^{-3}}$; $n_b$ es un parámetro de ajuste \\
+18 & Al reducir $I_{B2}$ ``se activaría $Q_2$, el cual se empezaría a apagar'' & $Q_2$ \emph{sale de
+saturación} y pasa a activa; recién ahí la realimentación actúa en sentido inverso hasta el corte \\
+20 & ``Región de estrangulamiento cuando $V_{GS}<V_{GS(th)}$'' & Eso es \textbf{corte}; el
+estrangulamiento (activa) es $V_{DS}>V_{GS}-V_{GS(th)}$ con canal formado \\
+21 & ``Zona de degradación'' & Zona de \textbf{deplexión} (vaciamiento) bajo la compuerta \\
+25 & $n_i(\mathrm{Si})=\num{1.5e10}$ & Valor antiguo; la tabla de constantes de la materia usa \niSi \\
+30 & $N_D$ $\times26.14$, $R$ $/92.94$, tensión $\times9.6$ & Con los datos de la diapo 29: $\times36.5$,
+$/130$, $\times11.4$; lo robusto es el orden de magnitud \\
+34 & MOSFET de SiC dibujado lateral & Didáctico; los comerciales son verticales (DMOS/trench) \\
+36 & ``Gas bidireccional de electrones'' & Gas \textbf{bidimensional} (2DEG) \\
+\bottomrule
+\end{tabularx}
+\caption{Errores e imprecisiones de la presentación corregidos en el apunte.}
+\label{tab:correcciones}
+\end{table}

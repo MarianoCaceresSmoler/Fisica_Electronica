@@ -1,0 +1,138 @@
+% =====================================================================
+\section{GTO (\emph{Gate Turn-Off Thyristor})}
+\label{sec:gto}
+% =====================================================================
+
+El GTO es un tiristor modificado para que \textbf{pueda apagarse desde la compuerta} con una
+corriente de compuerta negativa grande \diapo{17}. Se enciende como un tiristor; para apagarlo se
+\emph{extrae} por la compuerta una fracción importante de la corriente de ánodo durante algunos
+microsegundos.
+
+\subsection{Diferencias estructurales con el tiristor}
+
+\diapo{17} Para lograr la capacidad de desconexión, el GTO cambia tres cosas:
+\begin{enumerate}
+  \item \textbf{Estructura compuerta--cátodo muy interdigitada}: el cátodo se divide en cientos o
+  miles de ``dedos'' angostos (de unos \SI{100}{\micro m}), cada uno rodeado de compuerta. Así ningún
+  punto de la $p_2$ queda lejos de un contacto de compuerta y la caída lateral en $p_2$ durante el
+  apagado es chica (justo el problema de la figura~\ref{fig:compuerta-negativa}).
+  \item \textbf{Cátodos en forma de islas}: se graba el silicio alrededor de cada cátodo $n^+$, que
+  queda como una meseta; la compuerta contacta la $p_2$ en el fondo del grabado.
+  \item \textbf{Ánodo en cortocircuito}: zonas $n^+$ que atraviesan la $p^+$ del ánodo y conectan la
+  $n_1$ directamente con el metal de ánodo.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  % capas
+  \fill[rojo!12] (0,2.6) rectangle (10,3.4);
+  \fill[azul!8] (0,0.6) rectangle (10,2.6);
+  \fill[rojo!30] (0,0) rectangle (10,0.6);
+  \foreach \x in {2.3,5.0,7.7} \fill[azul!40] (\x,0) rectangle (\x+0.6,0.6);
+  % islas de cátodo
+  \foreach \x in {0.8,3.5,6.2} {
+    \fill[azul!35] (\x,3.4) rectangle (\x+1.6,4.0);
+    \draw (\x,3.4) -- (\x,4.0) -- (\x+1.6,4.0) -- (\x+1.6,3.4);
+    \fill[gris] (\x+0.1,4.0) rectangle (\x+1.5,4.12);
+    \node[font=\small] at (\x+0.8,3.7) {$n_2^+$};
+  }
+  \foreach \x in {0.05,2.6,5.3,8.0} \fill[gris] (\x,3.4) rectangle (\x+0.5,3.52);
+  \draw (0,0) rectangle (10,3.4); \draw (0,2.6) -- (10,2.6); \draw (0,0.6) -- (10,0.6);
+  \fill[gris] (0,-0.12) rectangle (10,0);
+  \node[font=\small] at (9.2,3.0) {$p_2$}; \node[font=\small] at (9.2,1.6) {$n_1^-$}; \node[font=\small] at (9.3,0.3) {$p_1^+$};
+  \foreach \x in {2.3,5.0,7.7} \node[font=\scriptsize] at (\x+0.3,0.3) {$n^+$};
+  \node[font=\small,above] at (1.6,4.15) {K}; \node[font=\small,above] at (4.3,4.15) {K}; \node[font=\small,above] at (7.0,4.15) {K};
+  \node[font=\small,above] at (2.85,3.55) {G}; \node[font=\small,above] at (5.55,3.55) {G};
+  \node[font=\small] at (5,-0.4) {A (metal de ánodo)};
+  % flechas de huecos que salen por los cortos
+  \draw[rojo,->,line width=0.8pt] (2.6,1.4) -- (2.6,0.65);
+  \draw[rojo,->,line width=0.8pt] (5.3,1.4) -- (5.3,0.65);
+  \node[rojo,font=\scriptsize,align=left,anchor=west] at (5.5,1.2) {los huecos en exceso\\salen por los $n^+$ del ánodo};
+\end{tikzpicture}
+\caption{Corte esquemático de un GTO \diapo{17}: cátodos en islas $n^+$ rodeados de contactos de
+compuerta sobre la $p_2$, y ánodo con cortocircuitos $n^+$ que perforan la $p_1^+$.}
+\label{fig:gto}
+\end{figure}
+
+\subsection{Ganancia de apagado}
+
+Partimos del GTO encendido, con $Q_1$ y $Q_2$ saturados, y extraemos por la compuerta una corriente
+$I_G'=-\IG>0$ \diapo{18}. La base de $Q_2$ recibe el colector de $Q_1$ menos lo que sale por la
+compuerta:
+\[
+  I_{B2}=I_{C1}-I_G'=\alpha_1\IA-I_G'.
+\]
+Por otro lado, el colector de $Q_2$ es la base de $Q_1$, que es lo que queda de $\IA$ después de
+restar su corriente de colector:
+\[
+  I_{C2}=I_{B1}=(1-\alpha_1)\IA .
+\]
+$Q_2$ sale de saturación (y se rompe la realimentación) cuando su corriente de base ya no alcanza
+para sostener su corriente de colector:
+\[
+  I_{B2}<\frac{I_{C2}}{\beta_2},\qquad \beta_2=\frac{\alpha_2}{1-\alpha_2}
+  \quad\Longrightarrow\quad
+  \alpha_1\IA-I_G'<\frac{(1-\alpha_1)(1-\alpha_2)}{\alpha_2}\IA .
+\]
+Despejando $I_G'$:
+\[
+  I_G'>\IA\left[\alpha_1-\frac{(1-\alpha_1)(1-\alpha_2)}{\alpha_2}\right]
+  =\IA\,\frac{\alpha_1+\alpha_2-1}{\alpha_2}.
+\]
+
+\begin{clave}[Ganancia de desconexión del GTO]
+\[
+  I_G'>\frac{\IA}{\boff},\qquad
+  \boff=\frac{\alpha_2}{\alpha_1+\alpha_2-1}\qquad\text{\diapo{18}}
+\]
+Para que $\boff$ sea grande (poca corriente de compuerta para apagar):
+\begin{itemize}
+  \item $\alpha_2\approx1$: capa $p_2$ delgada y $n_2$ (cátodo) muy dopada, como un BJT de alto $\beta$.
+  \item $\alpha_1$ chico: $n_1$ lo más gruesa posible y \textbf{vida media corta en $n_1$}, de modo que
+  $\alpha_1+\alpha_2$ supere a 1 por poco.
+\end{itemize}
+\end{clave}
+
+\begin{ejemplo}[Corriente de apagado]
+Con $\alpha_2=0.95$ y $\alpha_1=0.3$: $\boff=0.95/(0.3+0.95-1)=3.8$. Para apagar $\IA=\SI{1000}{A}$
+hay que extraer $I_G'>\SI{263}{A}$ durante el apagado. Aunque el pulso dura pocos microsegundos (la
+energía es chica), el circuito de compuerta de un GTO es voluminoso: es su principal desventaja frente
+al IGBT, y lo que llevó al IGCT (GTO con compuerta integrada de muy baja inductancia, $\boff\approx1$).
+\end{ejemplo}
+
+\subsection{El ánodo en cortocircuito}
+
+\diapo{18, 19} Una vida media corta en $n_1$ baja $\alpha_1$ y acelera el apagado, pero aumenta las
+pérdidas en conducción. El ánodo en cortocircuito resuelve el compromiso de otra manera:
+\begin{itemize}
+  \item Las zonas $n^+$ del ánodo \textbf{eliminan la barrera} para que los huecos en exceso de $n_1$
+  salgan al metal: son un ``disipador'' de huecos. Durante el apagado, la carga almacenada se retira
+  mucho más rápido que sólo por recombinación, sin tener que acortar tanto $\tau$.
+  \item También reducen la eficiencia de inyección de $J_1$, es decir, bajan $\alpha_1$
+  (exactamente lo que pide $\boff$).
+  \item Precio: $J_1$ queda cortocircuitada y \textbf{el GTO no bloquea en inversa} \diapo{17}; la
+  única juntura que lo intenta es $J_3$, que rompe a \SIrange{20}{30}{V} por sus dopajes altos. Y como
+  no se le puede aplicar tensión inversa, tampoco hay corriente inversa que barra los portadores: la
+  única forma de sacarlos es la recombinación interna y la difusión a través de los $n^+$
+  \diapo{19}.
+\end{itemize}
+En circuitos que necesitan bloqueo inverso se agrega un diodo en serie.
+
+\begin{ojo}[Redacción de la diapo 18]
+La diapo dice: ``se reduce $I_{B2}$, se \emph{activaría} $Q_2$, el cual se empezaría a apagar por la
+acción regenerativa''. Lo que ocurre es que al extraer corriente por la compuerta se reduce $I_{B2}$
+y $Q_2$ \textbf{sale de saturación} y pasa a la región activa; recién entonces la realimentación
+positiva actúa \emph{en sentido inverso}: menos $I_{C2}$ es menos base para $Q_1$, que entrega menos
+$I_{C1}$, y así sucesivamente hasta el corte.
+\end{ojo}
+
+\subsection{Transitorio de apagado}
+
+El apagado de un GTO tiene tres etapas: (1) \emph{almacenamiento}: la compuerta extrae carga de $p_2$
+mientras $\IA$ todavía no cambia; (2) \emph{caída}: $J_3$ se recupera, $\IA$ cae bruscamente y
+$\VAK$ sube; (3) \emph{cola}: la carga que quedó en $n_1$ (lejos de la compuerta) se va por
+recombinación y por los cortos de ánodo, con una corriente de cola que, multiplicada por la tensión
+ya alta, es una pérdida importante. Durante el apagado la corriente tiende a \emph{concentrarse} en
+los dedos que tardan más en apagarse (filamentación), por lo que el GTO necesita un \emph{snubber}
+que limite $\dd v/\dd t$.

@@ -1,0 +1,413 @@
+% =====================================================================
+\section{Tiristor (SCR)}
+\label{sec:tiristor}
+% =====================================================================
+
+El tiristor o \emph{rectificador controlado de silicio} (SCR) es una estructura de cuatro capas
+$pnpn$ con tres terminales: ánodo (A), cátodo (K) y compuerta (G, conectada a la $p$ interna). Es un
+diodo que \textbf{no conduce en directa hasta que se lo dispara} con un pulso de compuerta; una vez
+encendido \emph{se queda encendido} aunque se quite el pulso, y sólo se apaga cuando la corriente de
+ánodo cae por debajo de un mínimo (Pierret cap.~13; Mohan cap.~23).
+
+\subsection{Estructura}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  % capas (cátodo arriba, como en la diapo 8)
+  \fill[azul!35] (0,4.6) rectangle (2.2,5.2);  \fill[azul!35] (3.8,4.6) rectangle (6.4,5.2);
+  \fill[rojo!12] (0,3.6) rectangle (6.4,4.6);  \fill[rojo!12] (2.2,4.6) rectangle (3.8,5.2);
+  \fill[azul!8]  (0,1.2) rectangle (6.4,3.6);
+  \fill[rojo!12] (0,0.6) rectangle (6.4,1.2);
+  \fill[rojo!35] (0,0)   rectangle (6.4,0.6);
+  \draw (0,0) rectangle (6.4,5.2);
+  \foreach \y in {0.6,1.2,3.6} \draw (0,\y) -- (6.4,\y);
+  \draw (0,4.6) -- (2.2,4.6) -- (2.2,5.2); \draw (6.4,4.6) -- (3.8,4.6) -- (3.8,5.2);
+  % contactos
+  \fill[gris] (0.2,5.2) rectangle (2.0,5.32); \fill[gris] (4.0,5.2) rectangle (6.2,5.32);
+  \fill[gris] (2.6,5.2) rectangle (3.4,5.32); \fill[gris] (0,-0.12) rectangle (6.4,0);
+  \draw (1.1,5.32) -- (1.1,6.0) -- (5.1,6.0) -- (5.1,5.32);
+  \draw (1.1,6.0) -- (0.4,6.0) node[circle,draw,inner sep=1.3pt,fill=white]{} node[left=2pt] {K};
+  \draw (3.0,5.32) -- (3.0,5.6) node[circle,draw,inner sep=1.3pt,fill=white]{} node[right=2pt,font=\small] {G};
+  \draw (3.2,-0.12) -- (3.2,-0.5) node[circle,draw,inner sep=1.3pt,fill=white]{} node[right=2pt] {A};
+  % rótulos
+  \node at (1.1,4.9) {$n_2^+$}; \node at (5.1,4.9) {$n_2^+$};
+  \node at (1.1,4.1) {$p_2$}; \node at (1.1,2.4) {$n_1^-$}; \node at (1.1,0.9) {$p_1$}; \node at (1.1,0.3) {$p_1^+$};
+  \node[font=\small] at (4.2,4.1) {$\SI{1e17}{cm^{-3}}$};
+  \node[font=\small] at (4.2,2.4) {$\SIrange{1e13}{5e14}{cm^{-3}}$};
+  \node[font=\small] at (4.2,0.9) {$\SI{1e17}{cm^{-3}}$};
+  \node[font=\small] at (4.2,0.3) {$\SI{1e19}{cm^{-3}}$};
+  % junturas
+  \node[left,font=\small] at (0,4.6) {$J_3$};
+  \node[left,font=\small] at (0,3.6) {$J_2$};
+  \node[left,font=\small] at (0,1.2) {$J_1$};
+  % espesores
+  \draw[<->] (6.7,4.6) -- node[right,font=\small] {$\sim\SI{10}{\micro m}$, $\SI{1e19}{cm^{-3}}$} (6.7,5.2);
+  \draw[<->] (6.7,3.6) -- node[right,font=\small] {\SIrange{30}{100}{\micro m}} (6.7,4.6);
+  \draw[<->] (6.7,1.2) -- node[right,font=\small,align=left] {\SIrange{50}{1000}{\micro m}\\(bloquea la tensión)} (6.7,3.6);
+  \draw[<->] (6.7,0) -- node[right,font=\small] {\SIrange{30}{50}{\micro m}} (6.7,1.2);
+  % símbolo
+  \begin{scope}[xshift=11.4cm,yshift=1.6cm]
+    \draw (0,0) to[thyristor,l_=$ $] (0,2.2);
+    \node[right] at (0,2.3) {A}; \node[right] at (0,-0.1) {K};
+  \end{scope}
+\end{tikzpicture}
+\caption{Corte de un tiristor con los dopajes típicos de la diapo~8. La región $n_1^-$, poco dopada
+y gruesa, es la región de arrastre: fija la tensión de bloqueo en los dos sentidos. A la derecha, el
+símbolo.}
+\label{fig:tiristor-estructura}
+\end{figure}
+
+\subsection{Modelo de dos transistores}
+
+Cortando mentalmente las capas $n_1$ y $p_2$ en dos, el tiristor es un PNP ($Q_1=p_1n_1p_2$) y un
+NPN ($Q_2=n_1p_2n_2$) conectados de modo que \textbf{el colector de cada uno alimenta la base del
+otro} \diapo{5, 12}: realimentación positiva.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.4\textwidth}\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{capa/.style={draw,minimum width=1.4cm,minimum height=0.55cm,inner sep=0pt,font=\small}}
+  % Q1 (PNP) a la izquierda
+  \node[capa,fill=rojo!25] (a1) at (0,0) {$p_1$};
+  \node[capa,fill=azul!10,below=0pt of a1] (a2) {$n_1$};
+  \node[capa,fill=rojo!12,below=0pt of a2] (a3) {$p_2$};
+  % Q2 (NPN) a la derecha, desplazado una capa hacia abajo
+  \node[capa,fill=azul!10] (b1) at (2.0,-0.55) {$n_1$};
+  \node[capa,fill=rojo!12,below=0pt of b1] (b2) {$p_2$};
+  \node[capa,fill=azul!35,below=0pt of b2] (b3) {$n_2$};
+  \draw[dashed,gris] (a2.east) -- (b1.west);
+  \draw[dashed,gris] (a3.east) -- (b2.west);
+  \draw (a1.north) -- ++(0,0.4) node[above] {A};
+  \draw (b3.south) -- ++(0,-0.4) node[below] {K};
+  \draw (b2.east) -- ++(0.5,0) node[right] {G};
+  \node[font=\small] at (0,-1.75) {$Q_1$ (PNP)};
+  \node[font=\small] at (2.0,0.05) {$Q_2$ (NPN)};
+\end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}{0.55\textwidth}\centering
+\begin{circuitikz}
+  \draw (0,0) node[pnp,xscale=-1] (Q1) {};
+  \draw (2.2,-1.6) node[npn] (Q2) {};
+  \node[left] at (Q1.text) {$Q_1$};
+  \node[right] at (Q2.text) {$Q_2$};
+  \draw (Q1.E) -- ++(0,0.5) node[above] {A};
+  \draw[->] ($(Q1.E)+(0.25,0.4)$) -- node[right,font=\small] {$\IA$} ($(Q1.E)+(0.25,0.05)$);
+  \draw (Q1.C) |- (Q2.B);
+  \draw (Q1.B) -| (Q2.C);
+  \draw (Q2.E) -- ++(0,-0.5) node[below] {K};
+  \draw (Q2.B) ++(-0.65,0) -- ++(0,-1.2) -- ++(-1.3,0) node[left] {G};
+  \node[font=\small] at (1.35,0.25) {$I_{C2}=I_{B1}$};
+\end{circuitikz}
+\end{minipage}
+\caption{Izquierda: partición de la estructura $p_1n_1p_2n_2$ en dos transistores que comparten
+$n_1$ y $p_2$. Derecha: circuito equivalente \diapo{5, 12}, con $I_{B1}=I_{C2}$ e $I_{B2}=I_{C1}+\IG$. La corriente de colector de cada
+transistor es la corriente de base del otro.}
+\label{fig:dos-transistores}
+\end{figure}
+
+\paragraph{Derivación de la corriente de ánodo.}
+Con los dos transistores en activa (estado de bloqueo directo), la relación de la hoja de fórmulas
+$I_C=\alpha I_E+I_{CB0}$ \enhojatexto{} aplicada a cada uno da \diapo{12}
+\[
+  I_{C1}=\alpha_1\IA+I_{CO1},\qquad I_{C2}=\alpha_2I_K+I_{CO2},\qquad I_K=\IA+\IG ,
+\]
+donde las corrientes de fuga son las de Ebers--Moll con el emisor abierto,
+$I_{CO}=I_{CB0}=I_{R0}(1-\alpha_F\alpha_R)$ (la diapo escribe $I_{CS}[1-\alpha_f\alpha_r]$). En el nodo de
+ánodo, la corriente de emisor de $Q_1$ se reparte entre su colector y su base, y su base es el
+colector de $Q_2$:
+\[
+  \IA=I_{C1}+I_{B1}=I_{C1}+I_{C2}=\alpha_1\IA+I_{CO1}+\alpha_2(\IA+\IG)+I_{CO2}.
+\]
+Despejando:
+
+\begin{clave}[Corriente de ánodo del tiristor]
+\[
+  \IA=\frac{\alpha_2\IG+I_{CO1}+I_{CO2}}{1-(\alpha_1+\alpha_2)} .
+\]
+\begin{itemize}
+  \item \textbf{Bloqueo}: $\alpha_1+\alpha_2\ll1$ y $\IA$ es apenas una corriente de fuga \diapo{12}.
+  \item \textbf{Disparo}: cuando $\alpha_1+\alpha_2\to1$ el denominador se anula y la corriente crece
+  sin límite: la realimentación se vuelve regenerativa y $\IA$ queda \textbf{limitada sólo por el
+  circuito externo} \diapo{10}.
+\end{itemize}
+\end{clave}
+
+\begin{intuicion}[¿Por qué los $\alpha$ cambian?]
+Si los $\alpha$ fueran constantes, un tiristor con $\alpha_1+\alpha_2<1$ nunca se encendería. En
+realidad los $\alpha$ \textbf{crecen con la corriente}: a corriente baja la corriente de emisor es
+mayormente de recombinación en la zona desierta (Pierret §11.2.6), que no contribuye a la corriente
+de colector, y la eficiencia de emisión es pobre. Además crecen con $\VAK$ \diapo{13}: al aumentar la
+tensión, la zona desierta de $J_2$ se extiende en $n_1$ (achica la base de $Q_1$ $\Rightarrow$ sube
+$\alpha_{pnp}$) y en $p_2$ (achica la base de $Q_2$ $\Rightarrow$ sube $\alpha_{npn}$). Por eso el
+diseño usa $\alpha_1$ chico (base $n_1$ muy ancha) y $\alpha_2$ alto pero dependiente de la corriente.
+\end{intuicion}
+
+\begin{ejemplo}[Del bloqueo al disparo]
+Con $\alpha_1=0.3$, $\alpha_2=0.5$ y $I_{CO1}+I_{CO2}=\SI{2}{nA}$, sin compuerta:
+$\IA=\SI{2}{nA}/0.2=\SI{10}{nA}$ (bloqueo). Se inyecta $\IG=\SI{1}{mA}$ y, a medida que la corriente
+sube, también los $\alpha$; tomando $\alpha_2\approx0.5$ en el numerador:
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+$\alpha_1+\alpha_2$ & 0.8 & 0.95 & 0.99 & $\to1$ \\
+$\IA$ & \SI{2.5}{mA} & \SI{10}{mA} & \SI{50}{mA} & limitada por el circuito \\
+\bottomrule
+\end{tabular}
+\end{center}
+Cada aumento de $\IA$ sube los $\alpha$, que suben $\IA$: el proceso se dispara solo.
+\end{ejemplo}
+
+\subsection{Característica $I$--$V$ y estados}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.9\textwidth, height=7.4cm,
+  axis lines=middle, xmin=-7, xmax=7.2, ymin=-2.2, ymax=4.2,
+  xtick=\empty, ytick=\empty,
+  xlabel={$\VAK$}, ylabel={$\IA$},
+  every axis plot/.append style={line width=1.1pt},
+  clip=false,
+]
+  % estado de conducción
+  \addplot[azul,smooth] coordinates {(0.65,1.1) (0.85,1.7) (1.1,2.8) (1.4,4.0)};
+  % bloqueo directo IG=0, IG1, IG2
+  \addplot[rojo,smooth] coordinates {(0,0) (2,0.15) (4,0.3) (5.5,0.55) (5.9,1.0)};
+  \addplot[rojo,dashed,smooth] coordinates {(5.9,1.0) (4,1.15) (2,1.25) (0.75,1.3)};
+  \addplot[naranja,smooth] coordinates {(0,0) (2,0.2) (3.5,0.45) (3.9,0.9)};
+  \addplot[naranja,dashed,smooth] coordinates {(3.9,0.9) (2.5,1.15) (0.75,1.3)};
+  \addplot[violeta,smooth] coordinates {(0,0) (1.4,0.3) (2.0,0.75)};
+  \addplot[violeta,dashed,smooth] coordinates {(2.0,0.75) (1.4,1.1) (0.75,1.3)};
+  % bloqueo inverso y avalancha
+  \addplot[rojo,smooth] coordinates {(0,0) (-3,-0.15) (-5.5,-0.3) (-5.9,-0.8) (-6.05,-2.0)};
+  % rótulos
+  \node[font=\small,anchor=west] at (axis cs:5.95,1.0) {$V_{BO}$ ($\IG=0$)};
+  \node[font=\small,anchor=west] at (axis cs:3.95,0.85) {$I_{G1}$};
+  \node[font=\small,anchor=west] at (axis cs:2.05,0.7) {$I_{G2}$};
+  \draw[gris,dotted] (axis cs:0,1.3) -- (axis cs:0.75,1.3);
+  \node[font=\small,anchor=east] at (axis cs:0,1.3) {$I_H$};
+  \node[font=\small,anchor=west,align=left] at (axis cs:1.5,3.2) {conducción\\($\VAK\approx\SIrange{1}{2}{V}$)};
+  \node[font=\small,align=center] at (axis cs:3.6,-0.55) {bloqueo directo};
+  \node[font=\small,align=center] at (axis cs:-3.3,0.45) {bloqueo inverso};
+  \node[font=\small,anchor=east] at (axis cs:-6.1,-1.6) {$V_{RB}$ (avalancha)};
+  \node[font=\small,rojo,align=center] at (axis cs:3.6,2.4) {resistencia negativa\\(inestable)};
+  \draw[rojo,->] (axis cs:3.4,2.0) -- (axis cs:3.0,1.25);
+\end{axis}
+\end{tikzpicture}
+\caption{Característica estática \diapo{5, 8}. Con $\IG=0$ el tiristor bloquea hasta la tensión de
+ruptura directa $V_{BO}$; cuanto mayor $\IG$ ($I_{G2}>I_{G1}>0$), menor la tensión a la que se dispara. La rama
+punteada (resistencia negativa) no es observable en régimen: el punto de trabajo salta de bloqueo a
+conducción.}
+\label{fig:tiristor-iv}
+\end{figure}
+
+\begin{definicion}[Corrientes de enganche y de mantenimiento]
+\begin{itemize}
+  \item \textbf{Corriente de enganche} $I_L$ (\emph{latching}): mínima $\IA$ que tiene que alcanzarse
+  \emph{durante el pulso de compuerta} para que, al retirarlo, el tiristor quede encendido.
+  \item \textbf{Corriente de mantenimiento} $I_H$ (\emph{holding}): mínima $\IA$ que mantiene el
+  dispositivo en conducción; si $\IA<I_H$, $\alpha_1+\alpha_2$ cae por debajo de 1 y se apaga.
+  Siempre $I_L>I_H$ (típicamente $I_L\approx2$--$3\,I_H$).
+\end{itemize}
+\end{definicion}
+
+\paragraph{Bloqueo inverso} ($\VAK<0$) \diapo{12}. $J_1$ y $J_3$ en inversa, $J_2$ en directa.
+$J_3$ tiene dopajes altos a ambos lados y rompe a pocos volts (\SIrange{20}{30}{V}), así que
+\textbf{la que soporta la tensión es $J_1$}, y el límite lo pone el ancho de la zona $n_1$
+(perforación hasta $J_2$) o su avalancha.
+
+\paragraph{Bloqueo directo} ($\VAK>0$, sin disparo) \diapo{12}. $J_1$ y $J_3$ en directa, $J_2$ en
+inversa. Por los dopajes, la zona desierta de $J_2$ se extiende en $n_1$: otra vez es la región
+$n_1$ la que fija la tensión de bloqueo directa $V_{BO}$. Por eso un tiristor simétrico bloquea
+aproximadamente la misma tensión en los dos sentidos.
+
+\paragraph{Conducción} \diapo{13}. Las cuatro capas están inundadas de portadores minoritarios en
+exceso; $J_2$ pasa a \textbf{directa} y los dos transistores del modelo están \textbf{saturados}.
+La tensión es la suma de las tres junturas (la de $J_2$ con signo opuesto) más la región modulada:
+\[
+  \VAK(\mathrm{enc})=V_{J1}-V_{J2}+V_{J3}+V_{n^-}\approx\SIrange{0.8}{1}{V}\;(+\text{óhmica}) \qquad\text{\diapo{10, 13}}.
+\]
+Como en el diodo PiN, la $n_1$ está modulada y la caída casi no depende de la tensión de bloqueo:
+es el dispositivo con menor caída por ampere para tensiones de varios kV.
+
+\subsection{Diagramas de bandas}
+
+\newcommand{\bandastir}[5]{% #1..#4: nivel de E_c en n2, p2, n1, p1; #5: hasta dónde llega J2 en n1
+  \draw[bandac] (0,#1) -- (1.8,#1) to[out=0,in=180] (2.3,#2) -- (4.3,#2) to[out=0,in=180] (#5,#3)
+     -- (9.3,#3) to[out=0,in=180] (9.8,#4) -- (12,#4);
+  \draw[bandav] (0,{#1-1.1}) -- (1.8,{#1-1.1}) to[out=0,in=180] (2.3,{#2-1.1}) -- (4.3,{#2-1.1})
+     to[out=0,in=180] (#5,{#3-1.1}) -- (9.3,{#3-1.1}) to[out=0,in=180] (9.8,{#4-1.1}) -- (12,{#4-1.1});
+}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.95cm,y=0.95cm,>=Stealth]
+  % cabecera de regiones
+  \foreach \xa/\xb/\t in {0/2/{$n_2^+$ (K)}, 2/4.5/{$p_2$ (G)}, 4.5/9.5/{$n_1^-$}, 9.5/12/{$p_1^+$ (A)}}
+     \node[font=\small] at ({(\xa+\xb)/2},2.0) {\t};
+  \foreach \x/\j in {2/J_3, 4.5/J_2, 9.5/J_1} \node[font=\small,gris] at (\x,1.55) {$\j$};
+  % (a) equilibrio
+  \begin{scope}
+    \bandastir{0.1}{1.0}{0.25}{1.05}{4.9}
+    \draw[fermi] (0,0) -- (12,0) node[right,black,font=\small] {$E_F$};
+    \node[font=\small,anchor=west] at (12.5,0.6) {(a) equilibrio};
+  \end{scope}
+  % (b) bloqueo directo
+  \begin{scope}[yshift=-3.0cm]
+    \bandastir{0.1}{0.85}{-1.25}{-0.6}{6.0}
+    \node[font=\small,anchor=west] at (12.5,0.0) {(b) bloqueo directo};
+    \node[font=\scriptsize,rojo,align=center] at (8.2,-0.4) {$J_2$ en inversa: cae casi toda $\VAK$};
+    \draw[<->] (11.6,0.1) -- node[right,font=\small] {$q\VAK$} (11.6,-0.6);
+    \draw[dashed,gris] (0,0.1) -- (11.8,0.1);
+  \end{scope}
+  % (c) conducción
+  \begin{scope}[yshift=-6.7cm]
+    \bandastir{0.1}{0.35}{0.0}{0.1}{4.9}
+    \node[font=\small,anchor=west] at (12.5,0.0) {(c) conducción};
+    \node[font=\small,verde!60!black,align=center] at (7,0.8) {todas las barreras bajas: inyección en las cuatro capas};
+  \end{scope}
+\end{tikzpicture}
+\caption{Banda de conducción (azul) y de valencia (roja) del tiristor, cátodo a la izquierda como en
+las diapos~9--11. (a) Equilibrio. (b) Bloqueo directo: $J_1$ y $J_3$ apenas en directa; la tensión
+cae en la zona desierta de $J_2$, que se extiende en $n_1^-$. (c) Conducción: con las barreras
+reducidas, los electrones del cátodo y los huecos del ánodo atraviesan toda la estructura
+(proceso regenerativo, \diapo{10}). Esquemático: las escalas de energía no son exactas.}
+\label{fig:tiristor-bandas}
+\end{figure}
+
+\subsection{Mecanismos de encendido}
+
+Cualquier cosa que haga $\alpha_1+\alpha_2\to1$ enciende el tiristor:
+\begin{enumerate}
+  \item \textbf{Corriente de compuerta} (el normal) \diapo{13}. Una $\IG$ entrante polariza en
+  directa $J_3$ y la $n_2^+$ inyecta electrones en $p_2$; éstos difunden por la base y son barridos
+  por el campo de $J_2$ hacia $n_1$. En $n_1$ producen dos efectos: ensanchan la zona desierta de
+  $J_2$ y, por neutralidad, obligan a $J_1$ a inyectar huecos desde el ánodo. Los huecos cruzan hacia
+  $p_2$ y suman corriente de base para $Q_2$: realimentación.
+  \item \textbf{Sobretensión}: si $\VAK>V_{BO}$, la multiplicación por avalancha en $J_2$ aporta la
+  corriente que falta (Pierret generaliza $\IA=\dots/[1-M(\alpha_1+\alpha_2)]$). No destruye el
+  dispositivo si la corriente está limitada, pero no es un modo de disparo controlado.
+  \item \textbf{$\dd v/\dd t$}: $J_2$ en inversa es un capacitor $C_{J2}$. Un escalón rápido de tensión
+  inyecta $i=C_{J2}\,\dd\VAK/\dd t$, que actúa como corriente de compuerta.
+  \item \textbf{Temperatura}: las fugas $I_{CO}$ se duplican cada $\sim\SI{8}{\celsius}$ y los $\alpha$
+  suben.
+  \item \textbf{Luz} (LASCR): pares generados en $J_2$; se usa en tiristores de muy alta tensión
+  disparados por fibra óptica (unidad 6).
+\end{enumerate}
+
+\begin{ejemplo}[Disparo espurio por $\dd v/\dd t$]
+Con $C_{J2}=\SI{50}{pF}$ y un flanco de $\SI{200}{V/\micro s}$:
+$i=\num{50e-12}\cdot\num{2e8}=\SI{10}{mA}$, del orden de la corriente de disparo de compuerta de un
+tiristor de media potencia. Por eso la hoja de datos da un $(\dd v/\dd t)_{\max}$ y se usan
+\emph{snubbers} RC en paralelo.
+\end{ejemplo}
+
+\subsection{Transitorio de encendido y $\dd i/\dd t$}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  % iG
+  \draw[->] (0,5.0) -- (10.5,5.0) node[right] {$t$};
+  \node[left] at (0,5.5) {$i_G$};
+  \draw[violeta,line width=1.1pt] (0,5.0) -- (1,5.0) -- (1,5.7) -- (5.5,5.7) -- (5.5,5.0) -- (10,5.0);
+  % iA
+  \draw[->] (0,2.6) -- (10.5,2.6) node[right] {$t$};
+  \node[left] at (0,3.6) {$i_A$};
+  \draw[azul,line width=1.1pt] (0,2.6) -- (2.2,2.6) -- (2.4,2.65) -- (4.0,3.9) -- (10,3.9);
+  \draw[dashed,gris] (0,3.9) node[left,black,font=\small] {$I_o$} -- (4.0,3.9);
+  \node[font=\small,anchor=east] at (3.1,3.45) {$\dd i_A/\dd t$};
+  % vAK
+  \draw[->] (0,0) -- (10.5,0) node[right] {$t$};
+  \node[left] at (0,1.5) {$v_{AK}$};
+  \draw[rojo,line width=1.1pt] (0,1.6) -- (2.3,1.6) -- (4.0,0.55) .. controls (5.5,0.25) and (7,0.12) .. (10,0.1);
+  % tiempos
+  \foreach \x in {1,2.3,4.0,8.5} \draw[dotted] (\x,-0.2) -- (\x,5.8);
+  \draw[<->] (1,-0.35) -- node[below,font=\small] {$t_{d,\mathrm{enc}}$} (2.3,-0.35);
+  \draw[<->] (2.3,-0.35) -- node[below,font=\small] {$t_r$} (4.0,-0.35);
+  \draw[<->] (4.0,-0.35) -- node[below,font=\small] {$t_{ps}$} (8.5,-0.35);
+\end{tikzpicture}
+\caption{Encendido del tiristor \diapo{15}. $t_{d,\mathrm{enc}}$: retardo hasta que los $\alpha\to1$
+cerca de la compuerta; $t_r$: subida de la corriente, con pendiente impuesta por el circuito;
+$t_{ps}$: extensión del plasma, durante la cual el área encendida crece y $v_{AK}$ termina de bajar.}
+\label{fig:tiristor-encendido}
+\end{figure}
+
+\begin{intuicion}[El plasma y el límite de $\dd i/\dd t$ \diapo{15, 16}]
+La compuerta inyecta portadores en $p_2$ \emph{cerca de su contacto}: el tiristor se enciende
+primero en una franja angosta junto a la compuerta, donde se forma una acumulación de portadores en
+exceso (``plasma''). El plasma se expande lateralmente a $\sim\SI{0.1}{mm/\micro s}$, mucho más lento
+que lo que puede crecer la corriente. Si $\dd i_A/\dd t$ es grande, toda la corriente pasa por la
+pequeña área ya encendida: densidad de corriente enorme, punto caliente y destrucción. De ahí el
+$(\dd i/\dd t)_{\max}$ del fabricante, que se respeta con una inductancia serie \diapo{13, 15}, y las
+compuertas \emph{interdigitadas} o \emph{amplificadoras} de los tiristores grandes.
+\end{intuicion}
+
+\subsection{Apagado}
+
+Un tiristor convencional \textbf{no se apaga desde la compuerta}: hay que llevar $\IA$ por debajo
+de $I_H$ (conmutación natural, cuando la corriente alterna pasa por cero, o forzada por un circuito
+auxiliar) y mantenerlo sin tensión directa el tiempo suficiente.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  \draw[->] (0,0) -- (11,0) node[right] {$t$};
+  \draw[->] (0,-2.4) -- (0,2.3);
+  \draw[azul,line width=1.1pt] (0,1.6) -- (1.2,1.6) -- (3.0,-1.2) .. controls (3.3,-1.5) and (3.6,-0.4) .. (4.4,-0.05) -- (11,0);
+  \node[azul,left] at (0,1.6) {$i_A$};
+  \draw[rojo,line width=1.1pt] (0,0.1) -- (3.1,0.1) .. controls (3.4,-1.6) .. (3.9,-1.8) -- (6.6,-1.6) .. controls (7.0,0.2) .. (7.4,1.9) -- (11,1.9);
+  \node[rojo,right] at (11,1.9) {$v_{AK}$};
+  \node[rojo,font=\small] at (5.2,-2.1) {bloqueo inverso};
+  \draw[dashed,gris] (2.25,0) -- (2.25,2.2);
+  \draw[dashed,gris] (7.0,0) -- (7.0,2.2);
+  \draw[<->] (2.25,2.1) -- node[above,font=\small] {$t_q$: tiempo de apagado} (7.0,2.1);
+  \node[font=\small,align=left] at (9.2,1.0) {recién ahora puede\\volver la tensión directa};
+\end{tikzpicture}
+\caption{Apagado por conmutación \diapo{11}. Como en el diodo, la corriente se invierte mientras se
+extraen los portadores almacenados (pico de corriente inversa al vaciarse $J_1$ y $J_3$); luego la
+carga que queda en $J_2$ debe desaparecer por \emph{recombinación}, porque $J_2$ está en directa y
+no la barre ningún campo. Si se reaplica tensión directa antes de $t_q$, el tiristor se reenciende.}
+\label{fig:tiristor-apagado}
+\end{figure}
+
+\diapo{11, 14} Durante la conducción se inyectaron en $n_1$ y $p_2$ concentraciones de portadores
+mucho mayores que las de equilibrio. Para apagar, la recombinación interna y el barrido de
+portadores (acelerado si se invierte la polaridad, a costa de una considerable corriente inversa)
+retiran la carga almacenada hasta sacar a los transistores de saturación y llevarlos a la zona
+activa, donde la ganancia de lazo ya es menor que 1. El tiempo $t_q$ (decenas a cientos de
+\si{\micro s}) es la razón por la que los tiristores se usan a frecuencia de red.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
+    resis/.style={decorate,decoration={zigzag,amplitude=2pt,segment length=4pt}}]
+  \fill[rojo!12] (0,0) rectangle (10,1.6);
+  \fill[azul!35] (0.8,1.0) rectangle (4.4,1.6); \fill[azul!35] (5.6,1.0) rectangle (9.2,1.6);
+  \fill[azul!8] (0,-1.2) rectangle (10,0);
+  \draw (0,-1.2) rectangle (10,1.6); \draw (0,0) -- (10,0);
+  \fill[gris] (0.8,1.6) rectangle (4.4,1.72); \fill[gris] (5.6,1.6) rectangle (9.2,1.72);
+  \fill[gris] (0,1.6) rectangle (0.5,1.72); \fill[gris] (9.5,1.6) rectangle (10,1.72);
+  \node[font=\small] at (2.6,1.3) {$n_2^+$ (cátodo)}; \node[font=\small] at (7.4,1.3) {$n_2^+$ (cátodo)};
+  \node[font=\small] at (0.25,2.0) {G}; \node[font=\small] at (9.75,2.0) {G};
+  \node[font=\small] at (5,0.3) {$p_2$}; \node[font=\small] at (5,-0.8) {$n_1$};
+  % corriente de compuerta negativa: sale por los bordes
+  \draw[violeta,resis] (2.4,0.55) -- (0.6,0.55);
+  \draw[violeta,->] (0.6,0.55) -- (0.25,1.5);
+  \draw[violeta,resis] (7.6,0.55) -- (9.4,0.55);
+  \draw[violeta,->] (9.4,0.55) -- (9.75,1.5);
+  % corriente de ánodo concentrada en el centro
+  \foreach \x in {2.2,2.6,3.0,7.0,7.4,7.8} \draw[azul,->,line width=0.9pt] (\x,-1.1) -- (\x,0.95);
+  \foreach \x in {1.2,3.8,6.2,8.8} \draw[azul!50,->] (\x,-1.1) -- (\x,-0.3);
+  \node[font=\small,violeta,align=center] at (5,2.3) {$-\IG$ sólo saca portadores del borde del cátodo};
+\end{tikzpicture}
+\caption{Por qué una corriente de compuerta negativa no apaga un tiristor convencional \diapo{14}.
+La corriente de compuerta circula lateralmente por la $p_2$, que tiene resistencia; sólo polariza en
+inversa $J_3$ cerca del borde del cátodo. El centro de los cátodos (de área mucho mayor que la
+compuerta) sigue conduciendo y la corriente se concentra allí. El GTO resuelve esto achicando y
+entrelazando los cátodos (sección~\ref{sec:gto}).}
+\label{fig:compuerta-negativa}
+\end{figure}

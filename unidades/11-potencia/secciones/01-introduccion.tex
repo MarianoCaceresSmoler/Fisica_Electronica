@@ -1,0 +1,141 @@
+% =====================================================================
+\section{Introducción: el semiconductor como llave}
+\label{sec:intro}
+% =====================================================================
+
+En electrónica de potencia los semiconductores casi nunca se usan como amplificadores lineales: se
+usan como \textbf{llaves} que conectan y desconectan una carga de una fuente, miles o millones de
+veces por segundo (convertidores CC--CC, inversores, rectificadores controlados, variadores de
+motores). Todos los dispositivos de la unidad \diapo{1} son distintas respuestas a la misma
+pregunta: \emph{¿cómo hacer una llave que bloquee mucha tensión, conduzca mucha corriente con poca
+caída, y pase de un estado al otro rápido y con poca energía de control?}
+
+\begin{definicion}[Llave ideal]
+\begin{itemize}
+  \item \textbf{Apagada (bloqueo)}: soporta cualquier tensión, directa o inversa, con corriente nula.
+  \item \textbf{Encendida (conducción)}: conduce cualquier corriente con caída de tensión nula.
+  \item \textbf{Conmutación}: instantánea, y controlada con una señal de potencia despreciable.
+\end{itemize}
+Como $p=vi$ es siempre cero, una llave ideal no disipa.
+\end{definicion}
+
+Un dispositivo real se aparta en los tres puntos, y de ahí salen las tres fuentes de pérdidas:
+\begin{itemize}
+  \item \textbf{Pérdidas de conducción}: $P_{\mathrm{cond}}=V_{\mathrm{on}}I$ (o $\Ron I^2$). Dependen de
+  cómo se \emph{conduce}: con un solo tipo de portador (MOSFET, Schottky) o con inyección de ambos
+  (diodo PiN, tiristor, IGBT).
+  \item \textbf{Pérdidas de conmutación}: durante la transición $v$ e $i$ coexisten (figura~\ref{fig:conmutacion}).
+  Con conmutación lineal de duración $t_{\mathrm{c,enc}}$ y $t_{\mathrm{c,apag}}$ a frecuencia $f_s$,
+  \[
+     P_{\mathrm{conm}} \approx \tfrac12\,V_d I_o\,f_s\,(t_{\mathrm{c,enc}}+t_{\mathrm{c,apag}}).
+  \]
+  Crecen con la frecuencia y con la carga almacenada que hay que meter o sacar del dispositivo.
+  \item \textbf{Pérdidas de bloqueo y de control}: fugas en bloqueo ($V I_{\mathrm{fuga}}$) y la
+  potencia del circuito de disparo.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  % ejes
+  \draw[->] (0,0) -- (11,0) node[right] {$t$};
+  \draw[->] (0,0) -- (0,3.1);
+  % tensión
+  \draw[rojo,line width=1pt] (0,2.4) -- (1.5,2.4) -- (2.7,0.12) -- (6.5,0.12) -- (7.7,2.4) -- (10.5,2.4);
+  \node[rojo,right] at (10.5,2.4) {$v_T$};
+  % corriente
+  \draw[azul,line width=1pt] (0,0.05) -- (1.5,0.05) -- (2.7,2.0) -- (6.5,2.0) -- (7.7,0.05) -- (10.5,0.05);
+  \node[azul,right] at (10.5,0.35) {$i_T$};
+  \draw[dashed,gris] (0,2.0) node[left,black] {$I_o$} -- (1.5,2.0);
+  \node[left] at (0,2.4) {$V_d$};
+  % potencia
+  \begin{scope}[yshift=-3cm]
+    \draw[->] (0,0) -- (11,0) node[right] {$t$};
+    \draw[->] (0,0) -- (0,2.2) node[left] {$p_T$};
+    \fill[naranja!35] (1.5,0) .. controls (1.9,1.6) and (2.3,1.6) .. (2.7,0.1) -- (2.7,0) -- cycle;
+    \fill[naranja!35] (6.5,0) .. controls (6.9,1.6) and (7.3,1.6) .. (7.7,0.1) -- (7.7,0) -- cycle;
+    \draw[naranja!80!black,line width=1pt] (0,0.02) -- (1.5,0.02) .. controls (1.9,1.6) and (2.3,1.6) .. (2.7,0.25)
+       -- (6.5,0.25) .. controls (6.9,1.6) and (7.3,1.6) .. (7.7,0.02) -- (10.5,0.02);
+    \node[font=\small,align=center] at (2.1,1.75) {$W_{\mathrm{enc}}$};
+    \node[font=\small,align=center] at (7.1,1.75) {$W_{\mathrm{apag}}$};
+    \node[font=\small] at (4.6,0.55) {$V_{\mathrm{on}}I_o$ (conducción)};
+    \draw[<->] (1.5,-0.3) -- node[below,font=\small] {$t_{\mathrm{c,enc}}$} (2.7,-0.3);
+    \draw[<->] (6.5,-0.3) -- node[below,font=\small] {$t_{\mathrm{c,apag}}$} (7.7,-0.3);
+  \end{scope}
+\end{tikzpicture}
+\caption{Conmutación de una carga inductiva idealizada. En cada transición la potencia instantánea
+$p_T=v_Ti_T$ llega a valores del orden de $V_dI_o/4$; la energía de cada pico ($W_{\mathrm{enc}}$,
+$W_{\mathrm{apag}}$) se pierde $f_s$ veces por segundo.}
+\label{fig:conmutacion}
+\end{figure}
+
+\subsection{Dos familias: unipolares y bipolares}
+
+La física de los dispositivos de potencia se ordena alrededor de un compromiso que se deriva en la
+sección~\ref{sec:deriva}: \textbf{para bloquear mucha tensión hace falta una región gruesa y poco
+dopada} (la \emph{región de arrastre} o \emph{de deriva}, $n^-$), y esa región, en conducción, es una
+resistencia enorme. Hay dos maneras de vivir con ella:
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+ & \textbf{Unipolares} (portadores mayoritarios) & \textbf{Bipolares} (inyección de minoritarios) \\
+\midrule
+Ejemplos & Schottky, MOSFET, JFET, HEMT & Diodo PiN, BJT, tiristor, GTO, IGBT \\
+Región $n^-$ en conducción & Resistencia óhmica fija: $\Ron\propto \VB^2$ & Se \emph{inunda} de electrones y huecos
+($\delta n=\delta p\gg N_D$): \textbf{modulación de conductividad} \\
+Caída en conducción & $\Ron I$ (chica a baja tensión, enorme a alta tensión) & $\approx$ una juntura
+($\sim\SI{1}{V}$) $+$ algo; casi independiente de $\VB$ \\
+Velocidad & Muy rápida (sólo cargar capacidades) & Lenta: hay que \emph{sacar} la carga almacenada
+($Q\approx I\tau$) \\
+Rango natural & $\lesssim\SI{600}{V}$ en Si (hasta kV en SiC) & De cientos de V a $\sim\SI{10}{kV}$ \\
+\bottomrule
+\end{tabularx}
+\caption{Las dos familias. Los materiales de banda ancha (SiC, GaN; secciones~\ref{sec:wbg} y
+\ref{sec:gan}) desplazan el límite de los unipolares a tensiones mucho mayores.}
+\label{tab:uni-bi}
+\end{table}
+
+\subsection{Mapa de los dispositivos}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.92\textwidth, height=7.2cm,
+  xmode=log, ymode=log,
+  xmin=10, xmax=3e7, ymin=10, ymax=1e9,
+  xlabel={Frecuencia de conmutación $f_s$ (Hz)},
+  ylabel={Potencia controlada (VA)},
+  grid=major, grid style={gris!20},
+  tick label style={font=\small},
+  every node/.style={fill opacity=1,text opacity=1},
+]
+  \fill[rojo!25,rounded corners=6pt,fill opacity=0.65]    (axis cs:20,1e5)  rectangle (axis cs:1e3,4e8);
+  \node[rojo!70!black,font=\small\bfseries] at (axis cs:140,8e7) {Tiristor};
+  \fill[naranja!30,rounded corners=6pt,fill opacity=0.65] (axis cs:80,1e5)  rectangle (axis cs:3e3,6e7);
+  \node[naranja!70!black,font=\small\bfseries] at (axis cs:500,3e6) {GTO / IGCT};
+  \fill[azul!20,rounded corners=6pt,fill opacity=0.65]    (axis cs:500,3e2) rectangle (axis cs:1e5,3e7);
+  \node[azul,font=\small\bfseries] at (axis cs:7e3,2e5) {IGBT};
+  \fill[verde!25,rounded corners=6pt,fill opacity=0.65]   (axis cs:1e4,10)  rectangle (axis cs:2e6,2e5);
+  \node[verde!60!black,font=\small\bfseries] at (axis cs:3e4,2.5e1) {MOSFET (Si)};
+  \fill[violeta!25,rounded corners=6pt,fill opacity=0.65] (axis cs:2e4,1e3) rectangle (axis cs:1e6,3e6);
+  \node[violeta,font=\small\bfseries] at (axis cs:1.5e5,8e5) {MOSFET SiC};
+  \fill[gris!25,rounded corners=6pt,fill opacity=0.65]    (axis cs:1e5,10)  rectangle (axis cs:2e7,3e4);
+  \node[gris!80!black,font=\small\bfseries] at (axis cs:2e6,1e4) {HEMT GaN};
+\end{axis}
+\end{tikzpicture}
+\caption{Zonas de aplicación típicas (orientativas; los bordes se mueven año a año). A mayor
+potencia, dispositivos bipolares lentos; a mayor frecuencia, unipolares. El SiC y el GaN empujan a los
+unipolares hacia arriba y a la derecha.}
+\label{fig:mapa}
+\end{figure}
+
+\begin{definicion}[Área de operación segura (SOA)]
+Región del plano $(V,I)$ por la que puede pasar la trayectoria de conmutación sin destruir el
+dispositivo. Está limitada por: la corriente máxima (hilos, metalización), la potencia máxima
+(temperatura de juntura), la \emph{segunda ruptura} en bipolares (concentración de corriente con
+realimentación térmica) y la tensión de ruptura por avalancha. Los circuitos \emph{snubber} existen
+para mantener la trayectoria dentro de la SOA y limitar $\dd v/\dd t$ y $\dd i/\dd t$.
+\end{definicion}

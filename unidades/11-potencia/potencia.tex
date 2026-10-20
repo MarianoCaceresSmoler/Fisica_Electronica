@@ -1,0 +1,79 @@
+\documentclass[11pt,a4paper]{article}
+\input{../../comun/preambulo.tex}
+\unidad{Unidad 11 -- Dispositivos de potencia}
+
+% ---------- Macros propias de la unidad ----------
+\newcommand{\Ecr}{\mathcal{E}_c}          % campo eléctrico crítico (ruptura)
+\newcommand{\Ron}{R_{\mathrm{on}}}
+\newcommand{\Ronsp}{R_{\mathrm{on,sp}}}
+\newcommand{\VB}{V_{B}}
+\newcommand{\VAK}{V_{AK}}
+\newcommand{\IA}{I_{A}}
+\newcommand{\IG}{I_{G}}
+\newcommand{\RDSon}{R_{DS(\mathrm{on})}}
+\newcommand{\Qg}{Q_{g}}
+\newcommand{\Qrr}{Q_{rr}}
+\newcommand{\trr}{t_{rr}}
+\newcommand{\IRM}{I_{RM}}
+\newcommand{\boff}{\beta_{\mathrm{apag}}}
+\newcommand{\taueff}{\tau_{\mathrm{ef}}}
+
+% ---------- Valores de literatura para materiales WBG ----------
+% (no están en la tabla oficial de la materia; se toman de la diapo 29
+%  y de Baliga, "Fundamentals of Power Semiconductor Devices")
+\newcommand{\EcSi}{\num{3e5}}          % V/cm
+\newcommand{\EcSiC}{\num{2e6}}         % V/cm (4H-SiC, diapo 29)
+\newcommand{\EcGaN}{\num{3.3e6}}       % V/cm
+\newcommand{\epsrSiC}{9.7}
+\newcommand{\epsrGaN}{9.0}
+\newcommand{\munSiC}{720}              % cm^2/(V s) (diapo 29)
+\newcommand{\munGaN}{900}
+\newcommand{\EGSiC}{3.26}
+\newcommand{\EGGaN}{3.39}
+
+\title{\color{azul}\textbf{Semiconductores y dispositivos de potencia}\\[0.3em]
+  \large Diodo de potencia, tiristor, triac, GTO, MOSFET, IGBT y dispositivos de banda ancha (SiC, GaN)}
+\author{Física Electrónica -- Resumen de la unidad 11}
+\date{Basado en la clase ``Semiconductores y Dispositivos de Potencia'' (Ing.\ E.\ D.\ Báez), en
+Pierret, \emph{Semiconductor Device Fundamentals} (caps.~6, 8, 13 y 18), en Mohan--Undeland--Robbins,
+\emph{Electrónica de potencia} (caps.~20--25) y en Baliga, \emph{Fundamentals of Power Semiconductor Devices}}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{tcolorbox}[base,colback=white,colframe=gris,title={Cómo leer este apunte}]
+\small
+\begin{itemize}
+  \item Cajas \textcolor{azul}{\textbf{azules}}: definiciones; \textcolor{verde}{\textbf{verdes}}: resultados
+  clave; \textcolor{naranja}{\textbf{naranjas}}: intuición física; \textcolor{violeta}{\textbf{violetas}}: ejemplos;
+  \textcolor{rojo}{\textbf{rojas}} (\emph{Ojo}): errores o imprecisiones de las diapositivas y confusiones típicas.
+  \item \diapo{n} indica la diapositiva $n$ de la presentación de la unidad.
+  \item El sello \enhojatexto{} indica que el resultado figura en la hoja de fórmulas oficial. La hoja
+  no tiene una sección de potencia: lo que se usa de ella son los resultados de juntura, BJT
+  (Ebers--Moll, $\alpha$, $I_{CB0}$) y MOSFET, sobre los que se construye toda la unidad.
+  \item Los ejemplos con silicio usan la \emph{tabla de constantes} de la materia. Para SiC y GaN, que
+  no están en la tabla, se usan los valores de la diapo~29 (aclarado en cada caso).
+  \item Notación del tiristor (igual que las diapositivas y Mohan): capas $p_1n_1p_2n_2$ desde el ánodo,
+  junturas $J_1$ ($p_1n_1$), $J_2$ ($n_1p_2$), $J_3$ ($p_2n_2$); $Q_1$ es el PNP ($p_1n_1p_2$) con
+  ganancia $\alpha_1$ y $Q_2$ el NPN ($n_1p_2n_2$) con ganancia $\alpha_2$.
+\end{itemize}
+\end{tcolorbox}
+
+\tableofcontents
+\newpage
+
+\input{secciones/01-introduccion}
+\input{secciones/02-bloqueo-y-deriva}
+\input{secciones/03-diodo-potencia}
+\input{secciones/04-recombinacion}
+\input{secciones/05-tiristor}
+\input{secciones/06-triac-control-fase}
+\input{secciones/07-gto}
+\input{secciones/08-mosfet-potencia}
+\input{secciones/09-igbt}
+\input{secciones/10-wbg-sic}
+\input{secciones/11-gan-hemt}
+\input{secciones/12-resumen}
+
+\end{document}

@@ -1,0 +1,198 @@
+% =====================================================================
+\section{Triac y control de fase}
+\label{sec:triac}
+% =====================================================================
+
+\subsection{El triac: un tiristor bidireccional}
+
+El triac (\emph{triode for alternating current}) integra en una sola pastilla el equivalente de
+\textbf{dos tiristores en antiparalelo con una compuerta común} \diapo{6}. Sus terminales principales
+no se llaman ánodo y cátodo sino MT1 y MT2 (\emph{main terminals}); la compuerta G está del lado de MT1
+y todas las tensiones se miden respecto de MT1. Es una estructura de cinco regiones ($npnpn$ vista en
+un corte): según el signo de $V_{MT2-MT1}$ conduce una u otra mitad (Pierret §13.3).
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.3\textwidth}\centering
+\begin{circuitikz}
+  \draw (0,0) node[below] {MT1} to[triac,n=T] (0,2.6) node[above] {MT2};
+  \draw (T.gate) -- ++(-0.6,0) node[left] {G};
+\end{circuitikz}
+\end{minipage}
+\begin{minipage}{0.3\textwidth}\centering
+\begin{circuitikz}
+  \draw (0,0) node[below] {MT1} -- (0,0.3) -- (-0.8,0.3) to[thyristor,n=S1] (-0.8,2.3) -- (0,2.3) -- (0,2.6) node[above] {MT2};
+  \draw (0,0.3) -- (0.8,0.3) to[thyristor,invert,n=S2] (0.8,2.3) -- (0,2.3);
+\end{circuitikz}
+\end{minipage}
+\begin{minipage}{0.36\textwidth}\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[azul!30] (0,2.2) rectangle (1.1,2.6);
+  \fill[rojo!15] (1.1,2.2) rectangle (2.6,2.6);
+  \fill[rojo!15] (0,1.8) rectangle (2.6,2.2);
+  \fill[azul!8] (0,0.8) rectangle (2.6,1.8);
+  \fill[rojo!15] (0,0.4) rectangle (2.6,0.8);
+  \fill[rojo!15] (0,0) rectangle (1.5,0.4);
+  \fill[azul!30] (1.5,0) rectangle (2.6,0.4);
+  \fill[azul!30] (0,0.4) rectangle (0.5,0.62);
+  \draw (0,0) rectangle (2.6,2.6);
+  \node[font=\scriptsize] at (0.55,2.4) {$n$}; \node[font=\scriptsize] at (1.85,2.4) {$p$};
+  \node[font=\scriptsize] at (1.3,2.0) {$p$}; \node[font=\scriptsize] at (1.3,1.3) {$n^-$};
+  \node[font=\scriptsize] at (1.3,0.6) {$p$}; \node[font=\scriptsize] at (0.75,0.2) {$p$}; \node[font=\scriptsize] at (2.05,0.2) {$n$};
+  \node[font=\scriptsize] at (0.25,0.51) {$n$};
+  \fill[gris] (0,2.6) rectangle (2.6,2.7); \fill[gris] (0.6,-0.1) rectangle (2.6,0);
+  \fill[gris] (0,-0.1) rectangle (0.4,0);
+  \node[font=\small] at (1.3,2.95) {MT2}; \node[font=\small] at (1.6,-0.35) {MT1}; \node[font=\small] at (0.2,-0.35) {G};
+\end{tikzpicture}
+\end{minipage}
+\caption{Triac: símbolo, equivalente con dos tiristores en antiparalelo y corte esquemático
+\diapo{6}. Las regiones $n$ junto a cada terminal hacen de cátodo de uno u otro tiristor según la
+polaridad; la $n$ junto a la compuerta permite dispararlo con $\IG$ de ambos signos.}
+\label{fig:triac}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\textwidth, height=6.4cm,
+  axis lines=middle, xmin=-7, xmax=7.5, ymin=-4.2, ymax=4.2,
+  xtick=\empty, ytick=\empty,
+  xlabel={$V_{MT2-MT1}$}, ylabel={$I$},
+  every axis plot/.append style={line width=1.1pt},
+]
+  \addplot[azul,smooth] coordinates {(0.65,1.1) (0.85,1.7) (1.1,2.8) (1.4,4.0)};
+  \addplot[rojo,smooth] coordinates {(0,0) (2,0.15) (4,0.3) (5.5,0.55) (5.9,1.0)};
+  \addplot[rojo,dashed,smooth] coordinates {(5.9,1.0) (3,1.2) (0.75,1.3)};
+  \addplot[naranja,dashed,smooth] coordinates {(3.0,0.6) (2,1.1) (0.75,1.3)};
+  \addplot[naranja,smooth] coordinates {(0,0) (2.6,0.3) (3.0,0.6)};
+  \addplot[azul,smooth] coordinates {(-0.65,-1.1) (-0.85,-1.7) (-1.1,-2.8) (-1.4,-4.0)};
+  \addplot[rojo,smooth] coordinates {(0,0) (-2,-0.15) (-4,-0.3) (-5.5,-0.55) (-5.9,-1.0)};
+  \addplot[rojo,dashed,smooth] coordinates {(-5.9,-1.0) (-3,-1.2) (-0.75,-1.3)};
+  \addplot[naranja,dashed,smooth] coordinates {(-3.0,-0.6) (-2,-1.1) (-0.75,-1.3)};
+  \addplot[naranja,smooth] coordinates {(0,0) (-2.6,-0.3) (-3.0,-0.6)};
+  \node[font=\small,anchor=south west] at (axis cs:5.9,1.05) {$V_{BO}$};
+  \node[font=\small,anchor=east] at (axis cs:-5.95,-1.0) {$-V_{BO}$};
+  \node[font=\small] at (axis cs:3.2,3.3) {cuadrante I};
+  \node[font=\small] at (axis cs:-3.2,-3.3) {cuadrante III};
+\end{axis}
+\end{tikzpicture}
+\caption{Característica del triac \diapo{6}: la del tiristor repetida en el tercer cuadrante. Se
+dispara en los dos sentidos, con corriente de compuerta entrante o saliente.}
+\label{fig:triac-iv}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{cccl}
+\toprule
+Modo & $V_{MT2-MT1}$ & $\IG$ & Sensibilidad \\
+\midrule
+I$^+$   & $+$ & $+$ (entra) & la mejor \\
+I$^-$   & $+$ & $-$ (sale)  & buena \\
+III$^-$ & $-$ & $-$ (sale)  & buena \\
+III$^+$ & $-$ & $+$ (entra) & mala (se evita) \\
+\bottomrule
+\end{tabular}
+\caption{Modos de disparo del triac. En la práctica se usan I$^-$ y III$^-$ (compuerta siempre
+negativa) o I$^+$ y III$^-$ (pulso del mismo signo que $V_{MT2}$).}
+\label{tab:triac-cuadrantes}
+\end{table}
+
+\begin{intuicion}[Tiristor o triac \diapo{7}]
+El triac es cómodo (un solo componente y un solo disparo para alterna), pero es más lento y soporta
+menos $\dd v/\dd t$ de conmutación: al pasar la corriente por cero, la carga que quedó de un
+semiciclo puede reencender el dispositivo en el semiciclo siguiente. Por eso se usa en \textbf{baja
+potencia} (atenuadores de luz, control de motores universales, relés de estado sólido) y el
+\textbf{tiristor en media, alta y muy alta potencia} (rectificadores controlados, transmisión HVDC,
+arrancadores).
+\end{intuicion}
+
+\subsection{Control de fase}
+
+La aplicación clásica de ambos es el \textbf{control de fase}: en cada semiciclo de la red se
+dispara el dispositivo con un retardo $\alpha$ (ángulo de disparo) respecto del cruce por cero. El
+dispositivo conduce desde $\omega t=\alpha$ hasta que la corriente pasa por cero (con carga
+resistiva, en $\omega t=\pi$) y la carga recibe una ``porción'' de cada semiciclo \diapo{7}.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}
+  \draw (0,0) to[sV,l={$v_s=V_m\sin\omega t$}] (0,2.6) -- (1.2,2.6) to[thyristor,n=S] (3.6,2.6)
+        -- (5.0,2.6) to[R,l=$R$] (5.0,0) -- (0,0);
+  \node[draw,font=\small,align=center] (ctl) at (2.9,3.9) {control de compuerta};
+  \draw (S.gate) -- (S.gate |- ctl.south);
+  \node at (5.9,2.3) {$+$}; \node at (5.9,1.3) {$v_o$}; \node at (5.9,0.3) {$-$};
+\end{circuitikz}
+
+\medskip
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.9\textwidth, height=4.0cm, name=a1,
+  xmin=0, xmax=720, ymin=-1.15, ymax=1.15,
+  xtick={0,60,180,360,420,540,720}, xticklabels={0,$\alpha$,$\pi$,$2\pi$,,$3\pi$,$4\pi$},
+  ytick=\empty, ylabel={tiristor},
+  tick label style={font=\scriptsize}, samples=361, domain=0:720,
+]
+  \addplot[gris,dashed] {sin(x)};
+  \addplot[rojo,line width=1.1pt] {(mod(x,360)>=60 && mod(x,360)<=180) ? sin(x) : 0};
+  \addplot[violeta,ycomb,line width=1.2pt] coordinates {(60,0.35) (420,0.35)};
+\end{axis}
+\begin{axis}[
+  width=0.9\textwidth, height=4.0cm, at={(a1.south)}, anchor=north, yshift=-0.2cm,
+  xmin=0, xmax=720, ymin=-1.15, ymax=1.15,
+  xtick={0,60,180,240,360,420,540,600,720}, xticklabels={0,$\alpha$,$\pi$,$\pi{+}\alpha$,$2\pi$,,$3\pi$,,$4\pi$},
+  ytick=\empty, ylabel={triac},
+  tick label style={font=\scriptsize}, samples=361, domain=0:720,
+  xlabel={$\omega t$},
+]
+  \addplot[gris,dashed] {sin(x)};
+  \addplot[verde!60!black,line width=1.1pt] {(mod(x,180)>=60) ? sin(x) : 0};
+  \addplot[violeta,ycomb,line width=1.2pt] coordinates {(60,0.35) (240,-0.35) (420,0.35) (600,-0.35)};
+\end{axis}
+\end{tikzpicture}
+\caption{Control de fase con carga resistiva, $\alpha=\ang{60}$ como en la diapo~7. Arriba: tiristor
+(media onda); los pulsos (violeta) en el semiciclo negativo no tienen efecto porque el tiristor está
+en inversa. Abajo: triac (onda completa), disparado en los dos semiciclos.}
+\label{fig:control-fase}
+\end{figure}
+
+Integrando la porción de senoide entre $\alpha$ y $\pi$:
+
+\begin{clave}[Control de fase con carga resistiva]
+\[
+  \text{Tiristor (media onda):}\qquad
+  V_{\mathrm{med}}=\frac{1}{2\pi}\int_\alpha^\pi V_m\sin\theta\dd\theta=\frac{V_m}{2\pi}(1+\cos\alpha)
+\]
+\[
+  \text{Triac (onda completa):}\qquad
+  V_{\mathrm{ef}}=\sqrt{\frac1\pi\int_\alpha^\pi V_m^2\sin^2\theta\dd\theta}
+  =\frac{V_m}{\sqrt2}\sqrt{1-\frac{\alpha}{\pi}+\frac{\sin2\alpha}{2\pi}},
+  \qquad P=\frac{V_{\mathrm{ef}}^2}{R}.
+\]
+\end{clave}
+
+\begin{ejemplo}[Atenuador de \SI{220}{V} con triac]
+Lámpara de $R=\SI{100}{\ohm}$ (supuesta constante) en la red de \SI{220}{V} ($V_m=\SI{311}{V}$):
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+$\alpha$ & \ang{0} & \ang{60} & \ang{90} & \ang{120} \\
+\midrule
+$V_{\mathrm{ef}}$ (triac) & \SI{220}{V} & \SI{197}{V} & \SI{156}{V} & \SI{97}{V} \\
+$P$ & \SI{484}{W} & \SI{389}{W} & \SI{242}{W} & \SI{95}{W} \\
+$V_{\mathrm{med}}$ (tiristor, media onda) & \SI{99}{V} & \SI{74}{V} & \SI{50}{V} & \SI{25}{V} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=\ang{90}$ la potencia es exactamente la mitad: se entrega medio semiciclo de cada
+uno, y por simetría de $\sin^2$ cada mitad tiene la misma energía.
+\end{ejemplo}
+
+\begin{intuicion}[El precio del control de fase]
+La corriente de línea deja de ser senoidal: el encendido brusco en $\alpha$ genera armónicos e
+interferencia (de ahí los filtros LC de los atenuadores) y el factor de potencia empeora aun con
+carga resistiva. Para generar el pulso en $\alpha$, los atenuadores simples usan una red RC que
+carga un capacitor hasta la tensión de disparo de un \emph{diac} (dos junturas en antiparalelo que
+rompen a $\sim\SI{30}{V}$).
+\end{intuicion}

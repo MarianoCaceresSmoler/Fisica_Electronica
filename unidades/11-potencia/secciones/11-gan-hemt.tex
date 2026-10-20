@@ -1,0 +1,212 @@
+% =====================================================================
+\section{GaN: el transistor de alta movilidad (HEMT)}
+\label{sec:gan}
+% =====================================================================
+
+\diapo{36} Con GaN se pueden hacer diodos parecidos a los de SiC, pero no es su interés principal.
+Su dispositivo estrella es el \textbf{HEMT} (\emph{High Electron Mobility Transistor}), un
+\textbf{transistor de heterounión}: funciona como un MESFET (un JFET con compuerta metálica, de
+Schottky, en lugar de semiconductora), pero su canal no es una capa dopada sino un \textbf{gas
+bidimensional de electrones} (2DEG) confinado en la interfaz entre dos semiconductores distintos. La
+conductividad de ese canal es altísima y se logra con capacidades parásitas muy bajas.
+
+\begin{ojo}[``Gas bidireccional'' \diapo{36}]
+La diapo~36 dice ``gas \emph{bidireccional} de electrones''. Es gas \textbf{bidimensional} (2D gas,
+2DEG): los electrones están confinados en un pozo de unos pocos nanómetros en la dirección
+perpendicular a la interfaz y se mueven libremente en las otras dos. Las diapos~37 y 38 lo llaman
+correctamente.
+\end{ojo}
+
+\subsection{La heterounión y el 2DEG}
+
+Cuando se apoya un semiconductor de gap grande (AlGaN, o AlGaAs) sobre uno de gap menor (GaN, o
+GaAs), la banda de conducción tiene un escalón $\Delta E_c$ en la interfaz. Del lado del material de
+gap chico se forma un \textbf{pozo triangular} cuyo fondo queda \emph{por debajo} de $E_F$: allí se
+acumulan electrones, que sólo pueden moverse paralelos a la interfaz.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  % regiones
+  \fill[gris!40] (-1.0,-4.2) rectangle (0,2.4);
+  \fill[naranja!15] (0,-4.2) rectangle (2.2,2.4);
+  \fill[azul!6] (2.2,-4.2) rectangle (9,2.4);
+  \node[font=\small] at (-0.5,2.65) {metal};
+  \node[font=\small] at (1.1,2.65) {AlGaN};
+  \node[font=\small] at (5.6,2.65) {GaN (sin dopar)};
+  % E_F
+  \draw[fermi] (-1.0,0) -- (9,0) node[right,black,font=\small] {$E_F$};
+  % Ec
+  \draw[bandac] (0,1.9) -- (2.2,0.5) -- (2.2,-0.45) .. controls (2.6,-0.15) and (3.4,0.45) .. (5,0.65) -- (9,0.7);
+  % Ev
+  \draw[bandav] (0,-2.1) -- (2.2,-3.5) -- (2.2,-3.85) .. controls (2.6,-3.55) and (3.4,-2.95) .. (5,-2.75) -- (9,-2.7);
+  % 2DEG
+  \fill[azul!60,opacity=0.6] (2.2,-0.45) .. controls (2.35,-0.32) and (2.5,-0.2) .. (2.62,-0.1) -- (2.62,0) -- (2.2,0) -- cycle;
+  \foreach \x/\y in {2.3/-0.15,2.42/-0.08,2.33/-0.32} \node[elec,minimum size=3.5pt] at (\x,\y) {};
+  \draw[<-] (2.5,-0.12) -- (3.6,-0.9) node[right,font=\small,align=left] {2DEG: pozo triangular\\bajo $E_F$ ($\sim\SI{1e13}{cm^{-2}}$)};
+  \draw[<->] (2.05,0.5) -- node[left,font=\small] {$\Delta E_c$} (2.05,-0.45);
+  \node[azul,font=\small] at (7.5,1.0) {$E_c$};
+  \node[rojo,font=\small] at (7.5,-2.4) {$E_v$};
+  % cargas de polarización
+  \foreach \y in {1.8,1.2,0.6,-1.8,-2.4,-3.0} \node[font=\scriptsize,verde!50!black] at (2.0,\y-0.15) {$+$};
+  \node[font=\scriptsize,verde!50!black,align=center] at (1.0,-1.0) {carga de\\polarización\\$+\sigma_{\mathrm{pol}}$};
+\end{tikzpicture}
+\caption{Diagrama de bandas esquemático de una heterounión AlGaN/GaN bajo la compuerta. La
+polarización del cristal deja una carga positiva fija en la interfaz; el campo resultante inclina la
+banda del AlGaN y crea, del lado del GaN, un pozo triangular por debajo de $E_F$ donde se acumula el
+2DEG, \textbf{sin necesidad de dopar} \diapo{38}.}
+\label{fig:hemt-bandas}
+\end{figure}
+
+\paragraph{¿De dónde salen los electrones?}
+\begin{itemize}
+  \item \textbf{AlGaAs/GaAs} (HEMT tradicional, \diapo{37}): por \emph{dopaje modulado}. Se dopa el
+  AlGaAs con donores; sus electrones caen al pozo del GaAs, que queda sin dopar. Los electrones quedan
+  \emph{separados espacialmente} de los donores ionizados que los generaron: casi no hay dispersión
+  por impurezas y la movilidad es muy alta (\SI{8500}{cm^2/V.s} a \SI{300}{K}, mucho más a baja
+  temperatura). De ahí el nombre.
+  \item \textbf{AlGaN/GaN}: el GaN y el AlGaN tienen estructura wurtzita, \emph{polar}: tienen
+  polarización espontánea, y el AlGaN, al crecer tensionado sobre el GaN, además polarización
+  piezoeléctrica. La discontinuidad de polarización deja en la interfaz una carga fija
+  $\sigma_{\mathrm{pol}}/q\sim\SI{1e13}{cm^{-2}}$ que atrae una cantidad igual de electrones. Ambas
+  capas pueden estar sin dopar \diapo{38}.
+\end{itemize}
+
+\begin{ejemplo}[Resistencia del canal 2DEG]
+La resistencia de hoja de un canal de espesor despreciable con densidad superficial $n_s$ es
+$R_\square=1/(qn_s\mu)$. Para el 2DEG de AlGaN/GaN, $n_s=\SI{1e13}{cm^{-2}}$ y
+$\mu=\SI{2000}{cm^2/V.s}$:
+\[
+  R_\square=\frac{1}{\num{1.6e-19}\cdot\num{1e13}\cdot2000}\approx\SI{310}{\ohm}/\square .
+\]
+Un canal de inversión de un MOSFET de Si con la misma $n_s$ y $\mu\approx\SI{400}{cm^2/V.s}$ (la
+movilidad superficial es mucho menor que la de volumen, \munSi) tendría \SI{1.6}{k\ohm}/$\square$: el
+2DEG conduce cinco veces mejor con la misma carga, y por lo tanto con la misma capacidad de compuerta.
+\end{ejemplo}
+
+\subsection{El HEMT: estructura y control}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[rojo!25] (0,0) rectangle (10,0.8);
+  \fill[gris!25] (0,0.8) rectangle (10,1.3);
+  \fill[azul!8] (0,1.3) rectangle (10,3.0);
+  \fill[naranja!40] (1.6,3.0) rectangle (8.4,3.35);
+  \fill[azul!40,rounded corners=3pt] (0.3,2.4) rectangle (1.8,3.35);
+  \fill[azul!40,rounded corners=3pt] (8.2,2.4) rectangle (9.7,3.35);
+  \draw (0,0) rectangle (10,3.35);
+  \draw[azul,line width=1.6pt,dashed] (1.8,2.95) -- (8.2,2.95);
+  \fill[gris] (0.4,3.35) rectangle (1.7,3.75); \fill[gris] (8.3,3.35) rectangle (9.6,3.75);
+  \fill[gris] (3.2,3.35) rectangle (4.2,3.75);
+  \node[font=\small] at (1.05,4.0) {S}; \node[font=\small] at (3.7,4.0) {G}; \node[font=\small] at (8.95,4.0) {D};
+  \node[font=\small] at (1.05,2.75) {$n^+$}; \node[font=\small] at (8.95,2.75) {$n^+$};
+  \draw[<-] (7.4,3.2) -- (10.4,2.2) node[right,font=\small,align=left] {AlGaN\\($\sim\SI{20}{nm}$,\\sin dopar)};
+  \node[font=\small] at (5,2.0) {GaN (sin dopar)};
+  \node[font=\small] at (5,1.05) {capas de transición};
+  \node[font=\small] at (5,0.4) {sustrato: Si, SiC o zafiro};
+  \draw[<-] (5.6,2.92) -- (6.4,2.45) node[right,font=\small] {2DEG};
+  \draw[<->] (4.2,4.45) -- node[above,font=\scriptsize] {$L_{GD}$: soporta la tensión} (8.3,4.45);
+\end{tikzpicture}
+\caption{HEMT de AlGaN/GaN \diapo{38}. Es un dispositivo \textbf{lateral}: la corriente circula por el
+2DEG en el plano, y la tensión de bloqueo la soporta la distancia compuerta--drenaje $L_{GD}$ (y no el
+espesor, como en los verticales). El GaN se crece sobre Si (barato, obleas grandes), SiC (mejor
+disipación) o zafiro, con capas de transición que acomodan la diferencia de red cristalina.}
+\label{fig:hemt-estructura}
+\end{figure}
+
+La compuerta (Schottky) controla el 2DEG como la de un MESFET \diapo{37}: con $V_{GS}=0$ el canal
+existe y el transistor conduce; \textbf{polarizando la compuerta en inversa} ($V_{GS}<0$) se vacía el
+pozo y se puede disminuir, e incluso eliminar, el 2DEG. El HEMT básico es por lo tanto un dispositivo
+de \textbf{deplexión}, \emph{normalmente cerrado} (normally-on), con $V_{TH}\approx\SIrange{-3}{-5}{V}$.
+
+\begin{intuicion}[RF vs.\ potencia \diapo{38}]
+Con esta tecnología se construyeron primero amplificadores de radiofrecuencia (estaciones base,
+radares), donde que el transistor sea normally-on no importa: trabaja polarizado en la región
+lineal. En electrónica de potencia, en cambio, una llave que conduce cuando falta la tensión de
+compuerta es inaceptable (el mismo problema del JFET de SiC, diapo~33). Hay que conseguir HEMT
+\emph{normalmente abiertos}.
+\end{intuicion}
+
+\subsection{Cómo hacer un HEMT normalmente abierto}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \dx/\tit in {0/{(a) Schottky (deplexión)},5.2/{(b) compuerta $p$-GaN},10.4/{(c) MIS con recess}} {
+    \begin{scope}[xshift=\dx cm]
+      \fill[azul!8] (0,0) rectangle (4.4,1.4);
+      \node[font=\small] at (2.2,2.6) {\tit};
+    \end{scope}
+  }
+  % (a)
+  \fill[naranja!40] (0,1.4) rectangle (4.4,1.75);
+  \fill[gris] (1.6,1.75) rectangle (2.8,2.15);
+  \draw[azul,line width=1.5pt,dashed] (0,1.33) -- (4.4,1.33);
+  \node[font=\scriptsize] at (2.2,0.6) {2DEG continuo: conduce con $V_{GS}=0$};
+  % (b)
+  \begin{scope}[xshift=5.2cm]
+    \fill[naranja!40] (0,1.4) rectangle (4.4,1.75);
+    \fill[rojo!40] (1.6,1.75) rectangle (2.8,2.05);
+    \fill[gris] (1.7,2.05) rectangle (2.7,2.3);
+    \draw[azul,line width=1.5pt,dashed] (0,1.33) -- (1.5,1.33);
+    \draw[azul,line width=1.5pt,dashed] (2.9,1.33) -- (4.4,1.33);
+    \node[font=\scriptsize,align=center] at (2.2,0.6) {la $p$-GaN levanta la banda:\\sin 2DEG bajo la compuerta};
+  \end{scope}
+  % (c)
+  \begin{scope}[xshift=10.4cm]
+    \fill[naranja!40] (0,1.4) rectangle (1.5,1.75); \fill[naranja!40] (2.9,1.4) rectangle (4.4,1.75);
+    \fill[gris!40] (1.4,1.25) rectangle (3.0,1.4); \fill[gris!40] (1.4,1.4) rectangle (1.5,1.85); \fill[gris!40] (2.9,1.4) rectangle (3.0,1.85);
+    \fill[gris] (1.5,1.4) rectangle (2.9,1.95);
+    \draw[azul,line width=1.5pt,dashed] (0,1.33) -- (1.4,1.33);
+    \draw[azul,line width=1.5pt,dashed] (3.0,1.33) -- (4.4,1.33);
+    \node[font=\scriptsize,align=center] at (2.2,0.6) {se elimina el AlGaN bajo la compuerta;\\óxido $+$ canal tipo MOS};
+  \end{scope}
+\end{tikzpicture}
+\caption{Compuertas de HEMT de GaN (sólo la zona de compuerta; naranja: AlGaN, rojo: $p$-GaN, gris
+claro: dieléctrico). (a) Compuerta Schottky: normally-on. (b) Compuerta de GaN tipo $p$: su
+potencial interno vacía el 2DEG bajo la compuerta a $V_{GS}=0$; $V_{TH}\approx\SIrange{1}{2}{V}$.
+(c) Compuerta MIS con el AlGaN removido: se forma un canal por acumulación como en un MOSFET.}
+\label{fig:hemt-compuertas}
+\end{figure}
+
+La diapo~39 clasifica los HEMT de AlGaN/GaN comerciales por tipo de compuerta y comportamiento:
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+Comportamiento & Compuerta & Uso & Fabricantes (diapo 39) \\
+\midrule
+normalmente cerrado & metálica (MES) & RF (amplificación) & Cree, Nitronex, TriQuint \\
+normalmente abierto & metálica sobre $p$-GaN & electrónica de potencia (directo) & EPC, Panasonic, GaN Systems \\
+normalmente cerrado & MOS (MIS) & electrónica de potencia \textbf{en cascodo} con MOSFET de Si (fig.~\ref{fig:cascodo}) & Transphorm, MicroGaN, IR \\
+normalmente abierto & MOS (MIS) & en desarrollo (``¿?'' en la diapo) & --- \\
+\bottomrule
+\end{tabularx}
+\caption{Tipos de HEMT de AlGaN/GaN para potencia \diapo{39}.}
+\label{tab:hemt-tipos}
+\end{table}
+
+\paragraph{Ejemplo de Infineon \diapo{40}.} El dispositivo de la diapo (desarrollado por International
+Rectifier, hoy parte de Infineon) es un HEMT \emph{de deplexión} con compuerta MIS: un dieléctrico bajo
+la compuerta (``Metal Insulator Semiconductor'') que reduce mucho la fuga de compuerta respecto de una
+Schottky, fabricado con procesos CMOS estándar sobre sustrato de Si. Es \textbf{normalmente cerrado} y
+está pensado para usarse \textbf{en cascodo} con un MOSFET de Si de baja tensión, exactamente como el
+JFET de SiC (figura~\ref{fig:cascodo}): el conjunto es una llave normally-off. (La línea CoolGaN actual
+de Infineon usa compuerta $p$-GaN, normally-off.)
+
+\subsection{Lo que ganan y lo que cuesta el GaN}
+
+\begin{itemize}
+  \item \textbf{Velocidad}: $\Qg$ y capacidades muy chicas $\Rightarrow$ conmutación en pocos
+  nanosegundos, convertidores de \SIrange{1}{10}{MHz} con inductores y capacitores diminutos (los
+  cargadores USB-C de alta potencia son de GaN).
+  \item \textbf{Sin recuperación inversa}: no hay juntura $pn$ ni diodo de cuerpo; el HEMT conduce en
+  inversa por el propio canal (con una caída de unos volts) y no almacena carga.
+  \item \textbf{Limitaciones}: es lateral (hasta \SI{650}{V} típicos; los de \SI{1200}{V} recién
+  aparecen), la compuerta $p$-GaN tolera poca tensión (\SIrange{6}{7}{V}) y exige drivers cuidados,
+  y las trampas del material producen \emph{colapso de corriente} ($\RDSon$ dinámica: la resistencia
+  sube justo después de bloquear alta tensión). Su conductividad térmica (\SI{1.3}{W/cm.K}) es menor
+  que la del SiC, por lo que para alta potencia se lo crece sobre SiC.
+\end{itemize}

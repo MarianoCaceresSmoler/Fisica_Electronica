@@ -1,0 +1,208 @@
+% =====================================================================
+\section{Diodo de potencia}
+\label{sec:diodo}
+% =====================================================================
+
+\subsection{Estructura $p^+n^-n^+$ (PiN)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  \fill[rojo!20] (0,3.2) rectangle (6,4.0);
+  \fill[azul!8]  (0,1.2) rectangle (6,3.2);
+  \fill[azul!30] (0,0)   rectangle (6,1.2);
+  \draw (0,0) rectangle (6,4.0);
+  \draw (0,3.2) -- (6,3.2); \draw (0,1.2) -- (6,1.2);
+  \fill[gris] (0,4.0) rectangle (6,4.12); \fill[gris] (0,-0.12) rectangle (6,0);
+  \node at (1.0,3.6) {$p^+$}; \node[font=\small] at (3.9,3.6) {$N_A=\SI{1e19}{cm^{-3}}$};
+  \node at (1.0,2.2) {$n^-$ (epi)}; \node[font=\small] at (3.9,2.2) {$N_D=\SI{1e14}{cm^{-3}}$};
+  \node at (1.0,0.6) {$n^+$ (sustrato)}; \node[font=\small] at (3.9,0.6) {$N_D=\SI{1e19}{cm^{-3}}$};
+  \draw (3,4.12) -- (3,4.6) node[circle,draw,inner sep=1.3pt,fill=white] {} node[right=3pt] {Ánodo};
+  \draw (3,-0.12) -- (3,-0.6) node[circle,draw,inner sep=1.3pt,fill=white] {} node[right=3pt] {Cátodo};
+  \draw[<->] (6.3,3.2) -- node[right,font=\small] {$\sim\SI{10}{\micro m}$} (6.3,4.0);
+  \draw[<->] (6.3,1.2) -- node[right,font=\small,align=left] {$W_d$: depende de $\VB$\\(región de arrastre)} (6.3,3.2);
+  \draw[<->] (6.3,0) -- node[right,font=\small] {$\sim\SI{250}{\micro m}$ (soporte mecánico)} (6.3,1.2);
+\end{tikzpicture}
+\caption{Diodo de potencia típico \diapo{2}. La $n^+$ inferior no bloquea nada: sólo da rigidez
+mecánica y un buen contacto óhmico. Todo el diseño está en $N_D$ y $W_d$ de la capa epitaxial.}
+\label{fig:diodo-estructura}
+\end{figure}
+
+Comparado con un diodo de señal, el de potencia tiene dos diferencias: la región $n^-$ (para
+bloquear, sección~\ref{sec:deriva}) y la gran área (para conducir decenas o miles de amperes). La
+primera es un problema en conducción: con $N_D=\SI{1e14}{cm^{-3}}$ y $W_d=\SI{100}{\micro m}$ la $n^-$
+\emph{sin modular} tendría
+\[
+  \Ronsp=\frac{W_d}{q\mu_nN_D}=\frac{\num{1e-2}}{\num{1.6e-19}\cdot1350\cdot\num{1e14}}=\SI{0.46}{\ohm.cm^2},
+\]
+es decir \SI{46}{V} de caída a \SI{100}{A/cm^2}. Los diodos reales caen $\sim\SIrange{1}{2}{V}$:
+la diferencia la hace la \textbf{alta inyección}.
+
+\subsection{Baja y alta inyección; inyección doble}
+
+\begin{itemize}
+  \item \textbf{Baja inyección} ($\delta p\ll n_{n0}=N_D$): los huecos que inyecta la $p^+$ son pocos;
+  los electrones de equilibrio de la $n^-$ neutralizan su carga sin dificultad \diapo{3}. Es el diodo
+  de la unidad de junturas.
+  \item \textbf{Alta inyección} ($\delta p\gtrsim N_D$): la carga de los huecos inyectados ya no puede
+  ser neutralizada por los pocos electrones de la $n^-$. Esa carga positiva \emph{atrae electrones
+  desde la $n^+$}: la juntura $n^+n^-$ inyecta electrones en la región de arrastre, con
+  $\delta n=\delta p$ (neutralidad). Es la \textbf{inyección doble} \diapo{3}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=6cm,
+  ymode=log, ymin=1e4, ymax=1e20,
+  xmin=-0.3, xmax=1.3,
+  xtick={0,1}, xticklabels={$0$,$W_d$},
+  xlabel={$x$ en la región $n^-$},
+  ylabel={concentración (cm$^{-3}$)},
+  ytick={1e6,1e10,1e14,1e16,1e19},
+  axis lines=left,
+  every axis plot/.append style={line width=1.1pt},
+  legend style={font=\small,at={(0.5,0.4)},anchor=center},
+]
+  % zonas
+  \fill[rojo!10] (axis cs:-0.3,1e4) rectangle (axis cs:0,1e20);
+  \fill[azul!12] (axis cs:1,1e4) rectangle (axis cs:1.3,1e20);
+  \node[font=\small] at (axis cs:-0.15,3e19) {$p^+$};
+  \node[font=\small] at (axis cs:1.15,3e19) {$n^+$};
+  % alta inyección: perfil catenaria n=p
+  \addplot[naranja!80!black,domain=0:1,samples=60] {3e17*cosh((x-0.5)/0.2)/cosh(0.5/0.2)};
+  \addlegendentry{$n(x)\approx p(x)$ en alta inyección}
+  % equilibrio
+  \addplot[azul,dashed,domain=0:1] {1e14};
+  \addlegendentry{$n_{n0}=N_D=10^{14}$}
+  \addplot[rojo,dashed,domain=0:1] {1e6};
+  \addlegendentry{$p_{n0}=n_i^2/N_D=10^{6}$}
+\end{axis}
+\end{tikzpicture}
+\caption{Portadores en la región de arrastre \diapo{3}. En conducción a corriente alta, $n\approx p$
+es tres órdenes de magnitud mayor que el dopaje: la $n^-$ deja de ser una resistencia de
+\SI{0.46}{\ohm.cm^2}. El perfil es una catenaria (se deriva abajo).}
+\label{fig:pin-perfil}
+\end{figure}
+
+\subsection{Modulación de conductividad}
+
+Con $n\approx p\gg N_D$ la conductividad de la región de arrastre es
+$\sigma=q(\mu_n+\mu_p)n$, controlada por la \emph{corriente} y no por el dopaje.
+
+\begin{ejemplo}[Cuánto baja la resistencia]
+Con $n=p=\SI{1e17}{cm^{-3}}$ y las movilidades de la tabla ($\mu_n=\munSi$, $\mu_p=\mupSi$):
+\[
+  \rho=\frac{1}{q(\mu_n+\mu_p)n}=\frac{1}{\num{1.6e-19}\cdot1830\cdot\num{1e17}}=\SI{0.034}{\ohm.cm},
+  \qquad
+  \rho W_d=\SI{3.4e-4}{\ohm.cm^2}.
+\]
+A \SI{100}{A/cm^2}: \SI{34}{mV} en vez de \SI{46}{V}. (Las movilidades bajan algo en alta
+inyección por la dispersión portador--portador, pero el orden de magnitud no cambia.)
+\end{ejemplo}
+
+\paragraph{Perfil de portadores: difusión ambipolar.}
+En la $n^-$, con $\delta n=\delta p$ y el campo determinado por la neutralidad, las dos ecuaciones
+de continuidad se combinan en una sola, para el ``par'' electrón--hueco, con un coeficiente de
+\textbf{difusión ambipolar}:
+\[
+  D_a\frac{\dd^2\delta p}{\dd x^2}-\frac{\delta p}{\tau_{HL}}=0,
+  \qquad D_a=\frac{2D_nD_p}{D_n+D_p},\qquad L_a=\sqrt{D_a\tau_{HL}},
+\]
+donde $\tau_{HL}$ es la vida media en alta inyección (sección~\ref{sec:recomb}). La solución con
+inyección desde los dos extremos es simétrica:
+\[
+  \delta p(x)=\delta n(x)\propto\cosh\!\left(\frac{x-W_d/2}{L_a}\right),
+\]
+la ``catenaria'' de la figura~\ref{fig:pin-perfil}. Si $W_d\lesssim 2L_a$ el perfil es casi plano y la
+región está bien modulada; si $W_d\gg L_a$ el centro queda pobre en portadores y la caída crece
+rápidamente. Por eso \textbf{una vida media larga baja la caída en conducción}.
+
+\begin{clave}[Caída en directa del diodo de potencia]
+\[
+  V=V_j+V_d\;\approx\;V_j+R_{\mathrm{enc}}\,I \qquad\text{\diapo{3}}
+\]
+$V_j$: caída en las junturas $p^+n^-$ y $n^-n^+$ (logarítmica en $I$); $V_d$: caída en la región de
+arrastre modulada, aproximadamente óhmica a corriente alta. En la característica $I$--$V$ aparece como
+una recta de pendiente $1/R_{\mathrm{enc}}$ a partir de $\sim\SI{1}{V}$.
+\end{clave}
+
+\subsection{Recuperación inversa}
+
+La conductividad modulada tiene un precio: en conducción la región de arrastre almacena una carga
+$Q_F\approx I_F\,\tau_{HL}$ de portadores en exceso (control de carga, Pierret cap.~8). Para que el
+diodo bloquee, esa carga tiene que \emph{desaparecer} --- por recombinación o extraída como corriente
+inversa. Mientras haya carga cerca de la juntura, el diodo sigue ``encendido'' en sentido inverso.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+  \draw[->] (0,0) -- (11,0) node[right] {$t$};
+  \draw[->] (0,-2.6) -- (0,2.4) node[left] {$i_D$};
+  % corriente
+  \draw[azul,line width=1.1pt] (0,1.8) -- (1.5,1.8) -- (4.2,-1.8)
+     .. controls (4.6,-2.1) and (4.9,-0.9) .. (5.8,-0.2) .. controls (6.4,0) .. (10.5,0);
+  \node[azul,left] at (0,1.8) {$I_F$};
+  \draw[dashed,gris] (0,-1.98) node[left,black] {$-\IRM$} -- (4.4,-1.98);
+  \node[font=\small,rotate=-53] at (3.1,0.6) {$-\dd i/\dd t$};
+  % tiempos
+  \draw[dashed,gris] (2.85,0) -- (2.85,-2.6);
+  \draw[dashed,gris] (4.4,0) -- (4.4,-2.6);
+  \draw[dashed,gris] (6.2,0) -- (6.2,-2.6);
+  \draw[<->] (2.85,-2.45) -- node[below,font=\small] {$t_a$} (4.4,-2.45);
+  \draw[<->] (4.4,-2.45) -- node[below,font=\small] {$t_b$} (6.2,-2.45);
+  \draw[<->] (2.85,-3.15) -- node[below,font=\small] {$\trr$} (6.2,-3.15);
+  % área Qrr
+  \fill[azul!25] (2.85,0) -- (4.2,-1.8) .. controls (4.6,-2.1) and (4.9,-0.9) .. (5.8,-0.2) .. controls (6.0,-0.1) .. (6.2,0) -- cycle;
+  \node[font=\small] at (4.6,-0.6) {$\Qrr$};
+  % tensión
+  \draw[rojo,line width=1.1pt] (0,0.12) -- (4.3,0.12) .. controls (4.6,-1.0) and (4.9,-1.6) .. (5.3,-1.45)
+      .. controls (6.0,-1.2) .. (10.5,-1.2);
+  \node[rojo,right] at (10.5,-1.2) {$v_D=-V_R$};
+  \node[rojo,font=\small,align=left] at (8.2,-0.6) {sobretensión\\por $L\,\dd i/\dd t$};
+\end{tikzpicture}
+\caption{Apagado de un diodo de potencia con $\dd i/\dd t$ impuesto por el circuito ($\approx V_R/L$).
+Durante $t_a$ la juntura sigue polarizada en directa (todavía hay carga en su borde): la corriente
+inversa sólo está limitada por el circuito. Cuando la carga cerca de la juntura se agota, la juntura
+toma tensión y la corriente se recupera en $t_b$.}
+\label{fig:recup-inversa}
+\end{figure}
+
+\begin{definicion}[Parámetros de recuperación inversa]
+\begin{itemize}
+  \item $\trr=t_a+t_b$: tiempo de recuperación inversa.
+  \item $\Qrr$: carga recuperada (área de la corriente negativa), $\Qrr\approx\tfrac12\IRM\trr$.
+  \item $\IRM$: pico de corriente inversa. Si $t_b\ll t_a$: $t_a=\IRM/(\dd i/\dd t)$ y
+  \[
+    \IRM\approx\sqrt{2\,\Qrr\,\frac{\dd i}{\dd t}},\qquad \trr\approx\sqrt{\frac{2\Qrr}{\dd i/\dd t}}.
+  \]
+  \item Factor de suavidad $S=t_b/t_a$. Un diodo ``abrupto'' ($S\ll1$) corta la corriente de golpe y,
+  con la inductancia del circuito, genera sobretensiones y ruido; uno ``suave'' ($S\sim1$) es más
+  benigno.
+\end{itemize}
+\end{definicion}
+
+\begin{ejemplo}[Pico de corriente inversa]
+Diodo con $\Qrr=\SI{1}{\micro C}$, apagado con $\dd i/\dd t=\SI{100}{A/\micro s}$:
+\[
+  \IRM\approx\sqrt{2\cdot\num{1e-6}\cdot\num{1e8}}=\SI{14}{A},\qquad
+  \trr\approx\frac{\IRM}{\dd i/\dd t}=\SI{0.14}{\micro s}.
+\]
+Esos \SI{14}{A} los entrega la llave que se está encendiendo (por ejemplo el MOSFET de la otra
+rama de un puente), \emph{sumados} a la corriente de carga: la recuperación del diodo es la principal
+pérdida de encendido de muchos convertidores.
+\end{ejemplo}
+
+Al \emph{encender} hay un fenómeno dual, la \textbf{recuperación directa}: la región de arrastre
+todavía no está modulada, su resistencia es alta y la tensión tiene un sobrepico $V_{FR}$ de varios
+volts hasta que la inyección doble la llena de portadores.
+
+\subsection{Diodo Schottky de potencia}
+
+Un contacto metal--semiconductor sobre la $n^-$ es un diodo \emph{unipolar}: conduce por emisión
+termoiónica de mayoritarios (hoja de fórmulas: $I_S=AA^*T^2e^{-\phi_B/kT}$ \enhojatexto), no inyecta
+huecos y por lo tanto \textbf{no tiene carga almacenada ni recuperación inversa} (sólo la carga de
+la capacidad de juntura). A cambio no modula su región de arrastre: su caída sigue el límite
+unipolar y en silicio sólo se usan hasta $\sim\SI{100}{V}$--$\SI{200}{V}$. En SiC, gracias al $\Ecr$
+diez veces mayor, llegan a \SIrange{600}{1700}{V} (sección~\ref{sec:wbg}).
