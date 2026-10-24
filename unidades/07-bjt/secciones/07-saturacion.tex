@@ -56,12 +56,15 @@ Cuanto más se ``sobreexcita'' la base, más se acerca a cero la tensión de la 
 \begin{minipage}{0.38\textwidth}
 \centering
 \begin{circuitikz}[scale=0.85,transform shape]
-  \draw (0,0) node[pnp](Q){};
-  \draw (Q.E) -- ++(0,0.5) node[vcc]{$V_{CC}=\SI{5}{V}$};
-  \draw (Q.C) to[R,l=$R_C$,-*] ++(0,-2) coordinate(o) -- ++(0,-0.6) node[ground]{};
-  \draw (o) to[short,-o] ++(1.2,0) node[right] {$v_o$};
-  \draw (Q.B) to[short,-o] ++(-0.8,0) node[left] {$v_{in}$};
-  \node[font=\scriptsize,align=center] at (-1.3,-1.2) {$V_{EB}=V_{CC}-v_{in}$};
+  \draw (0,0) node[npn](Q){};
+  \draw (Q.C) to[short,-*] ++(0,0.4) coordinate(c)
+        to[R,l_=$R_C$,i<^=$i_C$] ++(0,2) node[vcc]{$V_{CC}=\SI{5}{V}$};
+  \draw (c) to[short,-o] ++(1.3,0) coordinate(o) node[below,font=\small] {$+$};
+  \draw (Q.E) -- ++(0,-0.9) coordinate(e) node[ground]{};
+  \draw (Q.B) -- ++(-0.9,0) to[short,-o] ++(-0.3,0) -- ++(-0.6,0) coordinate(b)
+        to[american voltage source,invert,l_=$v_{BE}$] (b|-e) node[ground]{};
+  \node[font=\small] at ($(o)+(0,-1.6)$) {$-$};
+  \node[font=\small,azul,anchor=west] at ($(o)+(-0.25,-0.85)$) {$v_o=v_{CE}$};
 \end{circuitikz}
 \end{minipage}%
 \begin{minipage}{0.6\textwidth}
@@ -70,31 +73,38 @@ Cuanto más se ``sobreexcita'' la base, más se acerca a cero la tensión de la 
 \begin{axis}[
   width=\textwidth,height=5.5cm,
   xmin=0.4,xmax=0.75,ymin=0,ymax=5.5,
-  xlabel={$V_{EB}$ (V)},ylabel={$v_o=I_CR_C$ (V)},
+  xlabel={$v_{BE}$ (V)},ylabel={$v_o=v_{CE}$ (V)},
   axis lines=left,grid=major,grid style={gray!20},
 ]
 \fill[gris!15] (axis cs:0.4,0) rectangle (axis cs:0.58,5.5);
-\fill[naranjaclaro] (axis cs:0.682,0) rectangle (axis cs:0.75,5.5);
-\addplot[azul,line width=1.3pt] table[x=VEB,y=vo] {datos/transfer.dat};
-\node[font=\small] at (axis cs:0.49,4.5) {corte};
-\node[font=\small] at (axis cs:0.635,4.5) {activa};
+\fill[naranjaclaro] (axis cs:0.676,0) rectangle (axis cs:0.75,5.5);
+\draw[densely dashed] (axis cs:0.58,0) -- (axis cs:0.58,5.5);
+\draw[densely dashed] (axis cs:0.676,0) -- (axis cs:0.676,5.5);
+\addplot[azul,line width=1.3pt] table[x=VEB,y expr=5-\thisrow{vo}] {datos/transfer.dat};
+\fill (axis cs:0.58,4.89) circle (2pt) node[above left,font=\small] {A};
+\fill (axis cs:0.676,0.676) circle (2pt) node[right,font=\small] {B};
+\node[font=\small] at (axis cs:0.49,2.5) {corte};
+\node[font=\small] at (axis cs:0.628,2.5) {activa};
 \node[font=\small,rotate=90] at (axis cs:0.715,2.5) {saturación};
 \end{axis}
 \end{tikzpicture}
 \end{minipage}
-\caption{Inversor con PNP ($R_C=\SI{1}{k\ohm}$) y su característica de transferencia, calculada
-con Ebers--Moll (equivalente PNP de la \diapo{2.14}). En corte $v_o\approx0$; en saturación
-$v_o\approx V_{CC}-V_{EC,sat}$. La región activa es la zona de pendiente alta: allí el circuito
-amplifica.}
+\caption{Inversor NPN en emisor común de la \diapo{2.14} ($R_C=\SI{1}{k\ohm}$) y su
+característica de transferencia, calculada con Ebers--Moll. En corte $v_o\approx V_{CC}$
+(punto A: empieza a conducir); en activa $v_o=V_{CC}-\beta i_BR_C$ cae con pendiente alta (allí
+el circuito amplifica); en B la juntura B--C llega a $0$ ($v_{CE}=v_{BE}$) y desde ahí el transistor
+satura con $v_o\to V_{CE,sat}$. El PNP es idéntico cambiando signos (tabla~\ref{tab:pnp-npn}): emisor a
+$V_{CC}$, $R_C$ a masa y $v_{EB}$ como entrada.}
 \label{fig:llave}
 \end{figure}
 
-\paragraph{La malla de salida decide la saturación \diapo{2.14}.} Con $V_{EB}$ fija en activa,
+\paragraph{La malla de salida decide la saturación \diapo{2.14}.} Con $v_{BE}$ fija en activa,
 $I_C=\beta I_B$ es independiente de $R_C$. Pero la malla de colector impone
-$V_{EC}=V_{CC}-I_CR_C$: si $\beta I_BR_C$ supera $V_{CC}$, la tensión $V_{EC}$ ``no alcanza'',
-la juntura C--B entra en directa y el transistor se satura. La corriente queda limitada a
-$I_{C,sat}\approx(V_{CC}-V_{EC,sat})/R_C<\beta I_B$. Criterio práctico de diseño: para
-asegurar saturación, $I_B>I_{C,sat}/\beta_{\min}$ con un margen.
+$V_{CE}=V_{CC}-I_CR_C$: si $\beta I_BR_C$ supera $V_{CC}$, la tensión $V_{CE}$ ``no alcanza'',
+la juntura B--C entra en directa y el transistor se satura: $R_C$ ``empuja'' al colector a
+saturación. La corriente queda limitada a $I_{C,sat}\approx(V_{CC}-V_{CE,sat})/R_C<\beta I_B$.
+Criterio práctico de diseño: para asegurar saturación, $I_B>I_{C,sat}/\beta_{\min}$ con un margen.
+(En el PNP: $V_{EC}=V_{CC}-I_CR_C$ y $V_{EC,sat}$.)
 
 \subsection{Qué pasa con $\beta$ en saturación}
 

@@ -53,15 +53,24 @@ con
 \begin{figure}[H]
 \centering
 \begin{circuitikz}[scale=0.95,transform shape]
-  \draw (0,0) node[left] {E} to[short,o-] (1,0)
-        to[D*,l_=$I_F$,-*] (3,0)
-        to[D*,invert,l_=$I_R$,*-] (5,0) to[short,-o] (6,0) node[right] {C};
-  \draw (1,0) -- (1,1.6) to[cI,l=$\aR I_R$,invert] (3,1.6) -- (3,0);
-  \draw (3,0) -- (3,1.6) to[cI,l=$\aF I_F$] (5,1.6) -- (5,0);
-  \draw (3,0) to[short,-o] (3,-1.3) node[below] {B};
-  \draw[flecha] (0.2,-0.35) -- node[below,font=\small] {$I_E$} (0.8,-0.35);
-  \draw[flecha] (5.2,-0.35) -- node[below,font=\small] {$I_C$} (5.8,-0.35);
-  \draw[flecha] (2.7,-0.6) -- node[left,font=\small] {$I_B$} (2.7,-1.1);
+  % rama E--B: diodo (arriba) en paralelo con la fuente aR*IR (abajo, inyecta hacia E)
+  \draw (0,0) node[left] {E} to[short,o-*] (1,0) -- (1,0.9)
+        to[D*] (3,0.9) -- (3,-0.9)
+        to[american current source] (1,-0.9) -- (1,0);
+  % rama C--B: diodo (anodo en C) en paralelo con la fuente aF*IF (inyecta hacia C)
+  \draw (6.6,0.9) to[D*] (4.6,0.9) -- (4.6,-0.9)
+        to[american current source] (6.6,-0.9) -- (6.6,0.9);
+  \draw (3,0) to[short,*-*] (4.6,0);
+  \draw (6.6,0) to[short,*-o] (7.6,0) node[right] {C};
+  \draw (3.8,0) to[short,*-o] (3.8,-1.9) node[below] {B};
+  \node[below,font=\small] at (2,-1.3) {$\aR I_R$};
+  \node[below,font=\small] at (5.6,-1.3) {$\aF I_F$};
+  % corrientes
+  \draw[flecha] (1.7,1.5) -- node[above,font=\small] {$I_F$} (2.3,1.5);
+  \draw[flecha] (5.9,1.5) -- node[above,font=\small] {$I_R$} (5.3,1.5);
+  \draw[flecha] (0.2,-0.3) -- node[below,font=\small] {$I_E$} (0.8,-0.3);
+  \draw[flecha] (6.8,-0.3) -- node[below,font=\small] {$I_C$} (7.4,-0.3);
+  \draw[flecha] (4.05,-0.7) -- node[right,font=\small] {$I_B$} (4.05,-1.3);
 \end{circuitikz}
 \caption{Circuito equivalente de Ebers--Moll de un PNP (Pierret, fig.~11.6; \diapo{1.19, 1.22}).
 $I_F=I_{F0}\eVEB$ e $I_R=I_{R0}\eVCB$ son las corrientes de dos diodos; cada diodo ``alimenta''
@@ -73,12 +82,17 @@ es lo que los diferencia de ``dos diodos enfrentados''.}
 \begin{figure}[H]
 \centering
 \begin{circuitikz}[scale=0.95,transform shape]
-  \draw (0,0) node[left] {E} to[short,o-] (1,0)
-        to[D*,l_=$I_F$,-*] (3,0)
-        to[short] (5,0) to[short,-o] (6,0) node[right] {C};
-  \draw (3,0) -- (3,1.6) to[cI,l=$\aF I_F$] (5,1.6) -- (5,0);
-  \draw (3,0) to[short,-o] (3,-1.3) node[below] {B};
-  \node[font=\small,align=left,anchor=west] at (6.8,0.4) {MAD: $I_R\approx-I_{R0}\approx0$\\$I_E\approx I_{F0}e^{V_{EB}/V_T}$\\$I_C\approx\aF I_E$};
+  \draw (0,0) node[left] {E} to[short,o-] (1,0) to[D*] (3,0)
+        to[short,-*] (3.5,0) -- (4,0)
+        to[american current source] (6,0) to[short,-o] (7,0) node[right] {C};
+  \draw (3.5,0) to[short,-o] (3.5,-1.9) node[below] {B};
+  \node[above,font=\small] at (5,0.45) {$\aF I_F$};
+  % corrientes
+  \draw[flecha] (1.7,0.6) -- node[above,font=\small] {$I_F$} (2.3,0.6);
+  \draw[flecha] (0.2,-0.3) -- node[below,font=\small] {$I_E$} (0.8,-0.3);
+  \draw[flecha] (6.2,-0.3) -- node[below,font=\small] {$I_C$} (6.8,-0.3);
+  \draw[flecha] (3.75,-0.7) -- node[right,font=\small] {$I_B$} (3.75,-1.3);
+  \node[font=\small,align=left,anchor=west] at (8,0.2) {MAD: $I_R\approx-I_{R0}\approx0$\\$I_E\approx I_{F0}e^{V_{EB}/V_T}$\\$I_C\approx\aF I_E$};
 \end{circuitikz}
 \caption{En activa directa el diodo C--B (en inversa) y la fuente $\aR I_R$ son despreciables:
 el transistor es \textbf{un diodo (E--B) más una fuente de corriente controlada} \diapo{1.23}.}

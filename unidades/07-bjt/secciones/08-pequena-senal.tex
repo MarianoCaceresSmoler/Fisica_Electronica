@@ -57,8 +57,8 @@ el efecto residual se representa con $r_\mu$.
 \centering
 \begin{circuitikz}[scale=0.95,transform shape]
   % entrada
-  \draw (0,3) node[left] {B} to[short,o-] (0.3,3) to[R] (2,3);
-  \node[above,font=\small] at (1.15,3.35) {$r_b$};
+  \draw (0,3) node[left] {B} to[short,o-] (0.2,3) to[R] (1.5,3) -- (2,3);
+  \node[above,font=\small] at (0.85,3.35) {$r_b$};
   \draw (2,3) to[short,*-] (2,3) node[above left,font=\small] {B'};
   \draw (2,3) to[C] (2,0);
   \node[left,font=\small] at (1.6,1.5) {$C_\pi$};
@@ -68,15 +68,15 @@ el efecto residual se representa con $r_\mu$.
   \node[font=\small,azul] at (3.0,1.5) {$v_\pi$};
   % realimentacion
   \draw (2,3) -- (2,4.2) -- (3.4,4.2) to[R] (6.4,4.2) -- (7.2,4.2);
-  \node[above,font=\small] at (4.9,4.55) {$r_\mu$};
-  \draw (2,4.2) -- (2,5.4) -- (3.4,5.4) to[C] (6.4,5.4) -- (7.2,5.4) -- (7.2,3);
-  \node[above,font=\small] at (4.9,5.85) {$C_\mu$};
+  \node[below,font=\small] at (4.9,3.85) {$r_\mu$};
+  \draw (2,4.2) -- (2,5.6) -- (3.4,5.6) to[C] (6.4,5.6) -- (7.2,5.6) -- (7.2,3);
+  \node[above,font=\small] at (4.9,6.0) {$C_\mu$};
   \draw (7.2,4.2) to[short,*-] (7.2,4.2);
   % salida
   \draw (3.6,3) to[short,*-] (3.6,3);
   \draw (7.2,3) to[short,*-] (7.2,3) to[R] (7.2,0);
   \node[left,font=\small] at (6.85,1.5) {$r_o$};
-  \draw (7.2,3) -- (8.8,3) to[cI] (8.8,0);
+  \draw (7.2,3) -- (8.8,3) to[american controlled current source] (8.8,0);
   \node[right,font=\small] at (9.3,1.5) {$g_mv_\pi$};
   \draw (8.8,3) to[short,-o] (10.6,3) node[right] {C};
   \draw (0.3,0) node[left] {E} to[short,o-] (10.6,0) to[short,-o] (10.6,0) node[right] {E};
@@ -96,7 +96,7 @@ modelo vale para PNP y NPN, porque relaciona \emph{variaciones}.}
   \node[font=\small,azul] at (0.7,1.9) {$+$}; \node[font=\small,azul] at (0.7,0.5) {$-$};
   \node[font=\small,azul] at (0.7,1.2) {$v_{be}$};
   \draw (1.5,2.4) -- (1.5,2.4);
-  \draw (4.6,2.4) to[cI] (4.6,0);
+  \draw (4.6,2.4) to[american controlled current source] (4.6,0);
   \node[left,font=\small] at (4.1,1.2) {$g_mv_{be}$};
   \draw (4.6,2.4) -- (6.4,2.4) to[R] (6.4,0);
   \node[right,font=\small] at (6.75,1.2) {$r_o$};
