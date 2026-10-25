@@ -1,0 +1,789 @@
+\documentclass[11pt,a4paper]{article}
+\input{../../comun/preambulo.tex}
+\unidad{Guía 5 -- BJT: resoluciones}
+
+\newcommand{\aF}{\alpha_F}
+\newcommand{\aR}{\alpha_R}
+\newcommand{\aT}{\alpha_T}
+\newcommand{\eVEB}{\left(e^{V_{EB}/V_T}-1\right)}
+\newcommand{\eVCB}{\left(e^{V_{CB}/V_T}-1\right)}
+\newcommand{\eVBE}{\left(e^{V_{BE}/V_T}-1\right)}
+\newcommand{\eVBC}{\left(e^{V_{BC}/V_T}-1\right)}
+\newcommand{\guia}{\textsf{[resp.\ guía]}}
+\newcommand{\prob}[1]{\needspace{6\baselineskip}\section*{Problema #1}\addcontentsline{toc}{section}{Problema #1}}
+
+\title{\color{azul}\textbf{Guía 5 -- Transistor bipolar de juntura (BJT)}\\[0.3em]
+  \large Resoluciones completas y resultados verificados}
+\author{Física Electrónica (23.09, ITBA)}
+\date{Complemento del resumen de las unidades 7 y 8}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{tcolorbox}[base,colback=white,colframe=gris,title={Cómo usar este solucionario}]
+\small
+\begin{itemize}
+  \item Cada problema tiene: planteo, desarrollo y \textbf{resultado en caja verde}. Las cajas
+  \textcolor{rojo}{\textbf{Ojo}} marcan diferencias con las respuestas al final de la guía
+  (\guia) y confusiones típicas; están todas resumidas en la tabla de correcciones del final.
+  \item Todos los números se recalcularon con un script (Python). Constantes: tabla de la
+  materia ($q=\qval$\,C, $k=\kval$\,eV/K, $\epsilon_0=\epsval$\,F/cm, $\epsilon_r=\epsrSi$,
+  $\mu_n=\munSi$, $\mu_p=\mupSi$\,\si{cm^2/V.s}); $n_i$ el que da el enunciado
+  ($\num{1.5e10}\,\si{cm^{-3}}$).
+  \item $V_T=kT/q=\SI{25.83}{mV}$ a \SI{300}{K}. Con \SI{26}{mV} los resultados cambian unos pocos
+  por ciento (las exponenciales son sensibles); las conclusiones no cambian.
+  \item Convención de signos y notación: la de la hoja de fórmulas (PNP, $I_{F0}$, $\aF$, $\gamma$,
+  $\aT$). Para NPN se invierten tensiones y se intercambian electrones$\leftrightarrow$huecos.
+\end{itemize}
+\end{tcolorbox}
+
+\subsection*{Resultados rápidos}
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}lp{11.5cm}@{}}
+\toprule
+Prob. & Resultado \\
+\midrule
+1 (PNP) & $V_{EB}=\SI{0.648}{V}$, $V_{CB}=\SI{-2}{V}$: $W=\SI{0.918}{\micro m}$, $I_{Ep}=\SI{0.488}{mA}$,
+$I_{En}=\SI{167}{\micro A}$, $I_{RB}=\SI{16.1}{\micro A}$, $I_B=\SI{183}{\micro A}$,
+$\alpha=0.721$, $\beta=2.58$, $\gamma=0.745$ (tabla completa en el problema). \\
+2 (NPN) & mismo punto: $I_{En}=\SI{1.354}{mA}$, $I_B=\SI{116}{\micro A}$, $\alpha=0.920$, $\beta=11.6$, $\gamma=0.931$. \\
+3 y 4 & $x_{EB}=\SI{158}{nm}$, $x_{CB}=\SI{85}{nm}$, $W_{\text{ef}}=\SI{1.757}{\micro m}$ (igual para PNP y NPN). \\
+5 & $I_{CB0}=(1-\aF\aR)I_{R0}$; además $I_{CE0}=I_{CB0}/(1-\aF)=(\beta_F+1)I_{CB0}$. \\
+6 & $g_m=\SI{387}{mA/V}$ (\SI{385}{mA/V} con \SI{26}{mV}), $r_\pi\approx\SI{1.29}{k\ohm}$ (\SI{1.30}{k\ohm}), $r_o=\SI{80}{k\ohm}$. \\
+7 & $h_{ie}=r_x+r_\pi$, $h_{re}\approx r_\pi/r_\mu\approx0$, $h_{fe}=g_mr_\pi=\beta_0$, $h_{oe}=1/r_o\,(+\beta/r_\mu)$. \\
+8 & Los tres cortocircuitos dan una ecuación de diodo $I=I_0\left(e^{V/V_T}-1\right)$. \\
+9 & NPN; electrones. (b) y (c): $\alpha$ y $\beta$ disminuyen. \\
+10 & a) F \quad b) F \quad c) F \quad d) F \quad e) F. \\
+14 & $V_{BE}=V_T\ln\!\left(1+I_1/I_{F0}\right)$. \\
+15 & $H=-g_m\,(r_o\parallel R_L)\,\dfrac{r_\pi}{r_\pi+R_{in}}$. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\tableofcontents
+\newpage
+
+% =====================================================================
+\prob{1 -- PNP: componentes de corriente, $\alpha$, $\beta$, $\gamma$}
+% =====================================================================
+
+\textbf{Datos.} $N_{AE}=\num{1e16}$, $N_{DB}=\num{8e15}$, $N_{AC}=\SI{1e13}{cm^{-3}}$,
+$W_B=\SI{1}{\micro m}$, $A=\SI{1e-5}{cm^2}$, $\tau_p=\tau_n=\SI{10}{ns}$, $T=\SI{300}{K}$,
+$n_i=\SI{1.5e10}{cm^{-3}}$.
+
+\subsection*{Paso 1: parámetros de cada región}
+En cada zona importan los \textbf{minoritarios}: electrones en el emisor y colector (p), huecos en
+la base (n).
+\[
+  D=\mu V_T,\qquad L=\sqrt{D\tau}
+\]
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lcccc}
+\toprule
+Región & minoritario & $D$ (\si{cm^2/s}) & $L$ (\si{\micro m}) & concentración de equilibrio (\si{cm^{-3}}) \\
+\midrule
+Emisor (p) & e$^-$ & $1350\cdot0.02583=34.87$ & 5.91 & $n_{E0}=n_i^2/N_{AE}=\num{22500}$ \\
+Base (n) & h$^+$ & $480\cdot0.02583=12.40$ & 3.52 & $p_{B0}=n_i^2/N_{DB}=\num{28125}$ \\
+Colector (p) & e$^-$ & 34.87 & 5.91 & $n_{C0}=n_i^2/N_{AC}=\num{2.25e7}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Paso 2: ancho efectivo de la base}
+Potenciales de contacto:
+\[
+  V_{bi,EB}=V_T\ln\frac{N_{AE}N_{DB}}{n_i^2}=\SI{0.687}{V},\qquad
+  V_{bi,CB}=V_T\ln\frac{N_{AC}N_{DB}}{n_i^2}=\SI{0.509}{V}.
+\]
+Sólo interesa la parte de cada zona desierta que \emph{invade la base} (lado n):
+\[
+  x_{n}=\sqrt{\frac{2\epsilon_s}{q}\,\frac{N_A}{N_D\,(N_A+N_D)}\,(V_{bi}-V_A)}
+\]
+con $V_A=V_{EB}$ para la juntura E--B y $V_A=V_{CB}$ para la C--B. Entonces
+$W=W_B-x_{EB}-x_{CB}$.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{cccccc}
+\toprule
+$V_{EB}$ (V) & $V_{CB}$ (V) & $V_{bi,EB}-V_{EB}$ (mV) & $x_{EB}$ (nm) & $x_{CB}$ (nm) & $W$ (\si{\micro m}) \\
+\midrule
+0.628 & $-2$ & 59 & 73.1 & 22.6 & 0.9043 \\
+0.648 & $-2$ & 39 & 59.5 & 22.6 & 0.9179 \\
+0.668 & $-2$ & 19 & 41.5 & 22.6 & 0.9359 \\
+0.648 & $-10$ & 39 & 59.5 & 46.3 & 0.8943 \\
+0.648 & $-20$ & 39 & 59.5 & 64.6 & 0.8759 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Coinciden con la guía. Como $N_{AC}\ll N_{DB}$, la zona desierta C--B está casi toda en el
+colector (\SI{18}{\micro m} del lado p para \SI{-2}{V}) y en la base entra muy poco: por eso el
+efecto Early de este transistor es moderado.
+
+\subsection*{Paso 3: componentes de corriente}
+\begin{clave}[Corrientes del BJT PNP (base de ancho arbitrario) \enhoja]
+\[
+  I_{Ep}=qA\frac{D_B}{L_B}p_{B0}\left[\frac{e^{V_{EB}/V_T}-1}{\tanh(W/L_B)}-\frac{e^{V_{CB}/V_T}-1}{\sinh(W/L_B)}\right]
+\]
+\[
+  I_{Cp}=qA\frac{D_B}{L_B}p_{B0}\left[\frac{e^{V_{EB}/V_T}-1}{\sinh(W/L_B)}-\frac{e^{V_{CB}/V_T}-1}{\tanh(W/L_B)}\right]
+\]
+\[
+  I_{En}=qA\frac{D_E}{L_E}n_{E0}\eVEB,\qquad
+  I_{Cn}=-qA\frac{D_C}{L_C}n_{C0}\eVCB
+\]
+\[
+  I_{B-R}=I_{Ep}-I_{Cp},\qquad I_B=I_E-I_C=I_{En}+I_{B-R}-I_{Cn}
+\]
+\[
+  \alpha=\frac{I_C}{I_E},\quad \beta=\frac{I_C}{I_B},\quad \gamma=\frac{I_{Ep}}{I_E},\quad \aT=\frac{I_{Cp}}{I_{Ep}}
+\]
+\end{clave}
+(La hoja escribe $I_B=I_{En}+I_{Cn}+I_{RB}$; con el signo de $I_{Cn}$ definido arriba, $I_{Cn}>0$
+en MAD y corresponde restarlo. Es del orden de pA, así que numéricamente no cambia nada.)
+
+\begin{ejemplo}[cálculo detallado para $V_{EB}=\SI{0.648}{V}$, $V_{CB}=\SI{-2}{V}$]
+$e^{V_{EB}/V_T}=e^{25.087}=\num{7.85e10}$, \quad $W/L_B=0.9179/3.521=0.2607$.
+\[
+  qA\frac{D_B}{L_B}p_{B0}=\num{1.6e-19}\cdot\num{1e-5}\cdot\frac{12.40}{\num{3.521e-4}}\cdot28125
+  =\SI{1.585e-15}{A}
+\]
+\[
+  I_{Ep}=\num{1.585e-15}\left[\frac{\num{7.85e10}}{\tanh 0.2607}+\frac{1}{\sinh 0.2607}\right]
+  =\SI{0.488}{mA},\qquad I_{Cp}=\SI{0.472}{mA}
+\]
+\[
+  I_{En}=\num{1.6e-24}\cdot\frac{34.87}{\num{5.905e-4}}\cdot22500\cdot\num{7.85e10}=\SI{167}{\micro A},
+\]
+\[
+  I_{Cn}=\num{1.6e-24}\cdot\frac{34.87}{\num{5.905e-4}}\cdot\num{2.25e7}=\SI{2.13}{pA}
+\]
+\[
+  I_{B-R}=\SI{16.1}{\micro A},\quad I_B=\SI{183.1}{\micro A},\quad
+  \alpha=\frac{0.4721}{0.6553}=0.7205,\quad \beta=\frac{0.4721}{0.1831}=2.58,\quad \gamma=0.745
+\]
+\textbf{Control rápido} con las aproximaciones de base corta de la hoja:
+\[
+  \gamma\approx\frac{1}{1+\dfrac{D_E}{D_B}\dfrac{N_B}{N_E}\dfrac{W}{L_E}}
+  =\frac{1}{1+2.8125\cdot0.8\cdot0.1554}=0.741,\qquad
+  \aT\approx1-\frac{W^2}{2L_B^2}=0.966 .
+\]
+\end{ejemplo}
+
+\begin{clave}[Resultados Problema 1 (PNP)]
+\centering\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{cccccccccccc}
+\toprule
+$V_{EB}$ & $V_{CB}$ & $I_{Ep}$ & $I_{Cp}$ & $I_{En}$ & $I_{Cn}$ & $I_{B-R}$ & $I_B$ & $\alpha$ & $\beta$ & $\gamma$ & $\aT$\\
+(V) & (V) & (mA) & (mA) & (\si{\micro A}) & (pA) & (\si{\micro A}) & (\si{\micro A}) & & & & \\
+\midrule
+0.628 & $-2$  & 0.2284 & 0.2210 & 77.0  & 2.13 & 7.33  & 84.3  & 0.7239 & 2.62 & 0.7479 & 0.9679\\
+0.648 & $-2$  & 0.4883 & 0.4721 & 167.0 & 2.13 & 16.13 & 183.1 & 0.7205 & 2.58 & 0.7451 & 0.9670\\
+0.668 & $-2$  & 1.0396 & 1.0040 & 362.2 & 2.13 & 35.67 & 397.9 & 0.7162 & 2.52 & 0.7416 & 0.9657\\
+\midrule
+0.648 & $-10$ & 0.5006 & 0.4849 & 167.0 & 2.13 & 15.72 & 182.7 & 0.7263 & 2.65 & 0.7499 & 0.9686\\
+0.648 & $-20$ & 0.5107 & 0.4953 & 167.0 & 2.13 & 15.40 & 182.4 & 0.7308 & 2.72 & 0.7536 & 0.9698\\
+\bottomrule
+\end{tabular}
+\end{clave}
+
+\begin{ojo}[la tabla de respuestas de la guía tiene un error de unidades]
+La guía da $I_{Ep}\approx\SI{46}{mA}$, $I_{B-R}\approx\SI{157}{nA}$, $\beta\approx286$ y
+$\gamma\approx0.9965$. Esos valores se reproducen \emph{exactamente} (dentro de las diferencias
+de $V_T$) si se usa $W$ en \si{\micro m}$\times10^{-6}$ (metros) mezclado con el resto en
+\si{cm}: $I_{Ep}\propto1/W$ queda $\times100$ e $I_{B-R}\propto W$ queda $/100$.
+Las columnas que no dependen de $W$ ($I_{En}$, $I_{Cn}$) sí coinciden con la guía.
+
+Prueba física de que $\beta\approx286$ es imposible: con $N_E/N_B=1.25$ el emisor casi no está más
+dopado que la base, y la fórmula de la hoja da $\gamma\approx0.74$, o sea
+$\beta\le\gamma/(1-\gamma)\approx2.9$. Un $\beta$ de cientos necesita $N_E\gg N_B$.
+\end{ojo}
+
+\begin{ojo}[validez del modelo en estos puntos]
+Los números son los del modelo ideal que pide el problema, pero el punto elegido está al borde
+de su validez:
+$V_{bi}-V_{EB}$ es apenas \SIrange{19}{59}{mV} (la aproximación de vaciamiento es dudosa) y
+$p_B(0)=p_{B0}e^{V_{EB}/V_T}=\num{1.0e15}$, \num{2.2e15}, \SI{4.8e15}{cm^{-3}}, que es
+\SIrange{13}{60}{\percent} de $N_{DB}$: ya no hay baja inyección para $V_{EB}=\SI{0.668}{V}$.
+\end{ojo}
+
+\subsection*{Conclusiones}
+\begin{itemize}
+  \item \textbf{$V_{EB}$ controla exponencialmente.} $+\SI{20}{mV}$ multiplica las corrientes por
+  $\approx e^{0.02/0.02583}=2.17$ (en la tabla: $\times2.14$, porque además $W$ crece un poco).
+  \item \textbf{$V_{EB}\uparrow\Rightarrow\beta\downarrow$ levemente:} $x_{EB}$ se achica, $W$
+  crece, $I_{Cp}\propto1/W$ baja y $I_{B-R}\propto W$ sube.
+  \item \textbf{$|V_{CB}|\uparrow\Rightarrow$ efecto Early:} $x_{CB}$ crece, $W$ baja, a $V_{EB}$
+  fijo aumentan $I_{Ep}$ e $I_C$ (de \SI{0.472}{mA} a \SI{0.495}{mA}) y $\beta$ ($2.58\to2.72$),
+  mientras baja la recombinación en la base. $I_{En}$ no cambia (no depende de $W$).
+  \item \textbf{$\beta$ muy bajo} porque está limitado por $\gamma\approx0.75$ (emisor mal dopado),
+  no por el transporte ($\aT\approx0.97$). $I_{Cn}$ (pA) es despreciable y no depende de $V_{EB}$.
+\end{itemize}
+
+% =====================================================================
+\prob{2 -- El mismo transistor en NPN}
+% =====================================================================
+
+Ahora $N_{DE}=\num{1e16}$, $N_{AB}=\num{8e15}$, $N_{DC}=\SI{1e13}{cm^{-3}}$. Los módulos de
+dopaje son los mismos, así que \textbf{$V_{bi}$, $x_{EB}$, $x_{CB}$ y $W$ son idénticos} al
+Problema~1. Lo que cambia es qué portador es minoritario en cada zona:
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lcccc}
+\toprule
+Región & minoritario & $D$ (\si{cm^2/s}) & $L$ (\si{\micro m}) & concentración \\
+\midrule
+Emisor (n) & h$^+$ & 12.40 & 3.52 & $p_{E0}=\num{22500}$ \\
+Base (p) & e$^-$ & 34.87 & 5.91 & $n_{B0}=\num{28125}$ \\
+Colector (n) & h$^+$ & 12.40 & 3.52 & $p_{C0}=\num{2.25e7}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+Las fórmulas son las del Problema~1 intercambiando $p\leftrightarrow n$ y usando $V_{BE}$, $V_{BC}$.
+Aquí la corriente \emph{útil} es de electrones ($I_{En}$, $I_{Cn}$) y la parásita del emisor es de
+huecos ($I_{Ep}$). (La guía mantiene los nombres de columna del PNP: su ``$I_{Ep}$'' es la
+corriente útil.)
+
+\begin{clave}[Resultados Problema 2 (NPN)]
+\centering\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{cccccccccccc}
+\toprule
+$V_{BE}$ & $V_{BC}$ & $I_{En}$ & $I_{Cn}$ & $I_{Ep}$ & $I_{Cp}$ & $I_{B-R}$ & $I_B$ & $\alpha$ & $\beta$ & $\gamma$ & $\aT$\\
+(V) & (V) & (mA) & (mA) & (\si{\micro A}) & (pA) & (\si{\micro A}) & (\si{\micro A}) & & & & \\
+\midrule
+0.628 & $-2$  & 0.6334 & 0.6260 & 45.9  & 1.27 & 7.35  & 53.3  & 0.9216 & 11.75 & 0.9324 & 0.9884\\
+0.648 & $-2$  & 1.3537 & 1.3375 & 99.6  & 1.27 & 16.19 & 115.8 & 0.9203 & 11.55 & 0.9315 & 0.9880\\
+0.668 & $-2$  & 2.8809 & 2.8451 & 216.0 & 1.27 & 35.81 & 251.8 & 0.9187 & 11.30 & 0.9303 & 0.9876\\
+\midrule
+0.648 & $-10$ & 1.3890 & 1.3732 & 99.6  & 1.27 & 15.78 & 115.4 & 0.9225 & 11.90 & 0.9331 & 0.9886\\
+0.648 & $-20$ & 1.4177 & 1.4022 & 99.6  & 1.27 & 15.45 & 115.0 & 0.9242 & 12.19 & 0.9344 & 0.9891\\
+\bottomrule
+\end{tabular}
+\end{clave}
+
+\begin{ojo}[misma corrección que en el Problema 1]
+La guía da corriente útil $\approx\SI{130}{mA}$, $I_{B-R}\approx\SI{157}{nA}$ y $\beta\approx1350$:
+otra vez el factor 100 de $W$. Las columnas de $I_{Ep}$ ($\approx\SI{97}{\micro A}$) e $I_{Cp}$
+(\SI{1.27}{pA}) sí coinciden.
+\end{ojo}
+
+\subsection*{Conclusiones y diferencias con el PNP}
+\begin{itemize}
+  \item Valen las mismas tendencias del Problema~1 (exponencial en $V_{BE}$, efecto Early).
+  \item La corriente útil se multiplica por $\mu_n/\mu_p=2.81$: los electrones difunden mejor.
+  \item La retroinyección al emisor (huecos) baja: $\propto D/L\propto\sqrt{D}$, o sea
+  $\times\sqrt{480/1350}=0.60$. Entonces $\gamma$ pasa de 0.745 a 0.931.
+  \item $L_B$ crece de 3.5 a \SI{5.9}{\micro m}, así que $\aT$ sube de 0.967 a 0.988.
+  \item $I_{B-R}$ \textbf{casi no cambia} ($\approx qAn_{B0}W/2\tau\cdot e^{V/V_T}$ no depende de $D$).
+  \item Resultado: $\beta$ sube de $\approx2.6$ a $\approx11.6$ ($\times4.5$). Por eso los BJT
+  rápidos y de alta ganancia son NPN. Igualmente sigue siendo un mal transistor por el emisor
+  poco dopado.
+\end{itemize}
+
+% =====================================================================
+\prob{3 -- Ancho efectivo de la base (PNP)}
+% =====================================================================
+
+\textbf{Datos.} $N_{AE}=\num{6e17}$, $N_{DB}=\num{1e16}$, $N_{AC}=\SI{1e14}{cm^{-3}}$,
+$W_B=\SI{2}{\micro m}$, $V_{EB}=\SI{0.605}{V}$, $V_{CB}=\SI{-5}{V}$, $T=\SI{300.15}{K}$
+($V_T=\SI{25.84}{mV}$). Se usa $n_i=\SI{1.5e10}{cm^{-3}}$ como en el Problema~1 (con eso
+coincide la guía). $\tau$ no interviene en $W$.
+
+\textbf{Juntura E--B.}
+\[
+  V_{bi,EB}=0.02584\ln\frac{\num{6e17}\cdot\num{1e16}}{\num{2.25e20}}=\SI{0.7989}{V}
+  \;\Rightarrow\; V_{bi}-V_{EB}=\SI{0.194}{V}
+\]
+\[
+  x_{EB}=\sqrt{\frac{2\cdot\num{1.044e-12}\cdot0.194}{\num{1.6e-19}}\cdot
+  \frac{\num{6e17}}{\num{1e16}\cdot\num{6.1e17}}}=\SI{1.578e-5}{cm}=\SI{158}{nm}
+\]
+\textbf{Juntura C--B.}
+\[
+  V_{bi,CB}=0.02584\ln\frac{\num{1e14}\cdot\num{1e16}}{\num{2.25e20}}=\SI{0.574}{V}
+  \;\Rightarrow\; V_{bi}-V_{CB}=\SI{5.574}{V}
+\]
+\[
+  x_{CB}=\sqrt{\frac{2\cdot\num{1.044e-12}\cdot5.574}{\num{1.6e-19}}\cdot
+  \frac{\num{1e14}}{\num{1e16}\cdot\num{1.01e16}}}=\SI{8.49e-6}{cm}=\SI{85}{nm}
+\]
+
+\begin{clave}[Resultado Problema 3]
+\[
+  W_{\text{ef}}=W_B-x_{EB}-x_{CB}=2-0.158-0.085=\SI{1.757}{\micro m}
+\]
+\end{clave}
+Con $n_i=\num{1e10}$ de la tabla: $x_{EB}=\SI{166}{nm}$, $x_{CB}=\SI{85}{nm}$,
+$W_{\text{ef}}=\SI{1.749}{\micro m}$. La diferencia es mínima.
+
+Aunque la juntura E--B está en directa, invade la base \emph{más} que la C--B en inversa,
+porque del lado C el colector es 100 veces menos dopado que la base: la zona desierta se va casi
+toda al colector.
+
+% =====================================================================
+\prob{4 -- Ídem para NPN}
+% =====================================================================
+Los anchos de vaciamiento sólo dependen de los \emph{módulos} de los dopajes y de las tensiones
+($V_{bi}$ y $x_n$ no distinguen si el lado más dopado es p o n). Por eso:
+\begin{clave}[Resultado Problema 4]
+\[
+  x_{EB}=\SI{158}{nm},\qquad x_{CB}=\SI{85}{nm},\qquad W_{\text{ef}}=\SI{1.757}{\micro m}
+\]
+\end{clave}
+Lo que \emph{sí} cambia entre PNP y NPN son las corrientes ($D$, $L$ de los minoritarios), no la
+geometría.
+
+% =====================================================================
+\prob{5 -- $I_{CB0}$ a partir de Ebers--Moll (NPN)}
+% =====================================================================
+
+Ebers--Moll para NPN ($I_E$ saliente, $I_C$ e $I_B$ entrantes):
+\[
+  I_E=I_{F0}\eVBE-\aR I_{R0}\eVBC,
+\]
+\[
+  I_C=\aF I_{F0}\eVBE-I_{R0}\eVBC,
+\]
+con reciprocidad $\aF I_{F0}=\aR I_{R0}$.
+
+\textbf{Emisor abierto} ($I_E=0$):
+\[
+  I_{F0}\eVBE=\aR I_{R0}\eVBC .
+\]
+Reemplazando en $I_C$:
+\[
+  I_C=\aF\aR I_{R0}\eVBC-I_{R0}\eVBC=-(1-\aF\aR)\,I_{R0}\eVBC .
+\]
+Con la juntura B--C fuertemente en inversa ($V_{BC}<-5V_T$, $e^{V_{BC}/V_T}\to0$):
+\begin{clave}[Resultado Problema 5]
+\[
+  I_{CB0}=(1-\aF\aR)\,I_{R0}
+\]
+\end{clave}
+\textbf{Detalle extra:} la tensión que queda en el emisor abierto es
+$e^{V_{BE}/V_T}-1=-\aR I_{R0}/I_{F0}=-\aF$, o sea $V_{BE}=V_T\ln(1-\aF)<0$ (unos
+\SI{-0.1}{V}): la juntura E--B queda levemente en inversa.
+
+\textbf{Qué es físicamente.} Escribiendo los coeficientes con
+$a=qA\frac{D_B}{L_B}n_{B0}$, $e=qA\frac{D_E}{L_E}p_{E0}$, $c=qA\frac{D_C}{L_C}p_{C0}$ y $u=W/L_B$:
+\[
+  I_{CB0}=c+a\,\frac{e\coth u+a}{e+a\coth u}
+  \;\xrightarrow[\;W\ll L_B\;]{\gamma\to1}\;
+  \underbrace{qA\frac{D_C}{L_C}p_{C0}}_{I_{Cp}\ \text{(colector)}}+\underbrace{\frac{qAn_{B0}W}{\tau_B}}_{\text{generación en la base}} .
+\]
+Domina el primer término (los minoritarios del colector, que es poco dopado), que es el $I_{Cp}$
+que menciona la guía. Por eso $I_{CB0}\approx I_{Cp}$ es una buena aproximación, no una igualdad.
+
+\textbf{Complemento: $I_{CE0}$} (base abierta, $I_B=0\Rightarrow I_E=I_C$). Repitiendo el álgebra:
+\[
+  I_{CE0}=\frac{(1-\aF\aR)I_{R0}}{1-\aF}=\frac{I_{CB0}}{1-\aF}=(\beta_F+1)\,I_{CB0}.
+\]
+La fuga con base abierta es amplificada por el transistor.
+
+% =====================================================================
+\prob{6 -- Modelo de pequeña señal ($\pi$ híbrido)}
+% =====================================================================
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.95,transform shape]
+  \draw (0,2) node[left]{B} to[short,o-*] (1.5,2) to[R,l_=$r_\pi$] (1.5,0) to[short,*-] (0,0) node[left]{E} ;
+  \draw (0,0) to[short,o-] (1.5,0);
+  \draw (1.5,0) -- (6,0) to[short,-o] (7,0) node[right]{E};
+  \draw (4,2) to[cI,l=$g_mv_\pi$] (4,0);
+  \draw (6,2) to[R,l=$r_o$] (6,0);
+  \draw (4,2) -- (6,2) to[short,*-o] (7,2) node[right]{C};
+  \node at (2.2,1.6) {$+$}; \node at (2.2,0.4) {$-$}; \node at (2.4,1) {$v_\pi$};
+  \draw (4,0) node[circ]{}; \draw (6,0) node[circ]{};
+\end{circuitikz}
+\caption{Modelo $\pi$ híbrido simplificado de baja frecuencia (sin $r_x$ ni $r_\mu$).}
+\end{figure}
+
+\[
+  g_m=\frac{I_C}{V_T}=\frac{\SI{10}{mA}}{\SI{25.83}{mV}}=\SI{387}{mA/V},\qquad
+  r_\pi=\frac{\beta}{g_m}=\frac{500}{0.387}=\SI{1.29}{k\ohm},
+\]
+\[
+  r_o=\frac{V_A}{I_C}=\frac{\SI{800}{V}}{\SI{10}{mA}}=\SI{80}{k\ohm}.
+\]
+\begin{clave}[Resultado Problema 6]
+$g_m=\SI{387}{mA/V}$, $r_\pi=\SI{1.29}{k\ohm}$, $r_o=\SI{80}{k\ohm}$.
+Con $V_T=\SI{26}{mV}$ (como la guía): $g_m=\SI{384.6}{mA/V}$, $r_\pi=\SI{1.30}{k\ohm}$.
+\end{clave}
+Si se conoce $V_{CE}$, la expresión más precisa es $r_o=(V_A+V_{CE})/I_C$; con $V_A=\SI{800}{V}$ la
+diferencia es despreciable.
+
+% =====================================================================
+\prob{7 -- Parámetros $h$ en emisor común a partir de Giacoletto}
+% =====================================================================
+
+Modelo de Giacoletto completo: $r_x$ ($r_{bb'}$), $r_\pi$ ($r_{b'e}$), $r_\mu$ ($r_{b'c}$),
+$g_mv_\pi$ y $r_o$ ($r_{ce}$). Definición de parámetros híbridos:
+\[
+  v_1=h_{ie}\,i_1+h_{re}\,v_2,\qquad i_2=h_{fe}\,i_1+h_{oe}\,v_2 .
+\]
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.9,transform shape]
+  \draw (0,2) node[left]{B} to[short,o-] (0.3,2) to[R,l=$r_x$] (2.3,2) node[above]{B$'$};
+  \draw (2.3,2) to[short,*-] (2.3,2) to[R,l_=$r_\pi$] (2.3,0);
+  \draw (2.3,2) -- (2.3,3.2) to[R,l=$r_\mu$] (6.3,3.2) -- (6.3,2);
+  \draw (4.5,2) to[cI,l=$g_mv_\pi$] (4.5,0);
+  \draw (6.3,2) to[R,l=$r_o$] (6.3,0);
+  \draw (4.5,2) -- (6.3,2) to[short,*-o] (7.3,2) node[right]{C};
+  \draw (0,0) node[left]{E} to[short,o-] (6.3,0) to[short,-o] (7.3,0) node[right]{E};
+  \draw (4.5,0) node[circ]{}; \draw (2.3,0) node[circ]{}; \draw (6.3,0) node[circ]{};
+  \node at (3.0,1.6) {$+$}; \node at (3.0,0.4) {$-$}; \node at (3.2,1) {$v_\pi$};
+\end{circuitikz}
+\caption{Modelo de Giacoletto (baja frecuencia: sin $C_\pi$ ni $C_\mu$).}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{$h_{ie}$} ($v_2=0$): $v_\pi=i_1\,(r_\pi\parallel r_\mu)$ $\Rightarrow$
+  $h_{ie}=r_x+r_\pi\parallel r_\mu\approx r_x+r_\pi$.
+  \item \textbf{$h_{re}$} ($i_1=0$): divisor $r_\mu$--$r_\pi$ $\Rightarrow$
+  $h_{re}=\dfrac{r_\pi}{r_\pi+r_\mu}\approx\dfrac{r_\pi}{r_\mu}\approx0$.
+  \item \textbf{$h_{fe}$} ($v_2=0$): $i_2=g_mv_\pi-v_\pi/r_\mu$ $\Rightarrow$
+  $h_{fe}=\left(g_m-\tfrac{1}{r_\mu}\right)(r_\pi\parallel r_\mu)\approx g_mr_\pi=\beta_0$.
+  \item \textbf{$h_{oe}$} ($i_1=0$): $i_2=\dfrac{v_2}{r_o}+g_mv_\pi+\dfrac{v_2-v_\pi}{r_\mu}$
+  con $v_\pi=v_2\frac{r_\pi}{r_\pi+r_\mu}$ $\Rightarrow$
+  $h_{oe}=\dfrac{1}{r_o}+\dfrac{1+g_mr_\pi}{r_\pi+r_\mu}\approx\dfrac{1}{r_o}+\dfrac{\beta_0}{r_\mu}$.
+\end{itemize}
+\begin{clave}[Resultado Problema 7]
+Modelo completo: $h_{ie}=r_x+r_\pi\parallel r_\mu$, $h_{re}=\dfrac{r_\pi}{r_\pi+r_\mu}$,
+$h_{fe}=\left(g_m-\tfrac{1}{r_\mu}\right)(r_\pi\parallel r_\mu)$, $h_{oe}=\dfrac{1}{r_o}+\dfrac{1+g_mr_\pi}{r_\pi+r_\mu}$.
+Simplificado ($r_x\to0$, $r_\mu\to\infty$, como la guía):
+\[
+  h_{ie}=r_\pi,\qquad h_{re}=0,\qquad h_{fe}=g_mr_\pi=\beta,\qquad h_{oe}=\frac{1}{r_o}.
+\]
+\end{clave}
+La guía omite $h_{re}$: en el modelo simplificado vale 0 y conviene decirlo explícitamente.
+
+% =====================================================================
+\prob{8 -- BJT con dos terminales en cortocircuito}
+% =====================================================================
+
+Ebers--Moll PNP: $I_E=I_{F0}\eVEB-\aR I_{R0}\eVCB$, $I_C=\aF I_{F0}\eVEB-I_{R0}\eVCB$, $I_B=I_E-I_C$.
+Hay \textbf{tres} formas de cortocircuitar dos terminales:
+
+\textbf{(i) C--B en corto ($V_{CB}=0$): diodo E--(B,C).}
+\[
+  I_E=I_{F0}\eVEB,\qquad I_C=\aF I_E,\qquad I_B=(1-\aF)I_E .
+\]
+Una fracción $\aF$ de los huecos inyectados cruza la base y vuelve por el colector, que está en
+corto con la base. Es un diodo casi ideal (factor de idealidad $\approx1$ en un rango amplio): es
+el ``transistor conectado como diodo'' de los espejos de corriente (Problema~14).
+\textbf{Ruptura baja}: la del E--B (\SIrange{5}{7}{V} típicos), porque el emisor está muy dopado
+y el campo máximo se alcanza con poca tensión.
+
+\textbf{(ii) E--B en corto ($V_{EB}=0$): diodo C--(B,E).}
+\[
+  I_C=-I_{R0}\eVCB,\qquad I_E=-\aR I_{R0}\eVCB=\aR I_C .
+\]
+Ahora el colector es el que inyecta, y sólo una fracción $\aR$ (chica) llega al emisor.
+\textbf{Ruptura alta}: la juntura C--B (colector poco dopado, zona desierta ancha).
+
+\textbf{(iii) E--C en corto ($V_{EB}=V_{CB}=V$): diodo B--(E,C).} Las dos junturas en paralelo:
+\[
+  I_B=I_E-I_C=\big[(1-\aF)I_{F0}+(1-\aR)I_{R0}\big]\left(e^{V/V_T}-1\right).
+\]
+La ruptura en inversa la impone la juntura más débil, la E--B.
+
+\begin{clave}[Resultado Problema 8]
+En los tres casos la corriente es $I=I_0\left(e^{V/V_T}-1\right)$: un diodo, con
+$I_0=I_{F0}$, $I_{R0}$ o $(1-\aF)I_{F0}+(1-\aR)I_{R0}$ respectivamente.
+$BV$: alta sólo en el caso (ii); (i) y (iii) quedan limitados por la juntura E--B.
+\end{clave}
+
+\begin{ojo}[sobre la comparación de $I_{F0}$ e $I_{R0}$]
+La guía dice ``si el transistor se construye de forma tal que $I_{F0}>I_{R0}$''. Por reciprocidad,
+$\aF I_{F0}=\aR I_{R0}$, y como $\aR<\aF$ en cualquier transistor normal, siempre resulta
+$I_{R0}>I_{F0}$ (el colector, poco dopado y de mayor área, tiene más corriente de saturación).
+Lo que hace ``mejor'' al diodo E--B no es una corriente de saturación mayor, sino que su corriente
+es casi toda de huecos que atraviesan la base (alta $\gamma$).
+\end{ojo}
+
+% =====================================================================
+\prob{9 -- Identificar el transistor y analizar dopaje y ancho de base}
+% =====================================================================
+
+\textbf{a)} En el emisor $E_G=\SI{1.15}{eV}$ y $|E_C-E_F|=\SI{0.22}{eV}<E_G/2=\SI{0.575}{eV}$: el
+nivel de Fermi está en la mitad superior de la banda prohibida, así que el emisor es \textbf{tipo n}
+y el transistor es \textbf{NPN}. Con $V_{BE}=+\SI{0.647}{V}$ (directa) y
+$V_{BC}=\SI{-3.59}{V}$ (inversa) está en \textbf{MAD}. Por la juntura C--B pasan
+\textbf{electrones} inyectados por el emisor que atravesaron la base sin recombinarse
+(empujados por el campo de la juntura en inversa).
+
+Para (b) y (c) conviene la expresión de la hoja (base corta, NPN):
+\[
+  \frac{1}{\beta}\approx\underbrace{\frac{D_E}{D_B}\,\frac{N_B}{N_E}\,\frac{W}{L_E}}_{\text{retroinyección }(\gamma)}
+  +\underbrace{\frac{W^2}{2L_B^2}}_{\text{recombinación }(\aT)},
+  \qquad \alpha=\frac{\beta}{\beta+1}.
+\]
+
+\textbf{b) $N_B\times2$, $W$ constante.} El primer término se duplica: la base inyecta más huecos
+hacia el emisor en relación a los electrones que recibe ($n_{B0}=n_i^2/N_B$ se reduce a la mitad).
+$\gamma\downarrow$. En el modelo ideal $\aT$ no cambia; en la realidad $\mu_n$ y $\tau_n$ bajan con
+el dopaje, así que $L_B$ baja y $\aT$ también cae algo. \textbf{$\alpha\downarrow$ y
+$\beta\downarrow$} (si $\gamma$ es lo que limita, $\beta$ cae aproximadamente a la mitad).
+Como efecto colateral bueno: menor efecto Early y menor resistencia de base.
+
+\textbf{c) $W\uparrow$, $N_B$ constante.} Suben los dos términos: $\gamma\downarrow$ (la corriente
+útil $\propto1/W$ mientras la retroinyección es fija) y $\aT\downarrow$ (más tiempo de tránsito,
+más recombinación, $\propto W^2$). \textbf{$\alpha\downarrow$ y $\beta\downarrow$}.
+
+\begin{ojo}[mecanismo en (b)]
+La guía lo atribuye a que ``más portadores se recombinan en la base''. Al duplicar $N_B$, la
+concentración inyectada en la base se \emph{reduce} a la mitad, y con ella la recombinación: el
+cociente $I_{B-R}/I_C$ no cambia en el modelo ideal. Lo que empeora es la \textbf{eficiencia de
+emisión} $\gamma$. La conclusión ($\alpha$ y $\beta$ bajan) es correcta.
+\end{ojo}
+
+% =====================================================================
+\prob{10 -- Verdadero o falso}
+% =====================================================================
+\begin{enumerate}[label=\alph*)]
+  \item \textbf{F.} $V_A\approx Q_B/C_{jC}\propto W$. Para una misma variación $\Delta x_{CB}$, la
+  variación relativa $\Delta W/W$ es menor en la base de \SI{800}{nm}: \textbf{menos} efecto Early.
+  (Que sea epitaxial no cambia el argumento.)
+  \item \textbf{F.} La juntura C--B está en inversa con tensiones grandes y variables: su zona
+  desierta cambia mucho. La E--B está en directa a $V_{BE}\approx$ cte, y su $x_{EB}$ casi no varía.
+  \item \textbf{F.} La primera mitad es correcta (aumento de $I_C$ con $V_{CE}$), pero el mecanismo es
+  la \textbf{modulación del ancho de la base}. ``Modulación del largo del canal'' es el
+  efecto análogo en el MOSFET; el BJT no tiene canal.
+  \item \textbf{F.} En saturación las dos junturas inyectan: el colector inyecta en sentido contrario
+  ($I_C$ baja) y aumenta la recombinación en la base ($I_B$ sube). $h_{FE}=I_C/I_B=\beta_{\text{forzado}}<\beta_F$:
+  el máximo $h_{FE}$ se obtiene en MAD.
+  \item \textbf{F.} En las dos polarizaciones, en las zonas neutras la corriente es de
+  \textbf{difusión de minoritarios}. En directa son portadores \emph{inyectados} (mayoritarios de un
+  lado que cruzan la barrera y pasan a ser minoritarios en exceso del otro). En inversa son
+  minoritarios generados térmicamente que difunden hasta la juntura y el campo los
+  \emph{arrastra} a través de ella (extracción). La guía dice ``directa: difusión de mayoritarios;
+  inversa: arrastre de minoritarios'', que es una simplificación. Lo correcto: lo que cruza la
+  barrera en directa son mayoritarios, pero lo que determina la corriente es su difusión como
+  minoritarios.
+\end{enumerate}
+
+% =====================================================================
+\prob{11 -- Preguntas teóricas}
+% =====================================================================
+\textbf{a) ¿Es lo mismo que dos diodos enfrentados?} No. En el BJT la base es mucho más angosta
+que la longitud de difusión ($W\ll L_B$): los portadores inyectados por el emisor llegan al
+colector sin recombinarse (acoplamiento, las fuentes $\aF I_F$, $\aR I_R$ de Ebers--Moll). En dos
+diodos discretos, el ``medio'' (zona neutra más contacto metálico) es muchísimo más largo que $L$:
+todo lo inyectado se recombina y no hay efecto transistor. Por eso dos diodos enfrentados sólo
+conducen la corriente de saturación inversa del que queda en inversa (o la de avalancha); no hay
+amplificación.
+
+\textbf{b) $V_{CE,\text{sat}}<\SI{1}{V}$ con las dos junturas en directa.} Las tensiones
+de juntura se \emph{restan} en la malla:
+\[
+  V_{CE}=V_{BE}-V_{BC}\approx0.7-0.5\approx\SI{0.2}{V}\quad\text{(NPN)}.
+\]
+$V_{BC}<V_{BE}$ porque la juntura colectora tiene mayor $I_{R0}$ (más área, colector poco dopado)
+y necesita menos tensión para la misma corriente. De Ebers--Moll:
+\[
+  V_{CE,\text{sat}}=V_T\ln\frac{1+(\beta_{\text{forz}}+1)/\beta_R}{1-\beta_{\text{forz}}/\beta_F},
+  \qquad\beta_{\text{forz}}=\frac{I_C}{I_B}<\beta_F .
+\]
+Ejemplo: $\beta_F=100$, $\beta_R=1$, $\beta_{\text{forz}}=10$ da $V_{CE,\text{sat}}=\SI{67}{mV}$
+ideal; con las resistencias serie del colector, \SIrange{0.1}{0.3}{V} en la práctica.
+
+\textbf{c) ¿Por qué la estructura planar vertical?} El efecto transistor necesita
+$W\ll L_B$ (\si{\micro m} o menos). No se puede hacer una capa tan delgada y además contactarla
+lateralmente con metal. En el proceso planar se difunde la base dentro del colector y después el
+emisor dentro de la base: el ancho de base queda definido por la \emph{diferencia de dos
+profundidades de difusión} (controlable con mucha precisión), y el efecto transistor ocurre sólo
+en el volumen vertical debajo del emisor. Ventajas: colector grande (disipación y alto $BV$),
+emisor inyectando sólo hacia abajo. Costo: resistencia de base parásita $r_x$ (la corriente de base
+recorre la base angosta en forma lateral), que no se puede reducir subiendo $N_B$ porque bajaría
+$\gamma$ y $\beta$.
+
+\textbf{d) Dopajes ideales.} $N_E\gg N_B\gg N_C$ (típico $10^{19}$--$10^{20}$, $10^{17}$ y $10^{15}$--\SI{e16}{cm^{-3}}):
+\begin{itemize}
+  \item $N_E\gg N_B$: $\gamma\to1$ (poca retroinyección).
+  \item $N_B$ moderado: suficiente para evitar el \emph{punch-through} y reducir el efecto Early y
+  $r_x$, pero sin arruinar $\gamma$.
+  \item $N_C$ bajo: zona desierta C--B ancha hacia el colector (alto $BV_{CB}$, baja $C_\mu$, poco
+  Early porque casi no invade la base).
+\end{itemize}
+
+% =====================================================================
+\prob{12 -- Diagrama de bandas de un NPN en equilibrio}
+% =====================================================================
+Ejemplo con dopajes típicos: $N_{DE}=\num{1e18}$, $N_{AB}=\num{1e17}$, $N_{DC}=\SI{1e15}{cm^{-3}}$,
+$n_i=\num{1e10}$:
+\[
+  E_F-E_i\big|_E=V_T\ln\tfrac{N_{DE}}{n_i}=\SI{0.48}{eV},\quad
+  E_i-E_F\big|_B=\SI{0.42}{eV},\quad
+  E_F-E_i\big|_C=\SI{0.30}{eV},
+\]
+\[
+  qV_{bi,EB}=0.48+0.42=\SI{0.89}{eV},\qquad qV_{bi,BC}=0.42+0.30=\SI{0.71}{eV}.
+\]
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[yscale=2.6,xscale=1.15]
+  % regiones
+  \fill[azulclaro!50] (0,-1.25) rectangle (2.8,1.2);
+  \fill[rojoclaro!60] (3.4,-1.25) rectangle (5.6,1.2);
+  \fill[azulclaro!50] (7.0,-1.25) rectangle (10,1.2);
+  \node[font=\small\bfseries] at (1.4,1.12) {Emisor n$^+$};
+  \node[font=\small\bfseries] at (4.5,1.12) {Base p};
+  \node[font=\small\bfseries] at (8.5,1.12) {Colector n};
+  % Ec
+  \draw[bandac] (0,0.084) -- (2.8,0.084) to[out=0,in=180] (3.4,0.976) -- (5.6,0.976)
+       to[out=0,in=180] (7.0,0.263) -- (10,0.263) node[right]{$E_C$};
+  % Ev
+  \draw[bandav] (0,-1.036) -- (2.8,-1.036) to[out=0,in=180] (3.4,-0.144) -- (5.6,-0.144)
+       to[out=0,in=180] (7.0,-0.857) -- (10,-0.857) node[right]{$E_V$};
+  % Ei
+  \draw[gris,dotted,thick] (0,-0.476) -- (2.8,-0.476) to[out=0,in=180] (3.4,0.416) -- (5.6,0.416)
+       to[out=0,in=180] (7.0,-0.297) -- (10,-0.297) node[right]{$E_i$};
+  % EF
+  \draw[fermi] (0,0) -- (10,0) node[right]{$E_F$};
+  % Vbi
+  \draw[flecha,<->] (2.3,0.084) -- node[left,font=\small]{$qV_{bi,EB}$} (2.3,0.976);
+  \draw[gris,thin] (2.2,0.976) -- (3.4,0.976);
+  \draw[flecha,<->] (7.6,0.263) -- node[right,font=\small]{$qV_{bi,BC}$} (7.6,0.976);
+  \draw[gris,thin] (5.6,0.976) -- (7.7,0.976);
+  % EG
+  \draw[flecha,<->] (4.5,-0.144) -- node[right,font=\small]{$E_G$} (4.5,0.976);
+  % zonas desiertas
+  \draw[gris,dashed] (2.8,-1.25) -- (2.8,1.05); \draw[gris,dashed] (3.4,-1.25) -- (3.4,1.05);
+  \draw[gris,dashed] (5.6,-1.25) -- (5.6,1.05); \draw[gris,dashed] (7.0,-1.25) -- (7.0,1.05);
+  \node[font=\scriptsize,gris] at (3.1,-1.17) {ZCE};
+  \node[font=\scriptsize,gris] at (6.3,-1.17) {ZCE};
+\end{tikzpicture}
+\caption{NPN en equilibrio. $E_F$ es plano (no hay corriente). En el emisor $E_F$ está cerca de
+$E_C$, en la base cerca de $E_V$ y en el colector también cerca de $E_C$ pero menos que en el
+emisor. La barrera E--B es mayor que la B--C. La ZCE E--B está mayormente en la base (el emisor
+está más dopado); la B--C, mayormente en el colector.}
+\end{figure}
+Elementos a indicar: $E_C$, $E_V$, $E_i$, $E_F$ constante, $E_G$ igual en las tres zonas,
+$qV_{bi,EB}>qV_{bi,BC}$, y las zonas desiertas ubicadas del lado menos dopado.
+
+% =====================================================================
+\prob{13 -- El BJT como llave para un LED}
+% =====================================================================
+\textbf{S1 abierta:} no hay corriente de base, $I_B=0$, la juntura B--E queda sin polarizar:
+\textbf{corte}. $I_C\approx I_{CE0}\approx0$, el LED está apagado y $V_C\approx V_{CC}-V_{LED}$
+(el LED casi no conduce).
+
+\textbf{S1 cerrada:} $R_B$ fija la corriente de base
+\[
+  I_B=\frac{V_{CC}-V_{BE}}{R_B}\approx\frac{V_{CC}-0.7}{R_B},
+\]
+y por efecto transistor circula $I_C$ por $R_C$ y el LED, que se enciende. Para un LED de
+\SI{700}{nm}: $E_{ph}=hc/\lambda=\SI{1.77}{eV}$, así que $V_{LED}\gtrsim\SI{1.8}{V}$.
+\[
+  V_C=V_{CC}-V_{LED}-I_CR_C .
+\]
+\begin{itemize}
+  \item Si $V_C>V_B\approx\SI{0.7}{V}$ (B--C en inversa): MAD, $I_C=\beta I_B$.
+  \item Si $\beta I_B$ ``pide'' más corriente de la que la malla puede dar, $V_C$ cae por debajo
+  de $V_B$, B--C entra en directa: \textbf{saturación}, $V_{CE}\approx\SIrange{0.1}{0.2}{V}$ e
+  $I_C$ queda fijada por el circuito externo:
+  \[
+    I_{C,\text{sat}}=\frac{V_{CC}-V_{LED}-V_{CE,\text{sat}}}{R_C}.
+  \]
+\end{itemize}
+\begin{clave}[Resultado Problema 13]
+Debe operar como \textbf{llave: corte (abierta) / saturación (cerrada)}. En saturación
+$P_{BJT}=V_{CE}I_C$ es mínima y la corriente del LED queda fijada por $R_C$ (no depende de
+$\beta$, que varía mucho entre unidades y con la temperatura). Condición de diseño:
+\[
+  \beta_{\min}I_B>I_{C,\text{sat}}\;\Longrightarrow\;
+  R_B<\beta_{\min}\,R_C\,\frac{V_{CC}-0.7}{V_{CC}-V_{LED}-V_{CE,\text{sat}}}
+\]
+(en la práctica, con un factor de sobreexcitación de 2 a 10).
+\end{clave}
+
+% =====================================================================
+\prob{14 -- Tensión base-emisor del transistor conectado como diodo}
+% =====================================================================
+En el circuito el colector está unido a la base: $V_{BC}=0$. La fuente $I_1$ entra por el
+nodo B--C y sale por el emisor, así que $I_E=I_1$. Con Ebers--Moll (NPN):
+\[
+  I_E=I_{F0}\eVBE-\aR I_{R0}\underbrace{\left(e^{0}-1\right)}_{0}=I_{F0}\eVBE=I_1 .
+\]
+\begin{clave}[Resultado Problema 14]
+\[
+  V_{BE}=V_T\ln\!\left(1+\frac{I_1}{I_{F0}}\right)\approx V_T\ln\frac{I_1}{I_{F0}}
+\]
+\end{clave}
+La guía escribe $I_S$: aquí $I_S$ es $I_{F0}$, la corriente de saturación de la juntura E--B con
+$V_{CB}=0$. Si se usa la $I_S$ de transporte ($I_C=I_Se^{V_{BE}/V_T}$, $I_S=\aF I_{F0}$), queda
+$V_{BE}=V_T\ln(1+\aF I_1/I_S)$. La diferencia es $V_T\ln\aF$, menor a \SI{1}{mV}. Además,
+$I_C=\aF I_1$ e $I_B=(1-\aF)I_1$. Es la referencia de un espejo de corriente.
+
+% =====================================================================
+\prob{15 -- Ganancia de tensión del emisor común}
+% =====================================================================
+Se pasivan $V_{BB}$ y $V_{CC}$ (cortocircuitos en AC) y se reemplaza el transistor por el modelo
+$\pi$ híbrido:
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[scale=0.9,transform shape]
+  \draw (0,0) to[sV,l=$v_{in}$] (0,2) to[R,l=$R_{in}$] (2.5,2) to[short,-*] (2.5,2);
+  \draw (2.5,2) to[R,l_=$r_\pi$] (2.5,0);
+  \draw (4.5,2) to[cI,l=$g_mv_\pi$] (4.5,0);
+  \draw (6.3,2) to[R,l=$r_o$] (6.3,0);
+  \draw (8.1,2) to[R,l=$R_L$] (8.1,0);
+  \draw (4.5,2) -- (8.1,2) to[short,-o] (9,2);
+  \draw (0,0) -- (8.1,0) to[short,-o] (9,0);
+  \draw (9,2) to[open,v^=$v_{out}$] (9,0);
+  \node at (3.1,1.6) {$+$}; \node at (3.1,0.4) {$-$}; \node at (3.3,1) {$v_\pi$};
+  \foreach \x in {2.5,4.5,6.3} {\draw (\x,0) node[circ]{};}
+  \foreach \x in {6.3} {\draw (\x,2) node[circ]{};}
+\end{circuitikz}
+\caption{Equivalente de pequeña señal del emisor común.}
+\end{figure}
+\[
+  v_\pi=v_{in}\frac{r_\pi}{r_\pi+R_{in}}\quad\text{(divisor)},\qquad
+  v_{out}=-g_mv_\pi\,(r_o\parallel R_L)\quad\text{(la fuente inyecta hacia E)}.
+\]
+\begin{clave}[Resultado Problema 15]
+\[
+  H=\frac{v_{out}}{v_{in}}=-g_m\,\frac{r_\pi}{r_\pi+R_{in}}\,\frac{r_oR_L}{r_o+R_L}
+  =-\frac{\beta\,(r_o\parallel R_L)}{r_\pi+R_{in}}
+\]
+\end{clave}
+El signo menos indica inversión de fase de \ang{180}. Si $R_{in}\ll r_\pi$ y $R_L\ll r_o$:
+$H\approx-g_mR_L$.
+
+% =====================================================================
+\section*{Tabla de correcciones respecto de las respuestas de la guía}
+\addcontentsline{toc}{section}{Tabla de correcciones}
+% =====================================================================
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lX X@{}}
+\toprule
+Prob. & Dice la guía & Correcto \\
+\midrule
+1 & $I_{Ep}\approx\SI{46}{mA}$, $I_{B-R}\approx\SI{157}{nA}$, $\beta\approx286$, $\gamma\approx0.997$ &
+Error de unidades en $W$ (factor 100). $I_{Ep}=\SI{0.488}{mA}$, $I_{B-R}=\SI{16.1}{\micro A}$,
+$\beta=2.58$, $\gamma=0.745$. $\beta$ de cientos es imposible con $N_E/N_B=1.25$. \\
+2 & corriente útil $\approx\SI{131}{mA}$, $\beta\approx1350$ & Mismo error: $\SI{1.354}{mA}$,
+$\beta=11.6$, $\gamma=0.931$. \\
+1, 2 & --- & El punto de trabajo viola baja inyección ($p_B(0)$ hasta $0.6N_B$) y $V_{EB}\approx V_{bi}$. \\
+5 & ``demostrar $I_{CB0}=I_{Cp}$'' & Es aproximado: $I_{CB0}=I_{Cp}+$ generación en la base $+\ldots$ \\
+7 & falta $h_{re}$ & $h_{re}=r_\pi/(r_\pi+r_\mu)\approx0$; si hay $r_x$, $h_{ie}=r_x+r_\pi$. \\
+8 & ``si $I_{F0}>I_{R0}$\ldots''; dos casos & Por reciprocidad, siempre $I_{R0}>I_{F0}$. Hay un
+tercer caso (E--C en corto). \\
+9b & ``más recombinación en la base'' & El mecanismo dominante es la caída de $\gamma$. \\
+10e & ``directa: difusión de mayoritarios; inversa: arrastre de minoritarios'' & En ambos casos,
+difusión de minoritarios en las zonas neutras (inyección o extracción). \\
+11a & ``no pueden conducir salvo avalancha'' & Conducen la corriente de saturación inversa (muy chica). \\
+14 & $I_S$ & Es $I_{F0}$ (con $I_S$ de transporte aparece $\aF$). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}
